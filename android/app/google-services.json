@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "34336197550",
+    "project_id": "hash-social-4a9dc",
+    "storage_bucket": "hash-social-4a9dc.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:34336197550:android:c0257430d2c0e145a7563f",
+        "android_client_info": {
+          "package_name": "com.HatchSocial"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "34336197550-tuaa6pad97lseop4q5pcsuqla7kcmsjg.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDQILnRXTHB5hC4ci-Ja5uQhKSGdoWJlr4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "34336197550-tuaa6pad97lseop4q5pcsuqla7kcmsjg.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
