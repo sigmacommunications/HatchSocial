@@ -23,7 +23,9 @@ import PostComponent from '../Components/PostComponent';
 import navigationService from '../navigationService';
 import {useNavigation} from '@react-navigation/native';
 
-const PostScreen = () => {
+const PostScreen = (props) => {
+  const item = props?.route?.params?.item
+  console.log("🚀 ~ PostScreen ~ item:", item)
   const privacy = useSelector(state => state.authReducer.privacy);
   const [placeholdertext, setPlaceholderText] = useState('');
   const [index, setIndex] = useState(0);
@@ -311,14 +313,15 @@ const PostScreen = () => {
             start={{x: 0, y: 0}}
             end={{x: 1, y: 0}}
             colors={['#f5eefe', '#f4edfd']}>
-            <CustomText
+            {/* <CustomText
               style={{
                 fontSize: moderateScale(25, 0.6),
                 color: Color.veryLightGray,
               }}
               isBold>
               #
-            </CustomText>
+            </CustomText> */}
+            {item?.image}
           </LinearGradient>
           <View
             style={{
@@ -332,7 +335,7 @@ const PostScreen = () => {
                 textAlign: 'left',
               }}
               isBold>
-              #Travelling
+              {item?.item?.name}
             </CustomText>
             <CustomText
               style={{

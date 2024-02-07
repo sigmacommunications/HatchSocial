@@ -46,7 +46,7 @@ const requestCameraPermission = async () => {
 const ImagePickerModal = props => {
   const themeColor = useSelector(state => state.authReducer.ThemeColor);
   let {show, setShow, setFileObject, setMultiImages, crop, type} = props;
-  console.log("🚀 ~ file: ImagePickerModal.js:49 ~ ImagePickerModal ~ type:", type)
+  // console.log("🚀 ~ file: ImagePickerModal.js:49 ~ ImagePickerModal ~ type:", type)
 
   const openGallery = () => {
     let options = {

@@ -5,6 +5,9 @@ import {
   View,
   TouchableOpacity,
   ScrollView,
+  Platform,
+  ToastAndroid,
+  Alert,
 } from 'react-native';
 import Color from '../Assets/Utilities/Color';
 import CustomStatusBar from '../Components/CustomStatusBar';
@@ -21,11 +24,18 @@ import navigationService from '../navigationService';
 import ImagePickerModal from '../Components/ImagePickerModal';
 import {Icon} from 'native-base';
 import Entypo from 'react-native-vector-icons/Entypo';
+import {Post} from '../Axios/AxiosInterceptorFunction';
 
 const CreateNewFeed = () => {
   const themeColor = useSelector(state => state.authReducer.ThemeColor);
   const privacy = useSelector(state => state.authReducer.privacy);
   const [feedTitle, setFeedTitle] = useState('');
+  // console.log("🚀 ~ CreateNewFeed ~ feedTitle:", feedTitle)
+  const profileData = useSelector(state => state.commonReducer.selectedProfile);
+  // console.log("🚀 ~ CreateNewFeed ~ profileData:", profileData)
+  const token = useSelector(state => state.authReducer.token);
+  // console.log("🚀 ~ CreateNewFeed ~ token:", token)
+  // console.log("🚀 ~ CreateNewFeed ~ feedTitle:", feedTitle)
   const [description, setDescription] = useState('');
   const [Details, setDetails] = useState('');
   const [radio, setRadio] = useState('');
@@ -33,9 +43,40 @@ const CreateNewFeed = () => {
   const [image, setImage] = useState({});
   const [showModal, setShowModal] = useState(false);
   const [hashtags, setHashTags] = useState([]);
+  const [feedsTitle, setFeedsTitle] = useState([]);
+  // console.log("🚀 ~ CreateNewFeed ~ hashtags:", hashtags)
+  // console.log("🚀 ~ CreateNewFeed ~ feedsTitle:", feedsTitle)
 
   const architecture = ['#architecture', 'ABC', 'BCD', 'CDE'];
   const [dropDownValue, setDropDownValue] = useState('#Architecture');
+
+  const addFeeds = async () => {
+    const url = 'auth/feed';
+    const formData = new FormData();
+    // console.log("🚀 ~ addFeeds ~ formData:", formData)
+    const body = {
+      profile_id: profileData?.id,
+      name: feedsTitle,
+      hashtags: hashtags,
+      description: Details,
+      photo: image,
+    };
+    for (let key in body) {
+      formData.append(key, body[key]);
+    }
+    // return console.log("🚀 ~ addFeeds ~ body:", formData)
+    setisLoading(true);
+    const response = await Post(url, formData, apiHeader(token));
+    setisLoading(false);
+    if (response != undefined) {
+      // return console.log("🚀 ~ addFeeds ~ response:", response?.data)
+      Platform.OS == 'android'
+        ? ToastAndroid.show('feed created successfully',ToastAndroid.SHORT)
+        : Alert.alert('feed created successfully');
+      navigationService.navigate('HomeScreen');
+    }
+  };
+
   return (
     <>
       <CustomStatusBar
@@ -117,10 +158,34 @@ const CreateNewFeed = () => {
                   marginLeft: moderateScale(30, 0.3),
                 }}
                 isBold>
-                Add Hashtag
+                feed title
               </CustomText>
-              <View
-                style={styles.hashtagview}>
+              <View style={styles.hashtagview}>
+                <TextInputWithTitle
+                  titleText={'Feed Title'}
+                  placeholder={'Feed Title'}
+                  setText={setFeedsTitle}
+                  value={feedsTitle}
+                  viewHeight={0.05}
+                  viewWidth={0.6}
+                  inputWidth={0.6}
+                  color={Color.black}
+                  placeholderColor={Color.themeLightGray}
+                  style={{fontWeight: 'bold'}}
+                />
+              </View>
+              <CustomText
+                style={{
+                  textAlign: 'left',
+                  // width: windowWidth * 0.5,
+                  marginTop: moderateScale(20, 0.3),
+                  fontSize: moderateScale(15, 0.6),
+                  marginLeft: moderateScale(30, 0.3),
+                }}
+                isBold>
+                asign hashtags
+              </CustomText>
+              <View style={styles.hashtagview}>
                 <TextInputWithTitle
                   titleText={'Feed Hashtag'}
                   placeholder={'Feed Hashtag'}
@@ -158,12 +223,10 @@ const CreateNewFeed = () => {
               </View>
             </View>
           </View>
-          <View
-            style={styles.mapview1}>
-            {hashtags.map((item, index) => {
+          <View style={styles.mapview1}>
+            {hashtags?.map((item, index) => {
               return (
-                <View
-                  style={styles.mapview2}>
+                <View style={styles.mapview2}>
                   <CustomText
                     isBold
                     style={{
@@ -176,11 +239,8 @@ const CreateNewFeed = () => {
               );
             })}
           </View>
-          <View
-            style={styles.descriptionview}>
-            <CustomText
-              style={styles.descriptiontext}
-              isBold>
+          <View style={styles.descriptionview}>
+            <CustomText style={styles.descriptiontext} isBold>
               Add The description
             </CustomText>
             <TextInputWithTitle
@@ -191,7 +251,7 @@ const CreateNewFeed = () => {
               value={Details}
               viewHeight={0.13}
               viewWidth={0.85}
-              inputWidth={0.99}
+              inputWidth={0.8}
               color={Color.red}
               placeholderColor={Color.themeLightGray}
               borderBottomWidth={1}
@@ -201,7 +261,7 @@ const CreateNewFeed = () => {
             />
           </View>
 
-          <View
+          {/* <View
             style={styles.privacyview}>
             <CustomText
               style={{
@@ -210,10 +270,10 @@ const CreateNewFeed = () => {
                 marginLeft: moderateScale(10, 0.3),
               }}>
               Privacy Setting
-            </CustomText>
+            </CustomText> */}
 
-            <View style={[styles.radioButtonContainer]}>
-              <TouchableOpacity
+          {/* <View style={[styles.radioButtonContainer]}> */}
+          {/* <TouchableOpacity
                 onPress={() => {
                   setRadio('private');
                 }}
@@ -223,9 +283,9 @@ const CreateNewFeed = () => {
                     backgroundColor:
                       radio == 'private' ? themeColor[1] : Color.veryLightGray,
                   },
-                ]}>
-                {/* <View style={styles.radioButtonIcon} /> */}
-              </TouchableOpacity>
+                ]}> */}
+          {/* <View style={styles.radioButtonIcon} /> */}
+          {/* </TouchableOpacity>
               <CustomText
                 onPress={() => {
                   setRadio('private');
@@ -251,9 +311,9 @@ const CreateNewFeed = () => {
                 }}
                 style={styles.radioButtonText}>
                 Public
-              </CustomText>
-            </View>
-          </View>
+              </CustomText> */}
+          {/* </View>
+          </View> */}
           <CustomButton
             text={
               isLoading ? (
@@ -273,7 +333,8 @@ const CreateNewFeed = () => {
             marginTop={moderateScale(30, 0.3)}
             // marginBottom={moderateScale(50)}
             onPress={() => {
-              navigationService.navigate('HomeScreen');
+              addFeeds();
+              // navigationService.navigate('HomeScreen');
             }}
           />
         </ImageBackground>
@@ -413,7 +474,7 @@ const styles = ScaledSheet.create({
     fontWeight: '600',
     color: '#000',
   },
-  hashtagview:{
+  hashtagview: {
     width: windowWidth * 0.8,
     flexDirection: 'row',
     justifyContent: 'space-between',
@@ -423,40 +484,42 @@ const styles = ScaledSheet.create({
     borderBottomWidth: 1,
     borderColor: Color.lightGrey,
   },
-  mapview1:{
+  mapview1: {
     width: windowWidth * 0.8,
     flexWrap: 'wrap',
     flexDirection: 'row',
+    // backgroundColor:'red'
   },
-  mapview2:{
+  mapview2: {
     paddingHorizontal: moderateScale(10, 0.6),
     paddingVertical: moderateScale(5, 0.6),
     borderWidth: 1,
     borderRadius: moderateScale(10, 0.6),
     borderColor: Color.white,
     marginHorizontal: moderateScale(5, 0.3),
+    marginTop: moderateScale(8, 0.3),
   },
-  descriptionview:{
+  descriptionview: {
     // width: windowWidth * 0.9,
     height: windowHeight * 0.14,
     marginTop: moderateScale(10, 0.3),
     // backgroundColor:'red',
     // marginLeft: moderateScale(-20, 0.3),
   },
-  descriptiontext:{
+  descriptiontext: {
     textAlign: 'left',
     // width: windowWidth * 0.5,
     fontSize: moderateScale(15, 0.6),
     // marginLeft: moderateScale(30, 0.3),
   },
-  privacyview:{
+  privacyview: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     width: windowWidth * 0.9,
     alignSelf: 'center',
     // backgroundColor:'red',
     marginTop: moderateScale(30, 0.3),
-  }
+  },
 });
 
 export default CreateNewFeed;

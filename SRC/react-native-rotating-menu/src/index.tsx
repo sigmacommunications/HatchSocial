@@ -208,12 +208,13 @@ const RoundMenu = ({
           <Animatable.View
             ref={outerContainerRef}
             style={styles({size, backgroundColor}).container}>
-            {[...content.slice(0,9),{text : '9+'}].map((el, i) => {
-              console.log(
-                '🚀 ~ {content.map ~ el:',
-                el?.item?.community_owner?.id,
-                profileData?.id
-              );
+            {[...content.slice(0,9)].map((el, i) => {
+              // console.log(
+              //   '🚀 ~ {content.map ~ el:',
+              //   el?.item?.community_owner?.id,
+              //   profileData?.id,
+              //   el?.bubble
+              // );
               const [x, y] = pointOnCircle({
                 radius,
                 angle:
@@ -255,7 +256,7 @@ const RoundMenu = ({
               
 
               return (
-                i <= 8 ?
+                // i <= 8 ?
                 <>
                   <Animatable.View
                     animation={
@@ -314,12 +315,14 @@ const RoundMenu = ({
                         } else if (el?.bubble && !el?.private) {
                           setclicked(true);
                           setSelectedBubbleId(el?.id);
-                        } else if (!el?.bubble && el?.private) {
-                          setIsVisible(true);
+                        } else if (!el?.bubble && !el?.private) {
+                          // setIsVisible(true);
+                          navigation.navigate('PostScreen' , {item : el});
                           setText('feed');
-                        } else if (!el?.bubble) {
-                          el?.onPress();
                         }
+                        //  else if (!el?.bubble) {
+                        //   el?.onPress();
+                        // }
                       }}
                       key={i}
                       activeOpacity={1}
@@ -382,54 +385,54 @@ const RoundMenu = ({
                     </TouchableOpacity>
                   </Animatable.View>
                 </>
-              :
-              <Animatable.View
+              // :
+              // <Animatable.View
               
-              animation={
-                (elContainerSize == x / 3 ||
-                  elContainerSize ==
-                    (Dimensions.get('window').width - x) / 3) &&
-                (el?.bubble ? 'pulse' : 'swing')
-              }
-              easing="ease-in"
-              iterationCount="infinite"
-              style={[
-                styles({elContainerSize, elContainerCoOrdinates: {x, y}})
-                  .elContainer,
-                {
-                  backgroundColor: 'rgba(0,0,0,0.5)',
-                  // borderColor: elContainerSize == size /3 ? 'yellow':'rgb('+(x)%255+','+(y)%255+','+(x+y)%255+')',
-                  borderColor:
-                   'red',
-                  // borderColor: 'yellow',
+              // animation={
+              //   (elContainerSize == x / 3 ||
+              //     elContainerSize ==
+              //       (Dimensions.get('window').width - x) / 3) &&
+              //   (el?.bubble ? 'pulse' : 'swing')
+              // }
+              // easing="ease-in"
+              // iterationCount="infinite"
+              // style={[
+              //   styles({elContainerSize, elContainerCoOrdinates: {x, y}})
+              //     .elContainer,
+              //   {
+              //     backgroundColor: 'rgba(0,0,0,0.5)',
+              //     // borderColor: elContainerSize == size /3 ? 'yellow':'rgb('+(x)%255+','+(y)%255+','+(x+y)%255+')',
+              //     borderColor:
+              //      'red',
+              //     // borderColor: 'yellow',
 
-                  borderRadius:  elContainerSize / 4,
-                  borderWidth:
-                    elContainerSize == x / 3 ||
-                    elContainerSize ==
-                      (Dimensions.get('window').width - x) / 3
-                      ? 3
-                      : 1,
-                  overflow: 'hidden',
-                },
-              ]}>
-                <TouchableOpacity 
-                onPress={()=>{
-                  navigation.navigate('BubbleList')
-                }}
-                style={{
-                  width : '100%',
-                  height : '100%',
-                  alignItems : 'center',
-                  justifyContent : 'center',
-                }}>
+              //     borderRadius:  elContainerSize / 4,
+              //     borderWidth:
+              //       elContainerSize == x / 3 ||
+              //       elContainerSize ==
+              //         (Dimensions.get('window').width - x) / 3
+              //         ? 3
+              //         : 1,
+              //     overflow: 'hidden',
+              //   },
+              // ]}>
+              //   <TouchableOpacity 
+              //   onPress={()=>{
+              //     navigation.navigate('BubbleList')
+              //   }}
+              //   style={{
+              //     width : '100%',
+              //     height : '100%',
+              //     alignItems : 'center',
+              //     justifyContent : 'center',
+              //   }}>
 
-              <Text style={{
-                color : 'white',
-                fontSize : 20,
-              }}>9+</Text>
-              </TouchableOpacity>
-              </Animatable.View>
+              // <Text style={{
+              //   color : 'white',
+              //   fontSize : 20,
+              // }}>9+</Text>
+              // </TouchableOpacity>
+              // </Animatable.View>
               );
             })}
           </Animatable.View>

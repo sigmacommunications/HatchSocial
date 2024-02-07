@@ -26,6 +26,7 @@ import Signup from './SRC/Screens/Signup';
 import ResetPassword from './SRC/Screens/ResetPassword';
 import ChangePassword from './SRC/Screens/ChangePassword';
 import Feeds from './SRC/Screens/Feeds';
+import FeedSelection from './SRC/Screens/FeedSelection';
 
 // import AppNavigator, {DrawerRoot} from './SRC/appNavigation';
 
@@ -75,6 +76,8 @@ const MainContainer = () => {
   if (isloading == true) {
     return <SplashScreen />;
   }
+  // return <FeedSelection/>;
+
   return <AppNavigator />;
 };
 

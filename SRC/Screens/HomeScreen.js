@@ -110,19 +110,20 @@ const HomeScreen = props => {
     const response = await Get(url, token);
     setIsLoading(false);
     if (response != undefined) {
+      console.log(JSON.stringify(response?.data,null,2))
       setBubbles(response?.data?.community_info);
       setContent(
-        response?.data?.community_info?.map(item => {
+        response?.data?.data?.map(item => {
           return {
             id: item?.id,
             image: (
               <Image
-                source={{uri: `${baseUrl}/${item?.image}`}}
+                source={{uri: `${baseUrl}/${item?.bubble ? item?.image : item?.photo}`}}
                 resizeMode="cover"
                 style={style.icon}
               />
             ),
-            bubble: true,
+            bubble: item?.bubble == 1 ? true : false,
             item:item,
             source: {uri: `${baseUrl}/${item?.image}`},
             private: item?.privacy?.toLowerCase() == 'yes' ? true : false,
@@ -148,7 +149,7 @@ const HomeScreen = props => {
   useEffect(() => {
     if (newSignUp) {
       setTimeout(() => {
-        console.log('New Signup');
+        // console.log('New Signup');
         setPrompt(true);
       }, 10000);
     }

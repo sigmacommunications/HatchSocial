@@ -28,7 +28,7 @@ const RequestModal = ({
   selectedBubbleId,
   item,
 }) => {
-  console.log("🚀 ~ file: RequestModal.js:31 ~ bubbleData:", bubbleData?.follow?.status)
+  // console.log("🚀 ~ file: RequestModal.js:31 ~ bubbleData:", bubbleData?.follow?.status)
   const themeColor = useSelector(state => state.authReducer.ThemeColor);
   const [loading, setLoading] = useState(false);
   const profileData = useSelector(state => state.commonReducer.selectedProfile);
