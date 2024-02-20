@@ -48,6 +48,7 @@ const Posts = ({onPress, bubbleId, bubbleInfo}) => {
     const response = await Get(url, token);
     setIsLoading(false);
     if (response != undefined) {
+      console.log("My console: ===> ", response?.data);
       console.log(
         '🚀 ~ file: Posts.js:46 ~ getPosts ~ response:',
         JSON.stringify(response?.data?.post_info),

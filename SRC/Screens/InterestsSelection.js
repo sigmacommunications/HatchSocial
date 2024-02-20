@@ -269,6 +269,7 @@ const InterestSelection = () => {
           {interestListing.map((item, index) => {
             return (
               <TouchableOpacity
+              key={index}
                 onPress={() => {
                   console.log('Here');
                   if (selectedBubble.findIndex(i => i == item?.id) != -1) {

@@ -11,20 +11,26 @@ import {
 import React, {useState} from 'react';
 const {height, width} = Dimensions.get('window');
 import {moderateScale} from 'react-native-size-matters';
-import Entypo from 'react-native-vector-icons/Entypo';
+import Ionicons from 'react-native-vector-icons/Ionicons';
 import {SearchData} from '../dummyData/SearchData';
 import CustomStatusBar from '../Components/CustomStatusBar';
 import Header from '../Components/Header';
-import {windowHeight, windowWidth} from '../Utillity/utils';
+import {apiHeader, windowHeight, windowWidth} from '../Utillity/utils';
 import CustomImage from '../Components/CustomImage';
 import CustomText from '../Components/CustomText';
 import Color from '../Assets/Utilities/Color';
 import TextInputWithTitle from '../Components/TextInputWithTitle';
 import {useSelector} from 'react-redux';
+import { Post } from '../Axios/AxiosInterceptorFunction';
+import { baseUrl } from '../Config';
 
 const BubbleSearch = () => {
+
   const themeColor = useSelector(state => state.authReducer.ThemeColor);
   const privacy = useSelector(state => state.authReducer.privacy);
+  const token = useSelector(state => state.authReducer.token);
+  const [isSelected, setIsSelected] =useState('bubbles');
+  const [data, setData] =useState({})
   const [search, setSearch] = useState('');
   const SearchData = [
     {
@@ -119,6 +125,32 @@ const BubbleSearch = () => {
     //   bubble: false,
     // },
   ];
+const searchBubble = async()=>{
+  const url = 'auth/search';
+  const body={
+    search:search
+  }
+  const response= await Post(url, body, apiHeader(token));
+  
+   if(response != undefined){
+   console.log("Search : ===> ", response.data);
+  setData(response?.data);
+}
+
+
+
+}
+
+console.log("Feed==> ",data?.feeds)
+const filteredData= SearchData.filter(item => item.name.toLowerCase().includes(search.toLowerCase()))
+  console.log(search)
+  const toggleBubbles = () => {
+    setIsSelected('bubbles');
+  };
+  
+  const toggleFeeds = () => {
+    setIsSelected('feeds');
+  };
   return (
     <>
       <CustomStatusBar
@@ -167,15 +199,34 @@ const BubbleSearch = () => {
 
           <TouchableOpacity
             activeOpacity={0.8}
+            onPress={searchBubble}
             style={{justifyContent: 'center'}}>
-            <Entypo name="images" size={28} color="#fff" />
+            <Ionicons name="search" size={28} color="#fff" />
           </TouchableOpacity>
         </View>
+ <View style={styles.searchCategories}>
+  <TouchableOpacity
+  onPress={toggleBubbles}
+  >
+  <View style={[styles.category,  isSelected == "bubbles" ? { backgroundColor: Color.white} : null]}>
+       <CustomText style={styles.txt}>Bubbles</CustomText>       
+  </View>
+  </TouchableOpacity>
+  <TouchableOpacity 
+  onPress={toggleFeeds}
+  >
+  <View style={[styles.category,  isSelected== "feeds" &&{ backgroundColor: Color.white}]}>
+       <CustomText style={styles.txt}>feeds</CustomText>       
+  </View>
+  </TouchableOpacity>
+  
 
+</View>
         <View
           style={{width: windowWidth, marginBottom: moderateScale(35, 0.3)}}>
+          
           <FlatList
-            data={SearchData}
+            data={ isSelected === 'bubbles' ? data.community_info : data.feeds }
             showsVerticalScrollIndicator={false}
             contentContainerStyle={{
               marginBottom: moderateScale(10, 0.3),
@@ -192,7 +243,7 @@ const BubbleSearch = () => {
                       item?.bubble ? {borderRadius: (windowHeight * 0.08) / 2} : {borderRadius:moderateScale(10,.6)}
                     ]}>
                     <CustomImage
-                      source={item.image}
+                      source={{uri:`${baseUrl}/${item.photo}`}}
                       style={{
                         height: '100%',
                         width: '100%',
@@ -221,12 +272,28 @@ const BubbleSearch = () => {
                         textAlign: 'left',
                         color: '#000',
                       }}>
-                      {item.Tags}
+                      {item.hashtags}
                     </CustomText>
                   </View>
                 </View>
               );
-            }}
+              
+            
+            }
+          }
+          ListEmptyComponent={() => (
+            <View style={styles.emptyContainer}>
+              <View style={styles.bubbleImage}>
+                <CustomImage
+                style={{width:"100%",height: "100%"}}
+                resizeMode={'contain'}
+                source={require('../Assets/Images/no-data.png')}
+                />
+              </View>
+              <CustomText style={styles.emptyText}>No data available</CustomText>
+              {/* You can add fallback images here if needed */}
+            </View>
+          )}                  
           />
         </View>
       </ImageBackground>
@@ -287,4 +354,35 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingLeft: moderateScale(14, 0.6),
   },
+  searchCategories:{
+    marginTop:moderateScale(5,0.3),
+    flexDirection:"row",
+    // justifyContent:"center",
+    gap:moderateScale(18,0.6),
+    alignItems:"center",
+    paddingHorizontal:moderateScale(40, 9)
+  },
+  category:{
+    borderWidth:1,
+    borderRadius: 150,
+    padding:moderateScale(5,0.4),
+    alignItems:"center",
+    width:windowWidth * 0.17,
+    
+    // backgroundColor: Color.themeBgColor,
+
+  },
+  emptyContainer:{
+    width:windowWidth,
+    height:windowHeight * 0.4,
+    justifyContent:'center',
+    alignItems:'center',
+    paddingTop:moderateScale(10,0.5)
+  },
+  bubbleImage:{
+    width: windowWidth * 0.45,
+    height:windowWidth * 0.45,
+    overflow:'hidden'
+  }
+
 });

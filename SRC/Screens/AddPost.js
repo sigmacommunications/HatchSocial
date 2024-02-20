@@ -31,7 +31,9 @@ import OptionsMenu from 'react-native-options-menu';
 
 const AddPost = props => {
   const bubbleId = props?.route?.params?.bubbleId;
+  // return console.log("🚀 ~ AddPost ~ bubbleId:", bubbleId)
   const data = props?.route?.params?.data;
+  console.log("🚀 ~ AddPost ~ data:", data)
   const themeColor = useSelector(state => state.authReducer.ThemeColor);
   const privacy = useSelector(state => state.authReducer.privacy);
   const token = useSelector(state => state.authReducer.token);
@@ -115,7 +117,7 @@ const AddPost = props => {
 
     setLoading(true);
     const response = await Post(url, formData, apiHeader(token));
-    console.log(
+   console.log(
       '🚀 ~ file: AddPost.js:115 ~ AddPost ~ response:',
       response?.data,
     );
