@@ -48,7 +48,7 @@ const RoundMenu = ({
   setText,
   setSelectedBubbleId,
 }) => {
-  console.log("🚀 ~ content:", content?.length)
+  // console.log("🚀 ~ content:", content?.length)
   const navigation = useNavigation()   
   const innerContainerRef = useRef(null);
   const outerContainerRef = useRef(null);
@@ -59,6 +59,7 @@ const RoundMenu = ({
   const center = {x: size / 2, y: size / 2};
   const radius = size / 3;
   const divisionAngle = content.length ? 360 / content.length : 0;
+  // console.log("🚀 ~ divisionAngle:", divisionAngle)
   const [offsetAngle, setOffsetAngle] = useState(0);
   const [pointsDone, setPointsDone] = useState(false);
 
@@ -68,6 +69,9 @@ const RoundMenu = ({
     touchEvent.current = e.nativeEvent;
     if (!touchStart.current) {
       touchStart.current = {
+
+
+
         touchEvent: e.nativeEvent,
         angle: offsetAngle,
       };
@@ -296,6 +300,7 @@ const RoundMenu = ({
                     <TouchableOpacity
                       onPress={() => {
                         if (el?.bubble && el?.private) {
+                          console.log('here')
                           console.log('Hrere=========>>>>>>', el?.item);
                           if (
                             el?.item?.profile_id == profileData?.id ||
@@ -313,6 +318,7 @@ const RoundMenu = ({
                             setBubbleData(el?.item);
                           }
                         } else if (el?.bubble && !el?.private) {
+                          
                           setclicked(true);
                           setSelectedBubbleId(el?.id);
                         } else if (!el?.bubble && !el?.private) {
@@ -360,7 +366,7 @@ const RoundMenu = ({
                         source={el.source}
                         style={{width: '100%', height: '100%'}}
                       />
-                      {/* <View
+                      <View
                         style={{     
                           alignSelf: 'center',
                           position: 'absolute',
@@ -381,7 +387,7 @@ const RoundMenu = ({
                           }}>
                           {el?.item?.title}
                         </Text>
-                      </View> */}
+                      </View>
                     </TouchableOpacity>
                   </Animatable.View>
                 </>

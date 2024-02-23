@@ -22,10 +22,6 @@ import CustomText from '../Components/CustomText';
 import {useDispatch, useSelector} from 'react-redux';
 import CustomButton from '../Components/CustomButton';
 import Color from '../Assets/Utilities/Color';
-import AlertModal from '../Components/AlertModal';
-import {Icon, ScrollView} from 'native-base';
-import Entypo from 'react-native-vector-icons/Entypo';
-import CardComponent from '../Components/CardComponent';
 import {Get, Post} from '../Axios/AxiosInterceptorFunction';
 import {
   setAccountPrivate,
@@ -49,6 +45,7 @@ const ProfilesListing = props => {
   const [isVisible, setIsVisible] = useState(false);
 
   const [bubbleData, setBubbleData] = useState([]);
+  console.log("🚀 ~ ProfilesListing ~ bubbleData:", bubbleData)
   const [selectedItem, setSelectedItem] = useState({});
   const dispatch = useDispatch();
   const selectedProfile = useSelector(
@@ -112,7 +109,7 @@ const ProfilesListing = props => {
         </CustomText>
         <View style={styles.mapview}>
           <View style={styles.View}>
-            {bubbleData.map((item, index) => {
+            {bubbleData?.map((item, index) => {
               return (
                 <>
                   <TouchableOpacity

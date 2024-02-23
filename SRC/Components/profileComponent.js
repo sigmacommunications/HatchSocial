@@ -108,7 +108,7 @@ const ProfileComponent = ({
             {item?.privacy}
           </CustomText>
         </View>
-      </TouchableOpacity>
+              </TouchableOpacity>
     </>
   );
 };
@@ -135,7 +135,7 @@ const styles = StyleSheet.create({
     top: 0,
     right: 0,
   },
-
+  
   row: {
     paddingVertical: moderateScale(5, 0.6),
     width: windowWidth * 0.97,
@@ -144,6 +144,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     borderBottomWidth: 1,
+    // backgroundColor:'red',
     borderColor: 'rgba(255,255,255,0.5)',
   },
 
@@ -168,7 +169,8 @@ const styles = StyleSheet.create({
   },
   mainView:{
     paddingLeft: moderateScale(15, 0.6),
-    width: windowWidth * 0.45,
+    // backgroundColor:'green',
+    width: windowWidth * 0.6,
   },
   T2:{
     fontSize: moderateScale(11, 0.6),

@@ -146,14 +146,15 @@ const BubbleSelection = () => {
   const getBubble = async () => {
     const url = `auth/community/${profileData?.id}`;
     setIsLaoding(true);
-    console.log("🚀 ~ getBubble ~ url:", url)
+    console.log('🚀 ~ getBubble ~ url:', url);
     const response = await Get(url, token);
     setIsLaoding(false);
     if (response != undefined) {
-      setBubble(response?.data?.community_info);
+      // console.log("🚀 ~ getBubble ~ response===================>:", response?.data)
+      setBubble(response?.data?.data);
     }
   };
-  
+
   useEffect(() => {
     getBubble();
   }, []);
@@ -161,21 +162,23 @@ const BubbleSelection = () => {
   const MultiAddCommunity = async () => {
     const url = `auth/community_multi_request`;
     const communityid = selectedBubble?.map((item, index) => {
+      // console.log("🚀 ~ communityid ~ item======================>:", item)
       return item?.id;
     });
     const body = {
       status: 'request',
       community_id: communityid,
       profile_id: profileData?.id,
-    };   
+    };
     setIsLaoding(true);
     const response = await Post(url, body, apiHeader(token));
     setIsLaoding(false);
     if (response != undefined) {
-          dispatch(setBubbleSelected(true));
-          Platform.OS == 'android'
-            ? ToastAndroid.show('Saved', ToastAndroid.SHORT)
-            : Alert.alert('Saved');
+      console.log('🚀 ~ MultiAddCommunity ~ response:', response?.data);
+      dispatch(setBubbleSelected(true));
+      Platform.OS == 'android'
+        ? ToastAndroid.show('Saved', ToastAndroid.SHORT)
+        : Alert.alert('Saved');
     }
   };
 
@@ -205,7 +208,7 @@ const BubbleSelection = () => {
             zIndex: 1,
           }}>
           <CustomButton
-          disabled ={bubble?.length == 0 ? true : false}
+            disabled={bubble?.length == 0 ? true : false}
             text={
               isLaoding ? (
                 <ActivityIndicator color={Color.white} size={'small'} />
@@ -261,60 +264,22 @@ const BubbleSelection = () => {
           style={{
             width: windowWidth,
           }}>
-            
-          {
-          // isLaoding ? (<ActivityIndicator
-          //  size={'large'} color={Color.white}/> ):
-
-          bubble?.map((item, index) => {
-            return (
-              <TouchableOpacity
-                onPress={() => {
-                 
-                  if (selectedBubble.findIndex(i => i.id == item?.id) != -1) {
-                    setSelectedBubble(
-                      selectedBubble?.filter(i => i?.id != item?.id),
-                    );
-                  } else {
-                    setSelectedBubble(prev => [...prev, item]);
-                  }
-                  const data = [...BubbleImageArraty];
-                  data[index].added = !data[index].added;
-                  handleBubbleSelection(index);
-                
-                }}
-                style={{
-                  width: windowWidth * 0.3,
-                  height:
-                    index % 2 == 0 ? windowHeight * 0.3 : windowHeight * 0.17,
-                  borderRadius: moderateScale(15, 0.6),
-                  overflow: 'hidden',
-                  marginTop:
-                    index == 4 || index == 10 ? -windowHeight * 0.13 : 0,
-                  zIndex: 1,
-                  marginVertical: moderateScale(5, 0.3),
-                  marginHorizontal: moderateScale(2, 0.3),
-                }}>
-                <CustomText
-                  numberOfLines={1}
-                  style={{
-                    fontSize: moderateScale(11, 0.6),
-                    fontWeight: '700',
-                    textAlign: 'left',
-                    position: 'absolute',
-                    bottom: 10,
-                    width: '100%',
-                    paddingLeft: moderateScale(10, 0.3),
-                    zIndex: 1,
-                    color: 'white',
-                    backgroundColor: 'rgba(0,0,0,0.6)',
-                  }}>
-                  {item?.title}
-                </CustomText>
-                <CustomImage
+          {isLaoding ? (
+          <ActivityIndicator
+              style={{
+                height: windowHeight * 0.8,
+                // backgroundColor:'red',
+                width: windowWidth,
+              }}
+              size={'large'}
+              color={Color.white}
+            />
+          ) : (
+            bubble?.map((item, index) => {
+              // return console.log("🚀 ~ bubble?.map ~ item=============>:", item)
+              return (
+                <TouchableOpacity
                   onPress={() => {
-                    console.log('hello==================>');
-
                     if (selectedBubble.findIndex(i => i.id == item?.id) != -1) {
                       setSelectedBubble(
                         selectedBubble?.filter(i => i?.id != item?.id),
@@ -324,79 +289,125 @@ const BubbleSelection = () => {
                     }
                     const data = [...BubbleImageArraty];
                     data[index].added = !data[index].added;
-
-                    setBubbleImageArraty(data);
+                    handleBubbleSelection(index);
                   }}
-                  source={
-                    item?.image
-                      ? {uri: `${baseUrl}/${item?.image}`}
-                      : require('../Assets/Images/travel.jpg')
-                  }
                   style={{
-                    width: '100%',
-                    height: '100%',
-                  }}
-                />
-                {selectedBubble?.some(data=> data?.id == item?.id) && (
-                  <View
+                    width: windowWidth * 0.3,
+                    height:
+                      index % 2 == 0 ? windowHeight * 0.3 : windowHeight * 0.17,
+                    borderRadius: moderateScale(15, 0.6),
+                    overflow: 'hidden',
+                    marginTop:
+                      index == 4 || index == 10 ? -windowHeight * 0.13 : 0,
+                    zIndex: 1,
+                    marginVertical: moderateScale(5, 0.3),
+                    marginHorizontal: moderateScale(2, 0.3),
+                  }}>
+                  <CustomText
+                    numberOfLines={1}
                     style={{
-                      width: windowWidth * 0.3,
-                      height:
-                        index % 2 == 0
-                          ? windowHeight * 0.3
-                          : windowHeight * 0.17,
-                      backgroundColor: 'rgba(0,0,0,0.5)',
+                      fontSize: moderateScale(11, 0.6),
+                      fontWeight: '700',
+                      textAlign: 'left',
                       position: 'absolute',
+                      bottom: 10,
+                      width: '100%',
+                      paddingLeft: moderateScale(10, 0.3),
                       zIndex: 1,
-                      // borderRightWidth:1,
-                      // borderColor:'red',
-                      // backgroundColor:'green'
+                      color: 'white',
+                      backgroundColor: 'rgba(0,0,0,0.6)',
                     }}>
-                    <Animatable.View
-                      animation="pulse"
-                      easing="ease-out"
-                      iterationCount="infinite"
-                      style={{
-                        width: moderateScale(60, 0.6),
-                        height: moderateScale(60, 0.6),
-                        // position: 'absolute',
-                        // zInd
-                        ex: 1,
-                        alignSelf: 'center',
-                        top: '35%',
-                      }}>
-                      <CustomImage
-                        onPress={() => {
-                          console.log('Here==================>');
-                          if (
-                            selectedBubble.findIndex(i => i.id == item?.id) !=
-                            -1
-                          ) {
-                            setSelectedBubble(
-                              selectedBubble?.filter(i => i?.id != item?.id),
-                            );
-                          } else {
-                            setSelectedBubble(prev => [...prev, item]);
-                          }
-                          const data = [...BubbleImageArraty];
-                          data[index].added = !data[index].added;
+                    {item?.title}
+                  </CustomText>
+                  <CustomImage
+                    onPress={() => {
+                      console.log('hello==================>');
 
-                          setBubbleImageArraty(data);
-                        }}
-                        source={require('../Assets/Images/heart.png')}
-                        resizeMode={'stretch'}
-                        style={{width: '100%', height: '100%' ,}}
-                      />
-                    </Animatable.View>
-                  </View>
-                )}
-              </TouchableOpacity>
-            );
-          })}
+                      if (
+                        selectedBubble.findIndex(i => i.id == item?.id) != -1
+                      ) {
+                        setSelectedBubble(
+                          selectedBubble?.filter(i => i?.id != item?.id),
+                        );
+                      } else {
+                        setSelectedBubble(prev => [...prev, item]);
+                      }
+                      const data = [...BubbleImageArraty];
+                      data[index].added = !data[index].added;
+
+                      setBubbleImageArraty(data);
+                    }}
+                    source={
+                      item?.image
+                        ? {uri: `${baseUrl}/${item?.image}`}
+                        : require('../Assets/Images/travel.jpg')
+                    }
+                    style={{
+                      width: '100%',
+                      height: '100%',
+                    }}
+                  />
+                  {selectedBubble?.some(data => data?.id == item?.id) && (
+                    <View
+                      style={{
+                        width: windowWidth * 0.3,
+                        height:
+                          index % 2 == 0
+                            ? windowHeight * 0.3
+                            : windowHeight * 0.17,
+                        backgroundColor: 'rgba(0,0,0,0.5)',
+                        position: 'absolute',
+                        zIndex: 1,
+                        // borderRightWidth:1,
+                        // borderColor:'red',
+                        // backgroundColor:'green'
+                      }}>
+                      <Animatable.View
+                        animation="pulse"
+                        easing="ease-out"
+                        iterationCount="infinite"
+                        style={{
+                          width: moderateScale(60, 0.6),
+                          height: moderateScale(60, 0.6),
+                          // position: 'absolute',
+                          // zInd
+                          ex: 1,
+                          alignSelf: 'center',
+                          top: '35%',
+                        }}>
+                        <CustomImage
+                          onPress={() => {
+                            console.log('Here==================>');
+                            if (
+                              selectedBubble.findIndex(i => i.id == item?.id) !=
+                              -1
+                            ) {
+                              setSelectedBubble(
+                                selectedBubble?.filter(i => i?.id != item?.id),
+                              );
+                            } else {
+                              setSelectedBubble(prev => [...prev, item]);
+                            }
+                            const data = [...BubbleImageArraty];
+                            data[index].added = !data[index].added;
+
+                            setBubbleImageArraty(data);
+                          }}
+                          source={require('../Assets/Images/heart.png')}
+                          resizeMode={'stretch'}
+                          style={{width: '100%', height: '100%'}}
+                        />
+                      </Animatable.View>
+                    </View>
+                  )}
+                </TouchableOpacity>
+              );
+            })
+          )}
         </ScrollView>
       </ImageBackground>
     </ScreenBoiler>
-  );  
+  );
 };
 
 const styles = ScaledSheet.create({

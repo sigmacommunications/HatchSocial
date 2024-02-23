@@ -87,7 +87,7 @@ const Bubble = props => {
   };
 
   const SendInvite = async () => {
-    const url = 'auth/community_member/add';
+    const url = 'auth/community_member/add';0
     const invitedIds = invitedPeople.map((item, index) => {
       return item?.id;
     });

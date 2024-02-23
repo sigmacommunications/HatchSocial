@@ -11,7 +11,7 @@ import {
 } from 'react-native';
 import React, {useEffect, useRef, useState} from 'react';
 const {height, width} = Dimensions.get('window');
-import {moderateScale} from 'react-native-size-matters';
+import {ScaledSheet, moderateScale} from 'react-native-size-matters';
 import CustomStatusBar from '../Components/CustomStatusBar';
 import Header from '../Components/Header';
 import {windowHeight, windowWidth} from '../Utillity/utils';
@@ -45,9 +45,10 @@ const HomeScreen = props => {
   const privacy = useSelector(state => state.authReducer.privacy);
   const themeColor = useSelector(state => state.authReducer.ThemeColor);
   const profileData = useSelector(state => state.commonReducer.selectedProfile);
-   console.log("🚀 ~ file: HomeScreen.js:46 ~ HomeScreen ~ profileData:", profileData)
+  console.log("🚀 ~ HomeScreen ~ profileData:", profileData?.flexDirection)
   const newSignUp = useSelector(state => state.authReducer.newSignUp);
   const token = useSelector(state => state.authReducer.token);
+  console.log("🚀 ~ HomeScreen ~ token:", token)
   const [selectedBubbleId, setSelectedBubbleId] = useState(null);
   const [prompt, setPrompt] = useState(false);
   const [clicked, setclicked] = useState(false);
@@ -62,6 +63,7 @@ const HomeScreen = props => {
 
   const backRef = useRef(null);
   const [rotationAngle, setRotationAngle] = useState(0);
+  console.log("🚀 ~ HomeScreen ~ rotationAngle:", rotationAngle)
   const [bubbleData, setBubbleData] = useState({})
   // console.log("🚀 ~ file: HomeScreen.js:63 ~ HomeScreen ~ bubbleData:", bubbleData?.map(item => item?.id))
   // const token = useSelector(state => state.authReducer.token);
@@ -116,12 +118,13 @@ const HomeScreen = props => {
       setContent(
         response?.data?.data?.map(item => {
           return {
+            key:item?.id,
             id: item?.id,
             image: (
               <Image
                 source={{uri: `${baseUrl}/${item?.bubble ? item?.image : item?.photo}`}}
                 resizeMode="cover"
-                style={style.icon}
+                style={styles.icon}
               />
             ),
             bubble: item?.bubble == 1 ? true : false,
@@ -174,36 +177,38 @@ const HomeScreen = props => {
             : require('../Assets/Images/Main.png')
         }
         resizeMode={'cover'}
-        style={style.container}>
+        style={styles.container}>
         {highlightedIcon && (
-          <View style={style.highlightedIcon}>{highlightedIcon}</View>
+          <View style={styles.highlightedIcon}>{highlightedIcon}</View>
         )}
+       
 
-        <View style={style.container2}>
-          <Animatable.View ref={backRef} style={style.animatedView}>
+        <View style={styles.container2}>
+          <Animatable.View ref={backRef} style={styles.animatedView}>
             <View
               style={[
-                style.container4,
+                styles.container4,
                 alignment == 'left' && {left: 0},
                 alignment == 'right' && {right: 0},
               ]}>
-              <CustomText isBold style={style.name}>
+              <CustomText isBold style={[styles.name]}>
                 {profileData?.name}
               </CustomText>
             </View>
+           
             <LinearGradient
               style={[
-                style.gradient,
-                alignment == 'left' && {left: windowWidth * 0.08},
-                alignment == 'right' && {right: windowWidth * 0.08},
+                styles.gradient,
+                alignment == 'left' && {left: windowWidth * 0.07},
+                alignment == 'right' && {right: windowWidth * 0.07},
               ]}
               colors={themeColor}>
               <View
-                style={[style.profileContainer, {backgroundColor: themeColor}]}>
+                style={[styles.profileContainer, {backgroundColor: themeColor}]}>
                 {profiles.map(item => {
                   return (
-                    <View style={style.profile}>
-                      <CustomImage source={item?.image} style={style.image} />
+                    <View style={styles.profile}>
+                      <CustomImage source={item?.image} style={styles.image} />
                     </View>
                   );
                 })}
@@ -217,8 +222,8 @@ const HomeScreen = props => {
               }
               resizeMode={'cover'}
               style={[
-                style.image,
-                style.image2,
+                styles.image,
+                styles.image2,
                 {transform: [{scaleX: alignment == 'left' ? 1 : -1}]},
                 alignment == 'left' && {right: 5},
                 alignment == 'right' && {left: 5},
@@ -227,7 +232,7 @@ const HomeScreen = props => {
           <GestureHandlerRootView>
             <View
               style={[
-                style.menuView,
+                styles.menuView,
                 {
                   marginLeft:
                     alignment == 'left'
@@ -238,9 +243,9 @@ const HomeScreen = props => {
               <RoundMenu
                 centerContent={
                   <ImageBackground
-                    source={profileData?.photo ? {uri : `${baseUrl}/${profileData?.photo}`} : require('../Assets/Images/dummyman1.png')}
+                    source={profileData?.photo ? {uri : `${profileData?.photo}`} : require('../Assets/Images/dummyman1.png')}
                     resizeMode="cover"
-                    style={style.centerImage}
+                    style={styles.centerImage}
                   />
                 }
                 largeImageSize={width / 2.5}
@@ -277,7 +282,7 @@ const HomeScreen = props => {
             <CustomButton
               iconName={'rotate-360'}
               iconType={MaterialCommunityIcons}
-              iconStyle={style.iconStyle}
+              iconStyle={styles.iconStyle}
               textColor={Color.white}
               onPress={() => {
                 setRotationAngle(prev => prev + 180);
@@ -295,10 +300,10 @@ const HomeScreen = props => {
       {clicked && (
         <BlurView
           // intensity={100}
-          style={style.blurView}
+          style={styles.blurView}
           blurRadius={5}
           blurType={'light'}>
-          <View style={style.container3}>
+          <View style={styles.container3}>
             <CustomButton
               text={'Home'}
               textColor={themeColor[1]}
@@ -344,7 +349,7 @@ const HomeScreen = props => {
 };
 
 export default HomeScreen;
-const style = StyleSheet.create({
+const styles = ScaledSheet.create({
   iconStyle: {
     color: 'white',
     marginRight: moderateScale(5, 0.3),
@@ -353,7 +358,7 @@ const style = StyleSheet.create({
     fontSize: moderateScale(20, 0.6),
   },
   container4: {
-    width: windowWidth * 0.08,
+    width: windowWidth * 0.07,
     height: windowHeight * 0.9,
     backgroundColor: Color.black,
     alignItems: 'center',
@@ -461,5 +466,6 @@ const style = StyleSheet.create({
     transform: [{rotate: '270deg'}],
     textAlign: 'center',
     textTransform: 'uppercase',
+    // backgroundColor :'red'
   },
 });

@@ -18,7 +18,7 @@ import FontAwesome from 'react-native-vector-icons/FontAwesome';
 
 import {windowHeight, windowWidth} from '../Utillity/utils';
 import CustomText from './CustomText';
-import { useSelector } from 'react-redux';
+import {useSelector} from 'react-redux';
 
 const TextInputWithTitle = props => {
   const themeColor = useSelector(state => state.authReducer.ThemeColor);
@@ -33,8 +33,10 @@ const TextInputWithTitle = props => {
             marginBottom: moderateScale(5, 0.3),
             width: windowWidth * props.viewWidth,
             marginTop: props.marginTop,
-            marginTop: props?.marginTop ? props?.marginTop : moderateScale(10, 0.3),
-            textAlign:'left',
+            marginTop: props?.marginTop
+              ? props?.marginTop
+              : moderateScale(10, 0.3),
+            textAlign: 'left',
           }}>
           {props?.title}
         </CustomText>
@@ -49,7 +51,7 @@ const TextInputWithTitle = props => {
             backgroundColor: props.backgroundColor,
           },
           props?.borderBottomWidth && {
-            borderBottomWidth : props?.borderBottomWidth
+            borderBottomWidth: props?.borderBottomWidth,
           },
           props.elevation && {
             shadowColor: themeColor[1],
@@ -124,7 +126,6 @@ const TextInputWithTitle = props => {
         {props.secureText ? (
           <>
             <TextInput
-            
               style={[
                 {
                   width: windowWidth * props.inputWidth,
@@ -144,6 +145,7 @@ const TextInputWithTitle = props => {
               autoCapitalize="none"
               onPressIn={props.onPressIn}
               maxLength={props.maxLength}
+              editable={props.disable ? false : true}
             />
             <TouchableOpacity
               onPress={() => {

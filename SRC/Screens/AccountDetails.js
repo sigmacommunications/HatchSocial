@@ -18,11 +18,12 @@ import CustomImage from '../Components/CustomImage';
 import navigationService from '../navigationService';
 import {useNavigation} from '@react-navigation/native';
 import Color from '../Assets/Utilities/Color';
-import { useSelector } from 'react-redux';
+import {useSelector} from 'react-redux';
 
 const AccountDetails = () => {
+  const profileData = useSelector(state => state.commonReducer.selectedProfile);
   const themeColor = useSelector(state => state.authReducer.ThemeColor);
-  const privacy = useSelector(state=> state.authReducer.privacy)
+  const privacy = useSelector(state => state.authReducer.privacy);
   const navigation = useNavigation();
   const [isLoading, setIsLoading] = useState(false);
   return (
@@ -34,16 +35,37 @@ const AccountDetails = () => {
       <Header right Title={'Account Details'} search />
 
       <ImageBackground
-        source={privacy == 'private' ? require('../Assets/Images/theme2.jpg'): require('../Assets/Images/Main.png')}
+        source={
+          privacy == 'private'
+            ? require('../Assets/Images/theme2.jpg')
+            : require('../Assets/Images/Main.png')
+        }
         resizeMode={'cover'}
         style={{
           width: windowWidth * 1,
           height: windowHeight * 0.9,
           alignItems: 'center',
         }}>
-        <View style={[styles.profileSection,{borderColor:privacy=='private' ? Color.red : Color.green }]}>
+        <View
+          style={[
+            styles.profileSection,
+            { borderColor:
+              profileData?.type == 'Content Creator'
+                ? 'yellow'
+                : profileData?.type == 'Business & Entrepreneurship'
+                ? Color.green
+                : profileData?.type == 'Community & Connection'
+                ? 'pink'
+                : profileData?.type == 'Learning & Exploring'
+                ? 'blue'
+                : 'black',},
+          ]}>
           <CustomImage
-            source={require('../Assets/Images/dummyman1.png')}
+            source={
+              profileData?.photo
+                ? {uri: `${profileData?.photo}`}
+                : require('../Assets/Images/dummyman1.png')
+            }
             style={{
               height: '100%',
               width: '100%',
@@ -60,7 +82,7 @@ const AccountDetails = () => {
               marginTop: moderateScale(5, 0.3),
             }}
             isBold>
-            Jonathan
+            {profileData?.name}
           </CustomText>
         </View>
 
@@ -83,7 +105,7 @@ const AccountDetails = () => {
           bgColor={['#FFFFFF', '#FFFFFF']}
           borderRadius={moderateScale(30, 0.3)}
           isGradient
-        //   isBold
+          //   isBold
         />
 
         <CustomButton
@@ -105,8 +127,31 @@ const AccountDetails = () => {
           bgColor={['#FFFFFF', '#FFFFFF']}
           borderRadius={moderateScale(30, 0.3)}
           isGradient
-        //   isBold
+          //   isBold
         />
+
+        <CustomButton
+          text={
+            isLoading ? (
+              <ActivityIndicator color={'#FFFFFF'} size={'small'} />
+            ) : (
+              'edit Profile'
+            )
+          }
+          textColor={themeColor[1]}
+          width={windowWidth * 0.7}
+          height={windowHeight * 0.06}
+          marginTop={moderateScale(10, 0.3)}
+          onPress={() => {
+            navigationService.navigate('Profile', {isEdit: true});
+          }}
+          fontSize={moderateScale(12, 0.6)}
+          bgColor={['#FFFFFF', '#FFFFFF']}
+          borderRadius={moderateScale(30, 0.3)}
+          isGradient
+          //   isBold
+        />
+
         {/* <CustomButton
           text={
             isLoading ? (

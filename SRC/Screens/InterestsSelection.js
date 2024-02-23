@@ -373,7 +373,7 @@ const InterestSelection = () => {
 
                           setBubbleImageArraty(data);
                         }}
-                        source={require('../Assets/Images/heart.png')}
+                        source={require('../Assets/Images/heart.png')}                                
                         resizeMode={'stretch'}
                         style={{width: '100%', height: '100%'}}
                       />

@@ -119,7 +119,7 @@ const Posts = ({onPress, bubbleId, bubbleInfo}) => {
           <View style={styles.profileImage}>
             <CustomImage
               // source={require('../Assets/Images/fitness2.png')}
-              source={{uri: `${baseUrl}/${profileData?.photo}`}}
+              source={{uri: `${profileData?.photo}`}}
               style={{
                 height: '100%',
                 width: '100%',

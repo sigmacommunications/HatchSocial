@@ -21,135 +21,129 @@ import CustomText from '../Components/CustomText';
 import Color from '../Assets/Utilities/Color';
 import TextInputWithTitle from '../Components/TextInputWithTitle';
 import {useSelector} from 'react-redux';
-import { Post } from '../Axios/AxiosInterceptorFunction';
-import { baseUrl } from '../Config';
+import {Post} from '../Axios/AxiosInterceptorFunction';
+import {baseUrl} from '../Config';
 
 const BubbleSearch = () => {
-
+  const profileData = useSelector(state => state.commonReducer.selectedProfile);
   const themeColor = useSelector(state => state.authReducer.ThemeColor);
   const privacy = useSelector(state => state.authReducer.privacy);
   const token = useSelector(state => state.authReducer.token);
-  const [isSelected, setIsSelected] =useState('bubbles');
-  const [data, setData] =useState({})
+  const [isSelected, setIsSelected] = useState('bubbles');
+  const [data, setData] = useState({});
   const [search, setSearch] = useState('');
-  const SearchData = [
-    {
-      id: 1,
-      image: require('../Assets/Images/bubble1.png'),
-      name: 'Alchole',
-      Tags: '#Architecture',
-      bubble: true,
-    },
-    {
-      id: 2,
-      image: require('../Assets/Images/bubble2.png'),
-      name: 'Alternative Fitness',
-      Tags: '#Architecture',
-      bubble: false,
-    },
-    {
-      id: 3,
-      image: require('../Assets/Images/bubble3.png'),
-      name: 'Archery',
-      Tags: '#Architecture',
-      bubble: true,
-    },
-    {
-      id: 4,
-      image: require('../Assets/Images/bubble4.png'),
-      name: 'architecture',
-      Tags: '#Architecture',
-      bubble: true,
-    },
-    {
-      id: 5,
-      image: require('../Assets/Images/bubble5.png'),
-      name: 'art',
-      Tags: '#Architecture',
-      bubble: false,
-    },
-    {
-      id: 6,
-      image: require('../Assets/Images/bubble6.png'),
-      name: 'Astrology',
-      Tags: '#Architecture',
-      bubble: true,
-    },
-    {
-      id: 7,
-      image: require('../Assets/Images/bubble10.png'),
-      name: 'Beer',
-      Tags: '#Architecture',
-      bubble: false,
-    },
-    {
-      id: 8,
-      image: require('../Assets/Images/bubble8.png'),
-      name: 'Author Books',
-      Tags: '#Architecture',
-      bubble: true,
-    },
-    {
-      id: 9,
-      image: require('../Assets/Images/bubble9.png'),
-      name: 'Bird Watching',
-      Tags: '#Architecture',
-      bubble: false,
-    },
-    {
-      id: 10,
-      image: require('../Assets/Images/bubble10.png'),
-      name: 'bolging',
-      Tags: '#Architecture',
-      bubble: true,
-    },
-    {
-      id: 11,
-      image: require('../Assets/Images/bubble11.png'),
-      name: 'Author books',
-      Tags: '#Architecture',
-      bubble: false,
-    },
-    {
-      id: 12,
-      image: require('../Assets/Images/bubble4.png'),
-      name: 'bolging',
-      Tags: '#Architecture',
-      bubble: false,
-    },
-    // {
-    //   id: 13,
-    //   image: require('../Assets/Images/Ellipse2.png'),
-    //   name: 'Author books',
-    //   Tags: '#Architecture',
-    //   bubble: false,
-    // },
-  ];
-const searchBubble = async()=>{
-  const url = 'auth/search';
-  const body={
-    search:search
-  }
-  const response= await Post(url, body, apiHeader(token));
-  
-   if(response != undefined){
-   console.log("Search : ===> ", response.data);
-  setData(response?.data);
-}
+  // const SearchData = [
+  //   {
+  //     id: 1,
+  //     image: require('../Assets/Images/bubble1.png'),
+  //     name: 'Alchole',
+  //     Tags: '#Architecture',
+  //     bubble: true,
+  //   },
+  //   {
+  //     id: 2,
+  //     image: require('../Assets/Images/bubble2.png'),
+  //     name: 'Alternative Fitness',
+  //     Tags: '#Architecture',
+  //     bubble: false,
+  //   },
+  //   {
+  //     id: 3,
+  //     image: require('../Assets/Images/bubble3.png'),
+  //     name: 'Archery',
+  //     Tags: '#Architecture',
+  //     bubble: true,
+  //   },
+  //   {
+  //     id: 4,
+  //     image: require('../Assets/Images/bubble4.png'),
+  //     name: 'architecture',
+  //     Tags: '#Architecture',
+  //     bubble: true,
+  //   },
+  //   {
+  //     id: 5,
+  //     image: require('../Assets/Images/bubble5.png'),
+  //     name: 'art',
+  //     Tags: '#Architecture',
+  //     bubble: false,
+  //   },
+  //   {
+  //     id: 6,
+  //     image: require('../Assets/Images/bubble6.png'),
+  //     name: 'Astrology',
+  //     Tags: '#Architecture',
+  //     bubble: true,
+  //   },
+  //   {
+  //     id: 7,
+  //     image: require('../Assets/Images/bubble10.png'),
+  //     name: 'Beer',
+  //     Tags: '#Architecture',
+  //     bubble: false,
+  //   },
+  //   {
+  //     id: 8,
+  //     image: require('../Assets/Images/bubble8.png'),
+  //     name: 'Author Books',
+  //     Tags: '#Architecture',
+  //     bubble: true,
+  //   },
+  //   {
+  //     id: 9,
+  //     image: require('../Assets/Images/bubble9.png'),
+  //     name: 'Bird Watching',
+  //     Tags: '#Architecture',
+  //     bubble: false,
+  //   },
+  //   {
+  //     id: 10,
+  //     image: require('../Assets/Images/bubble10.png'),
+  //     name: 'bolging',
+  //     Tags: '#Architecture',
+  //     bubble: true,
+  //   },
+  //   {
+  //     id: 11,
+  //     image: require('../Assets/Images/bubble11.png'),
+  //     name: 'Author books',
+  //     Tags: '#Architecture',
+  //     bubble: false,
+  //   },
+  //   {
+  //     id: 12,
+  //     image: require('../Assets/Images/bubble4.png'),
+  //     name: 'bolging',
+  //     Tags: '#Architecture',
+  //     bubble: false,
+  //   },
+  //   // {
+  //   //   id: 13,
+  //   //   image: require('../Assets/Images/Ellipse2.png'),
+  //   //   name: 'Author books',
+  //   //   Tags: '#Architecture',
+  //   //   bubble: false,
+  //   // },
+  // ];
+  const searchBubble = async () => {
+    const url = 'auth/search';
+    const body = {
+      search: search,
+    };
+    const response = await Post(url, body, apiHeader(token));
 
-
-
-}
-
-console.log("Feed==> ",data?.feeds)
-const filteredData= SearchData.filter(item => item.name.toLowerCase().includes(search.toLowerCase()))
-  console.log(search)
-  const toggleBubbles = () => {
-    setIsSelected('bubbles');
+    if (response != undefined) {
+      console.log('Search : ===> ', response.data);
+      setData(response?.data);
+    }
   };
-  
-  const toggleFeeds = () => {
-    setIsSelected('feeds');
+
+  // const filteredData = SearchData.filter(item =>
+  //   item.name.toLowerCase().includes(search.toLowerCase()),
+  // );
+  console.log(search);
+  const toggleBubbles = (type) => {
+    setIsSelected(type);
   };
   return (
     <>
@@ -172,9 +166,28 @@ const filteredData= SearchData.filter(item => item.name.toLowerCase().includes(s
           // alignItems: 'center',
         }}>
         <View style={styles.topContainer}>
-          <View style={styles.profileSection}>
+          <View
+            style={[
+              styles.profileSection,
+              {
+                borderColor:
+                  profileData?.type == 'Content Creator'
+                    ? 'yellow'
+                    : profileData?.type == 'Business & Entrepreneurship'
+                    ? Color.green
+                    : profileData?.type == 'Community & Connection'
+                    ? 'pink'
+                    : profileData?.type == 'Learning & Exploring'
+                    ? 'blue'
+                    : 'black',
+              },
+            ]}>
             <CustomImage
-              source={require('../Assets/Images/dummyman1.png')}
+              source={
+                profileData?.photo
+                  ? {uri: profileData?.photo}
+                  : require('../Assets/Images/dummyman1.png')
+              }
               style={{
                 height: '100%',
                 width: '100%',
@@ -185,7 +198,7 @@ const filteredData= SearchData.filter(item => item.name.toLowerCase().includes(s
 
           <TextInputWithTitle
             secureText={false}
-            placeholder={'Alchole'}
+            placeholder={'Search here ...'}
             setText={setSearch}
             value={search}
             viewHeight={0.05}
@@ -204,29 +217,38 @@ const filteredData= SearchData.filter(item => item.name.toLowerCase().includes(s
             <Ionicons name="search" size={28} color="#fff" />
           </TouchableOpacity>
         </View>
- <View style={styles.searchCategories}>
-  <TouchableOpacity
-  onPress={toggleBubbles}
-  >
-  <View style={[styles.category,  isSelected == "bubbles" ? { backgroundColor: Color.white} : null]}>
-       <CustomText style={styles.txt}>Bubbles</CustomText>       
-  </View>
-  </TouchableOpacity>
-  <TouchableOpacity 
-  onPress={toggleFeeds}
-  >
-  <View style={[styles.category,  isSelected== "feeds" &&{ backgroundColor: Color.white}]}>
-       <CustomText style={styles.txt}>feeds</CustomText>       
-  </View>
-  </TouchableOpacity>
-  
-
-</View>
+        {Object.keys(data).length > 0 && (
+          <View style={styles.searchCategories}>
+            <TouchableOpacity onPress={()=>toggleBubbles('bubbles')}>
+              <View
+                style={[
+                  styles.category,
+                  isSelected == 'bubbles'
+                    ? {backgroundColor: Color.white}
+                    : null,
+                ]}>
+                <CustomText isBold style={styles.txt}>
+                  Bubbles
+                </CustomText>
+              </View>
+            </TouchableOpacity>
+            <TouchableOpacity onPress={()=> toggleBubbles('feeds')}>
+              <View
+                style={[
+                  styles.category,
+                  isSelected == 'feeds' && {backgroundColor: Color.white},
+                ]}>
+                <CustomText isBold style={styles.txt}>
+                  feeds
+                </CustomText>
+              </View>
+            </TouchableOpacity>
+          </View>
+        )}
         <View
           style={{width: windowWidth, marginBottom: moderateScale(35, 0.3)}}>
-          
           <FlatList
-            data={ isSelected === 'bubbles' ? data.community_info : data.feeds }
+            data={isSelected === 'bubbles' ? data?.community_info : data?.feeds}
             showsVerticalScrollIndicator={false}
             contentContainerStyle={{
               marginBottom: moderateScale(10, 0.3),
@@ -234,16 +256,18 @@ const filteredData= SearchData.filter(item => item.name.toLowerCase().includes(s
               marginTop: moderateScale(10, 0.3),
             }}
             renderItem={({item, index}) => {
-            
+              console.log('🚀 ~ BubbleSearch ~ item:', item);
               return (
                 <View style={styles.row}>
                   <View
                     style={[
                       styles.profileSection2,
-                      item?.bubble ? {borderRadius: (windowHeight * 0.08) / 2} : {borderRadius:moderateScale(10,.6)}
+                      item?.bubble
+                        ? {borderRadius: (windowHeight * 0.08) / 2}
+                        : {borderRadius: moderateScale(10, 0.6)},
                     ]}>
                     <CustomImage
-                      source={{uri:`${baseUrl}/${item.photo}`}}
+                      source={{uri: `${baseUrl}/${item.photo}`}}
                       style={{
                         height: '100%',
                         width: '100%',
@@ -264,36 +288,37 @@ const filteredData= SearchData.filter(item => item.name.toLowerCase().includes(s
                         textAlign: 'left',
                       }}
                       isBold>
-                      {item?.name}
+                      {isSelected == 'feeds' ? item?.name : item?.title}
                     </CustomText>
-                    <CustomText
-                      style={{
-                        fontSize: moderateScale(9, 0.6),
-                        textAlign: 'left',
-                        color: '#000',
-                      }}>
-                      {item.hashtags}
-                    </CustomText>
+                    {isSelected == 'feeds' && (
+                      <CustomText
+                        style={{
+                          fontSize: moderateScale(9, 0.6),
+                          textAlign: 'left',
+                          color: '#000',
+                        }}>
+                        {item.hashtags}
+                      </CustomText>
+                    )}
                   </View>
                 </View>
               );
-              
-            
-            }
-          }
-          ListEmptyComponent={() => (
-            <View style={styles.emptyContainer}>
-              <View style={styles.bubbleImage}>
-                <CustomImage
-                style={{width:"100%",height: "100%"}}
-                resizeMode={'contain'}
-                source={require('../Assets/Images/no-data.png')}
-                />
+            }}
+            ListEmptyComponent={() => (
+              <View style={styles.emptyContainer}>
+                <View style={styles.bubbleImage}>
+                  <CustomImage
+                    style={{width: '100%', height: '100%'}}
+                    resizeMode={'contain'}
+                    source={require('../Assets/Images/no-data.png')}
+                  />
+                </View>
+                <CustomText style={styles.emptyText}>
+                  No data available
+                </CustomText>
+                {/* You can add fallback images here if needed */}
               </View>
-              <CustomText style={styles.emptyText}>No data available</CustomText>
-              {/* You can add fallback images here if needed */}
-            </View>
-          )}                  
+            )}
           />
         </View>
       </ImageBackground>
@@ -323,7 +348,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
     borderRadius: (windowHeight * 0.08) / 2,
     borderWidth: 3,
-    borderColor: Color.green,
+    // borderColor: Color.green,
     justifyContent: 'center',
     overflow: 'hidden',
     // alignSelf: 'center',
@@ -354,35 +379,36 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingLeft: moderateScale(14, 0.6),
   },
-  searchCategories:{
-    marginTop:moderateScale(5,0.3),
-    flexDirection:"row",
+  searchCategories: {
+    marginTop: moderateScale(5, 0.3),
+    flexDirection: 'row',
     // justifyContent:"center",
-    gap:moderateScale(18,0.6),
-    alignItems:"center",
-    paddingHorizontal:moderateScale(40, 9)
+    gap: moderateScale(18, 0.6),
+    alignItems: 'center',
+    paddingHorizontal: moderateScale(40, 9),
   },
-  category:{
-    borderWidth:1,
+  category: {
+    borderWidth: 1,
     borderRadius: 150,
-    padding:moderateScale(5,0.4),
-    alignItems:"center",
-    width:windowWidth * 0.17,
-    
+    padding: moderateScale(5, 0.4),
+    alignItems: 'center',
+    width: windowWidth * 0.17,
+    borderColor: Color.white,
     // backgroundColor: Color.themeBgColor,
-
   },
-  emptyContainer:{
-    width:windowWidth,
-    height:windowHeight * 0.4,
-    justifyContent:'center',
-    alignItems:'center',
-    paddingTop:moderateScale(10,0.5)
+  emptyContainer: {
+    width: windowWidth,
+    height: windowHeight * 0.4,
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingTop: moderateScale(10, 0.5),
   },
-  bubbleImage:{
+  bubbleImage: {
     width: windowWidth * 0.45,
-    height:windowWidth * 0.45,
-    overflow:'hidden'
-  }
-
+    height: windowWidth * 0.45,
+    overflow: 'hidden',
+  },
+  txt: {
+    fontSize: moderateScale(13, 0.6),
+  },
 });

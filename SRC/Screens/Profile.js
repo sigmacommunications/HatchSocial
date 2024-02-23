@@ -35,36 +35,49 @@ import {
   setQuestionAnswered,
   setUserToken,
 } from '../Store/slices/auth';
+import Modal from 'react-native-modal';
 import DropDownSingleSelect from '../Components/DropDownSingleSelect';
 import AntDesign from 'react-native-vector-icons/AntDesign';
 import {Icon} from 'native-base';
 import ImagePickerModal from '../Components/ImagePickerModal';
 import {Post} from '../Axios/AxiosInterceptorFunction';
 import {setSelectedProfileData} from '../Store/slices/common';
+import {profilePicUrl} from '../Config';
+import ResetProfilePassword from '../Components/ResetProfilePassword';
+import {useNavigation} from '@react-navigation/native';
 
 const Profile = props => {
+  const navigation = useNavigation();
+  const dispatch = useDispatch();
   const item = props?.route?.params?.item;
   const category = props?.route?.params?.category;
-  console.log('🚀 ~ file: Profile.js:46 ~ Profile ~ category:', category);
+  const isEdit = props?.route?.params?.isEdit;
   const token = useSelector(state => state.authReducer.token);
-  const numOfProfiles = useSelector(state => state.authReducer.numOfProfiles);
-  const dispatch = useDispatch();
+  const profileData = useSelector(state => state.commonReducer.selectedProfile);
   const themeColor = useSelector(state => state.authReducer.ThemeColor);
   const privacy = useSelector(state => state.authReducer.privacy);
-  const [username, setUserName] = useState(item?.name ? item?.name : '');
-  const [desc, setDesc] = useState(item?.desc ? item?.desc : '');
+  console.log('🚀 ~ Profile ~ privacy:', privacy);
+  const [username, setUserName] = useState(
+    isEdit == true && profileData?.name ? profileData?.name : '',
+  );
+  const [desc, setDesc] = useState(
+    isEdit == true && profileData?.description ? profileData?.description : '',
+  );
   const [selectedTab, setSelectedTab] = useState(privacy);
   const [isLoading, setIsLoading] = useState(false);
-  const [passCode, setPassCode] = useState('');
+  const [passCode, setPassCode] = useState(isEdit ? profileData?.passcode : '');
+  const [isModalVisible, setIsModalVisible] = useState(false);
+
   const [imagePickerModal, setImagePickerModal] = useState(false);
   const [type, setType] = useState(
-    item?.profileType
-      ? item?.profileType
+    profileData?.type
+      ? profileData?.type
       : category
       ? category
       : 'Select Profile Type',
   );
   const [image, setImage] = useState({});
+  console.log('🚀 ~ Profile ~ image:', image, profileData?.photo);
 
   const createProfile = async () => {
     const url = 'auth/profile';
@@ -110,10 +123,11 @@ const Profile = props => {
 
     setIsLoading(true);
     const response = await Post(url, formData, apiHeader(token));
+    //  return console.log("🚀 ~ createProfile ~ response:", response.data)
     setIsLoading(false);
 
     if (response?.data?.success) {
-       console.log(
+      console.log(
         '🚀 ~ file: Profile.js:104 ~ createProfile ~ response:',
         JSON.stringify(response?.data, null, 2),
       );
@@ -134,13 +148,70 @@ const Profile = props => {
     }
   };
 
+  const updateProfile = async () => {
+    const url = `auth/profile/${profileData?.id}?_method=PUT`;
+    const body = {
+      name: username,
+      description: desc,
+      privacy: selectedTab,
+      
+    };
+
+    const formData = new FormData();
+    if (Object.keys(image).length > 0) {
+      formData.append('photo', image);
+    }
+    for (let key in body) {
+      if (body[key] == '') {
+        return Platform.OS == 'android'
+          ? ToastAndroid.show(`${key} cannot be empty`, ToastAndroid.SHORT)
+          : Alert.alert(`${key} cannot be empty`);
+      }
+      formData.append(key, body[key]);
+    }
+
+    //decription validation
+    if (desc.length < 30) {
+      return Platform.OS == 'android'
+        ? ToastAndroid.show(`Description is too short`, ToastAndroid.SHORT)
+        : Alert.alert(`Description is too short`);
+    }
+
+    //private and passcode validation
+    if (privacy == 'private' && passCode == '') {
+      return Platform.OS == 'android'
+        ? ToastAndroid.show(`passcode is required`, ToastAndroid.SHORT)
+        : Alert.alert(`passcode is required`);
+    } else if (privacy == 'private' && passCode != '') {
+      formData.append('passcode', passCode);
+    }
+
+    setIsLoading(true);
+    const response = await Post(url, formData, apiHeader(token));
+    setIsLoading(false);
+
+    if (response?.data?.success) {
+      console.log(
+        '🚀 ~ file: Profile.js:104 ~ createProfile ~ response:',
+        JSON.stringify(response?.data?.profile_info, null, 2),
+      );
+
+      dispatch(setSelectedProfileData(response?.data?.profile_info));
+      navigation.goBack();
+    }
+  };
+
   return (
     <>
       <CustomStatusBar
         backgroundColor={Color.white}
         barStyle={'dark-content'}
       />
-      <Header right Title={'Create Profile'} showBack={true} />
+      <Header
+        right
+        Title={isEdit ? 'Update Profile' : 'Create Profile'}
+        showBack={true}
+      />
 
       <ImageBackground
         source={
@@ -179,8 +250,8 @@ const Profile = props => {
                 source={
                   Object.keys(image).length > 0
                     ? {uri: image?.uri}
-                    : item?.image
-                    ? item?.image
+                    : profileData?.photo
+                    ? {uri: profileData?.photo}
                     : require('../Assets/Images/dummyman1.png')
                 }
                 style={{
@@ -285,6 +356,7 @@ const Profile = props => {
                   borderRadius: moderateScale(10, 0.3),
                   borderWidth: 1,
                 }}
+                disabled={isEdit == true && true}
               />
               <TextInputWithTitle
                 title={'Description '}
@@ -318,9 +390,11 @@ const Profile = props => {
               <View style={[styles.radioButtonContainer]}>
                 <TouchableOpacity
                   onPress={() => {
-                    console.log('private');
-                    dispatch(setAccountPrivate('private'));
-                    setSelectedTab('private');
+                    if (isLoading == false) {
+                      console.log('private');
+                      dispatch(setAccountPrivate('private'));
+                      setSelectedTab('private');
+                    }
                   }}
                   style={[
                     styles.radioButton,
@@ -333,8 +407,10 @@ const Profile = props => {
                   ]}></TouchableOpacity>
                 <CustomText
                   onPress={() => {
-                    dispatch(setAccountPrivate('private'));
-                    setSelectedTab('private');
+                    if (isLoading == false) {
+                      dispatch(setAccountPrivate('private'));
+                      setSelectedTab('private');
+                    }
                   }}
                   style={styles.radioButtonText}>
                   Private
@@ -342,8 +418,10 @@ const Profile = props => {
 
                 <TouchableOpacity
                   onPress={() => {
-                    dispatch(setAccountPrivate('public'));
-                    setSelectedTab('public');
+                    if (isLoading == false) {
+                      dispatch(setAccountPrivate('public'));
+                      setSelectedTab('public');
+                    }
                   }}
                   style={[
                     styles.radioButton,
@@ -356,8 +434,10 @@ const Profile = props => {
                   ]}></TouchableOpacity>
                 <CustomText
                   onPress={() => {
-                    dispatch(setAccountPrivate('public'));
-                    setSelectedTab('public');
+                    if (isLoading == false) {
+                      dispatch(setAccountPrivate('public'));
+                      setSelectedTab('public');
+                    }
                   }}
                   style={styles.radioButtonText}>
                   Public
@@ -365,35 +445,69 @@ const Profile = props => {
               </View>
             </View>
             {privacy == 'private' && (
-              <View
-                style={{
-                  alignItems: 'center',
-                }}>
-                <TextInputWithTitle
-                  secureText
-                  title={'Passcode'}
-                  placeholder={'Passcode'}
-                  setText={setPassCode}
-                  value={passCode}
-                  viewHeight={0.06}
-                  viewWidth={0.82}
-                  inputWidth={0.8}
-                  border={1}
-                  borderColor={'#353535'}
-                  color={themeColor[1]}
-                  placeholderColor={Color.themeLightGray}
-                  borderRadius={moderateScale(10, 0.3)}
-                  titleColor={'#353535'}
-                  maxLength={4}
-                
-                  // textAlign={'center'}
-                />
-              </View>
+              <>
+                <View
+                  style={{
+                    alignItems: 'center',
+                    // backgroundColor: 'red',
+                    // width:windowWidth*0.8,
+                  }}>
+                  <TextInputWithTitle
+                    secureText
+                    title={'Passcode'}
+                    placeholder={'Passcode'}
+                    setText={setPassCode}
+                    value={passCode}
+                    viewHeight={0.06}
+                    viewWidth={0.82}
+                    inputWidth={0.8}
+                    border={1}
+                    borderColor={'#353535'}
+                    color={themeColor[1]}
+                    placeholderColor={Color.themeLightGray}
+                    borderRadius={moderateScale(10, 0.3)}
+                    titleColor={'#353535'}
+                    maxLength={4}
+                    disable={
+                      [null, undefined, ''].includes(profileData?.passcode) ==
+                        false && isEdit
+                    }
+
+                    // textAlign={'center'}a
+                  />
+                </View>
+                {![null, undefined, ''].includes(profileData?.passcode) && (
+                  <TouchableOpacity
+                    style={{
+                      // alignItems:'flex-end',
+                      width: windowWidth * 0.25,
+                      position: 'absolute',
+                      right: 0,
+                      bottom: 60,
+                      paddingVertical: moderateScale(5, 0.6),
+                      // backgroundColor: 'red',
+                    }}
+                    onPress={() => {
+                      setIsModalVisible(true);
+                    }}>
+                    <CustomText
+                      style={{
+                        // backgroundColor:'green',
+                        fontSize: moderateScale(11, 0.6),
+                      }}>
+                      {' '}
+                      Reset Passcode
+                    </CustomText>
+                  </TouchableOpacity>
+                )}
+              </>
             )}
             <CustomButton
               text={
                 isLoading ? (
                   <ActivityIndicator color={themeColor[1]} size={'small'} />
+                ) : isEdit ? (
+                  'Update'
                 ) : (
                   'Insert'
                 )
@@ -401,10 +515,10 @@ const Profile = props => {
               textColor={privacy == 'private' ? 'black' : themeColor[1]}
               width={windowWidth * 0.3}
               height={windowHeight * 0.04}
-              marginTop={moderateScale(20, 0.3)}
+              marginTop={moderateScale(35, 0.3)}
               fontSize={moderateScale(12, 0.3)}
               onPress={() => {
-                createProfile();
+                isEdit == true ? updateProfile() : createProfile();
                 // dispatch(setNumOfProfiles(1))
 
                 // navigationService.navigate('QuestionScreen',{type:type})
@@ -412,8 +526,14 @@ const Profile = props => {
               bgColor={'#FFFFFF'}
               borderRadius={moderateScale(30, 0.3)}
               elevation
+              disabled={isLoading}
             />
           </LinearGradient>
+          <ResetProfilePassword
+            setIsModalVisible={setIsModalVisible}
+            isModalVisible={isModalVisible}
+            setPassCode={setPassCode}
+          />
         </ScrollView>
       </ImageBackground>
 
@@ -434,7 +554,7 @@ const styles = StyleSheet.create({
   profileSection: {
     height: windowWidth * 0.4,
     width: windowWidth * 0.4,
-    backgroundColor: 'red',
+    backgroundColor: '#EEEEEE',
     borderRadius: (windowWidth * 0.4) / 2,
     marginTop: moderateScale(40, 0.3),
     overflow: 'hidden',

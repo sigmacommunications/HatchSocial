@@ -3,7 +3,7 @@ import { Text } from "react-native";
 import Color from "../Assets/Utilities/Color";
 
 const CustomText = (props) => {
-  const { children, numberOfLines, style, isBold, onPress,} = props;
+  const { children, numberOfLines, style, isBold, onPress} = props;
   return (
     <Text
       onPress={onPress}
@@ -19,7 +19,6 @@ const CustomText = (props) => {
         isBold && {
           fontFamily: "PlusJakartaDisplay-Bold",
           fontWeight: "bold",
-          color: Color.black,
         },
       ]}
       numberOfLines={numberOfLines}

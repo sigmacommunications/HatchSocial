@@ -34,7 +34,7 @@ import {FloatingLabelInput} from 'react-native-floating-label-input';
 import Header from '../Components/Header';
 import navigationService from '../navigationService';
 
-const ResetPassword = props => {
+const ResetPasscode = props => {
   const privacy = useSelector(state => state.authReducer.privacy);
   const themeColor = useSelector(state => state.authReducer.ThemeColor);
   const phoneNumber = props?.route?.params?.phoneNumber;
@@ -106,7 +106,7 @@ const ResetPassword = props => {
         <CustomText
           style={styles.ResetPassword}
           isBold={true}
-          children={'Reset Password'}
+          children={'Reset Passcode'}
         />
 
         <View style={styles.conatiner}>
@@ -182,7 +182,7 @@ const styles = ScaledSheet.create({
     alignSelf: 'center',
     borderRadius: moderateScale(15, 0.6),
     alignItems: 'center',
-    marginTop: windowHeight * 0.2,
+    // marginTop: windowHeight * 0.2,
   },
   textInput: {
     height: windowHeight * 0.05,
@@ -240,16 +240,18 @@ const styles = ScaledSheet.create({
     marginTop: moderateScale(10, 0.3),
     fontSize: moderateScale(12, 0.6),
   },
-  dropDown: {
-    backgroundColor: Color.red,
-  },
+
  ResetPassword: {
     fontSize: moderateScale(25, 0.6),
     color: '#353434',
     width: windowWidth * 0.9,
-    textAlign: 'left',
+    textAlign: 'center',
     marginTop: moderateScale(10, 0.3),
+    // backgroundColor:'red',
+    height:windowHeight*0.2,
+    paddingTop:windowHeight*0.1,
+    // height:windowHeight*0.35
   }
 });
 
-export default ResetPassword;
+export default ResetPasscode;

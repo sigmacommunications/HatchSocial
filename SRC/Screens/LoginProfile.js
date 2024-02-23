@@ -43,7 +43,7 @@ import navigationService from '../navigationService';
 
 const LoginProfile = props => {
   const item = props?.route?.params?.item;
-  console.log('🚀 ~ file: LoginProfile.js:34 ~ LoginProfile ~ item:', item);
+  console.log('🚀 ~ file: LoginProfile.js:34 ~ LoginProfile ~ item============>:', item);
   const privacy = useSelector(state => state.authReducer.privacy);
   const themeColor = useSelector(state => state.authReducer.ThemeColor);
   const token = useSelector(state => state.authReducer.token);
@@ -53,11 +53,15 @@ const LoginProfile = props => {
   const [modal, setModal] = useState(false);
   const [passCode, setPassCode] = useState('');
   const dispatch = useDispatch();
+  const ProfileData = useSelector(state => state.commonReducer.selectedProfile);
+  console.log("🚀 ~ LoginProfile ~ ProfileData================================>:", ProfileData)
+
 
   const loginProfile = async () => {
     const url = 'auth/profile_login';
     const body = {
-      name: item?.name,
+      id:item?.id,
+      // name: item?.name,
       passcode: passCode,
     };
 
@@ -71,6 +75,7 @@ const LoginProfile = props => {
     setIsLoading(false);
 
     if (response?.data?.success) {
+    //  return  console.log("🚀 ~ loginProfile ~ response:", response?.data)
       
       setPassCode('');
       setModal(false);

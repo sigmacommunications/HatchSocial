@@ -54,6 +54,7 @@ import QuestionScreen from './Screens/QuestionScreen';
 import ProfileType from './Screens/ProfileType';
 import InterestSelection from './Screens/InterestsSelection';
 import Activites from './Screens/Activites';
+import ResetPasscode from './Screens/ResetPassword';
 
 const AppNavigator = () => {
   // const isLogin = false;
@@ -159,6 +160,8 @@ const AppNavigator = () => {
           <RootNav.Screen name="ProfilesListing" component={ProfilesListing} />
           <RootNav.Screen name="LoginProfile" component={LoginProfile} />
           <RootNav.Screen name="Activites" component={Activites} />
+          <RootNav.Screen name="ResetPasscode" component={ResetPasscode} />
+
 
         </RootNav.Navigator>
       </NavigationContainer>

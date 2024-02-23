@@ -87,9 +87,10 @@ const ProfileList = () => {
               isLoading  ?  
               <ActivityIndicator size={'large'} color={'white'}/> :
           <FlatList
+          showsVerticalScrollIndicator={false}
             data={profileData}
             contentContainerStyle={{
-              marginBottom: moderateScale(30, 0.3),
+              paddingBottom: moderateScale(30, 0.3)
             }}
             renderItem={({item, index}) => {
               return (
@@ -123,6 +124,7 @@ const ProfileList = () => {
                   textAlign: 'center',
                 }}
                 isBold>
+
                 create new profile
               </CustomText>
             </View>}
