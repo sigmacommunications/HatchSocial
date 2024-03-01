@@ -41,6 +41,7 @@ const BubbleList = () => {
     const response = await Get(url, token);
     setIsLoading(false);
     if (response != undefined) {
+      console.log(response?.data)
       setYourBubbles(response?.data?.community);
     }
   };

@@ -45,7 +45,7 @@ const HomeScreen = props => {
   const privacy = useSelector(state => state.authReducer.privacy);
   const themeColor = useSelector(state => state.authReducer.ThemeColor);
   const profileData = useSelector(state => state.commonReducer.selectedProfile);
-  console.log("🚀 ~ HomeScreen ~ profileData:", profileData?.flexDirection)
+  console.log("🚀 ~ HomeScreen ~ profileData:", profileData?.id)
   const newSignUp = useSelector(state => state.authReducer.newSignUp);
   const token = useSelector(state => state.authReducer.token);
   console.log("🚀 ~ HomeScreen ~ token:", token)
@@ -113,16 +113,33 @@ const HomeScreen = props => {
     const response = await Get(url, token);
     setIsLoading(false);
     if (response != undefined) {
-      console.log(JSON.stringify(response?.data,null,2))
-      setBubbles(response?.data?.community_info);
+      // console.log(JSON.stringify(response?.data,null,2))
+      // setBubbles(response?.data?.community_info);
       setContent(
-        response?.data?.data?.map(item => {
-          return {
-            key:item?.id,
+        response?.data?.data?.slice(0,10)?.map((item,index) => {
+          console.log(item?.image)
+          return  index == 9 ? {
             id: item?.id,
             image: (
               <Image
-                source={{uri: `${baseUrl}/${item?.bubble ? item?.image : item?.photo}`}}
+                source={require('../Assets/Images/10.png')}
+                resizeMode="cover"
+                style={styles.icon}
+              />
+            ),
+            bubble: true,
+            item:item,
+            source: require('../Assets/Images/10.png'),
+            private: item?.privacy?.toLowerCase() == 'yes' ? true : false,
+            onPress : ()=>navigationService.navigate('Allcommunities')
+          } 
+          :
+          {
+            // key:item?.id,
+            id: item?.id,
+            image: (
+              <Image
+                source={{uri: `${baseUrl}/${item?.image}`}}
                 resizeMode="cover"
                 style={styles.icon}
               />
@@ -263,7 +280,6 @@ const HomeScreen = props => {
                 setIsVisible={setIsVisible}
                 setSelectedBubbleId={setSelectedBubbleId}
                 setclicked={setclicked}
-                setText={setText}
               />
             </View>
           </GestureHandlerRootView>
@@ -340,7 +356,6 @@ const HomeScreen = props => {
         selectedBubbleId={selectedBubbleId}
         setIsVisible={setIsVisible}
         isVisible={isVisible}
-        text={text}
         bubbleData={bubbleData}
       />
       <Propmpt isVisible={prompt} setVisible={setPrompt} />

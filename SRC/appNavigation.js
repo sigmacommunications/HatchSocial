@@ -55,6 +55,7 @@ import ProfileType from './Screens/ProfileType';
 import InterestSelection from './Screens/InterestsSelection';
 import Activites from './Screens/Activites';
 import ResetPasscode from './Screens/ResetPassword';
+import Allcommunities from './Screens/Allcommunities';
 
 const AppNavigator = () => {
   // const isLogin = false;
@@ -146,6 +147,7 @@ const AppNavigator = () => {
           <RootNav.Screen name="AddEvents" component={AddEvents} />
           <RootNav.Screen name="ProfileList" component={ProfileList} />
           <RootNav.Screen name="Notifications" component={Notifications} />
+          <RootNav.Screen name="Allcommunities" component={Allcommunities} />
           <RootNav.Screen name="CreateNewFeed" component={CreateNewFeed} />
           <RootNav.Screen name="Signup" component={Signup} />
           <RootNav.Screen name="ResetPassword" component={ResetPassword} />

@@ -23,8 +23,10 @@ import TextInputWithTitle from '../Components/TextInputWithTitle';
 import {useSelector} from 'react-redux';
 import {Post} from '../Axios/AxiosInterceptorFunction';
 import {baseUrl} from '../Config';
+import {useNavigation} from '@react-navigation/native';
 
 const BubbleSearch = () => {
+  const navigation = useNavigation();
   const profileData = useSelector(state => state.commonReducer.selectedProfile);
   const themeColor = useSelector(state => state.authReducer.ThemeColor);
   const privacy = useSelector(state => state.authReducer.privacy);
@@ -142,7 +144,7 @@ const BubbleSearch = () => {
   //   item.name.toLowerCase().includes(search.toLowerCase()),
   // );
   console.log(search);
-  const toggleBubbles = (type) => {
+  const toggleBubbles = type => {
     setIsSelected(type);
   };
   return (
@@ -151,7 +153,7 @@ const BubbleSearch = () => {
         backgroundColor={Color.white}
         barStyle={'dark-content'}
       />
-      <Header right Title={'Search'} search />
+      <Header right Title={'Search'} />
 
       <ImageBackground
         source={
@@ -219,7 +221,7 @@ const BubbleSearch = () => {
         </View>
         {Object.keys(data).length > 0 && (
           <View style={styles.searchCategories}>
-            <TouchableOpacity onPress={()=>toggleBubbles('bubbles')}>
+            <TouchableOpacity onPress={() => toggleBubbles('bubbles')}>
               <View
                 style={[
                   styles.category,
@@ -232,7 +234,7 @@ const BubbleSearch = () => {
                 </CustomText>
               </View>
             </TouchableOpacity>
-            <TouchableOpacity onPress={()=> toggleBubbles('feeds')}>
+            <TouchableOpacity onPress={() => toggleBubbles('feeds')}>
               <View
                 style={[
                   styles.category,
@@ -246,7 +248,11 @@ const BubbleSearch = () => {
           </View>
         )}
         <View
-          style={{width: windowWidth, marginBottom: moderateScale(35, 0.3)}}>
+          style={{
+            width: windowWidth,
+            height: windowHeight * 0.7,
+            // backgroundColor: 'red',
+          }}>
           <FlatList
             data={isSelected === 'bubbles' ? data?.community_info : data?.feeds}
             showsVerticalScrollIndicator={false}
@@ -256,9 +262,17 @@ const BubbleSearch = () => {
               marginTop: moderateScale(10, 0.3),
             }}
             renderItem={({item, index}) => {
-              console.log('🚀 ~ BubbleSearch ~ item:', item);
+              console.log('🚀 ~ BubbleSearch ~ item=======> here:', `${baseUrl}/${item.image}`);
               return (
-                <View style={styles.row}>
+                <TouchableOpacity
+                  style={styles.row}
+                  onPress={() =>
+                    isSelected == 'feeds' &&
+                    navigation.navigate('PostScreen', {
+                      item: data?.feeds,
+                      fromSearch: true,
+                    })
+                  }>
                   <View
                     style={[
                       styles.profileSection2,
@@ -267,7 +281,7 @@ const BubbleSearch = () => {
                         : {borderRadius: moderateScale(10, 0.6)},
                     ]}>
                     <CustomImage
-                      source={{uri: `${baseUrl}/${item.photo}`}}
+                      source={{uri: `${baseUrl}/${item.image}`}}
                       style={{
                         height: '100%',
                         width: '100%',
@@ -301,7 +315,7 @@ const BubbleSearch = () => {
                       </CustomText>
                     )}
                   </View>
-                </View>
+                </TouchableOpacity>
               );
             }}
             ListEmptyComponent={() => (

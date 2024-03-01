@@ -7,11 +7,12 @@ import {
   ImageBackground,
   FlatList,
   ScrollView,
+  ActivityIndicator,
 } from 'react-native';
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import CustomStatusBar from '../Components/CustomStatusBar';
-import {windowHeight, windowWidth} from '../Utillity/utils';
-import {moderateScale} from 'react-native-size-matters';
+import {apiHeader, windowHeight, windowWidth} from '../Utillity/utils';
+import {moderateScale, moderateVerticalScale} from 'react-native-size-matters';
 import Color from '../Assets/Utilities/Color';
 import CustomText from '../Components/CustomText';
 import {Icon} from 'native-base';
@@ -22,12 +23,20 @@ import {TabView, SceneMap, TabBar} from 'react-native-tab-view';
 import PostComponent from '../Components/PostComponent';
 import navigationService from '../navigationService';
 import {useNavigation} from '@react-navigation/native';
+import {Get, Post} from '../Axios/AxiosInterceptorFunction';
+import {Image} from 'react-native-svg';
+import {baseUrl} from '../Config';
+import CustomImage from '../Components/CustomImage';
 
-const PostScreen = (props) => {
-  const item = props?.route?.params?.item
-  console.log("🚀 ~ PostScreen ~ item:", item)
+const PostScreen = props => {
+  const item = props?.route?.params?.item;
+  // console.log(`${baseUrl}/${item?.image}` , item);
+  const profileData = useSelector(state => state.commonReducer.selectedProfile);
   const privacy = useSelector(state => state.authReducer.privacy);
-  const [placeholdertext, setPlaceholderText] = useState('');
+  const token = useSelector(state => state.authReducer.token);
+  const [isLoading, setIsLoading] = useState(false);
+  const [feedDetails, setFeedDetails] = useState({});
+  const [isFollow, setIsFollow] = useState(null);
   const [index, setIndex] = useState(0);
   const [routes] = useState([
     {key: 'first', title: 'Top'},
@@ -212,6 +221,34 @@ const PostScreen = (props) => {
     },
   ];
 
+  const Follow = async () => {
+    const body = {
+      profile_id: profileData?.id,
+      feed_id: item?.id,
+    };
+    // return console.log("🚀 ~ Follow ~ body:", body)
+
+    const url = 'auth/feed-follow';
+    setIsLoading(true);
+    const response = await Post(url, body, apiHeader(token));
+    setIsLoading(false);
+    if (response != undefined) {
+      console.log('🚀 ~ Follow ~ response:', response?.data);
+    }
+  };
+  const getDetails = async () => {
+    const url = `auth/feed-detail/${item?.id}`;
+    setIsLoading(true);
+    // console.log('🚀 ~ getPosts ~ url:', url);
+    const response = await Get(url, token);
+    setIsLoading(false);
+    if (response != undefined) {
+    return  console.log('🚀 ~ getPosts ~ response:================>', response?.data?.feeds_info);
+      setFeedDetails(response?.data?.feeds_info);
+      setIsFollow(response?.data?.feeds_info?.follow)
+    }
+  };
+
   const renderTabBar = props => (
     <TabBar
       {...props}
@@ -252,6 +289,10 @@ const PostScreen = (props) => {
     second: SecondRoute,
   });
 
+  useEffect(() => {
+    getDetails();
+  }, []);
+
   return (
     <>
       <CustomStatusBar
@@ -259,9 +300,13 @@ const PostScreen = (props) => {
         barStyle={'dark-content'}
       />
       {/* Header START  */}
-      <View
-        style={styles.headerview1}>
+      <View style={styles.headerview1}>
         <TouchableOpacity
+          style={{
+            // backgroundColor:'red',
+            position: 'absolute',
+            left: 10,
+          }}
           activeOpacity={0.8}
           onPress={() => {
             navigation.goBack();
@@ -276,22 +321,6 @@ const PostScreen = (props) => {
             }}
           />
         </TouchableOpacity>
-
-        <View
-          style={styles.headerview2}>
-          <TouchableOpacity activeOpacity={0.8}>
-            <Icon as={AntDesign} name="search1" size={15} color="#000" />
-          </TouchableOpacity>
-
-          <TextInput
-            style={styles.input}
-            onChangeText={setPlaceholderText}
-            value={placeholdertext}
-            placeholder="Search"
-            keyboardType="numeric"
-            placeholderTextColor={'black'}
-          />
-        </View>
       </View>
       {/* Header END */}
 
@@ -306,72 +335,92 @@ const PostScreen = (props) => {
           width: windowWidth * 1,
           height: windowHeight,
         }}>
-        <View
-          style={styles.container}>
-          <LinearGradient
-            style={styles.LinearGradient1}
-            start={{x: 0, y: 0}}
-            end={{x: 1, y: 0}}
-            colors={['#f5eefe', '#f4edfd']}>
-            {/* <CustomText
-              style={{
-                fontSize: moderateScale(25, 0.6),
-                color: Color.veryLightGray,
-              }}
-              isBold>
-              #
-            </CustomText> */}
-            {item?.image}
-          </LinearGradient>
+        {isLoading ? (
           <View
             style={{
-              width: windowWidth * 0.5,
-              marginLeft: moderateScale(15, 0.3),
+              width: windowWidth,
+              height: windowHeight * 0.8,
+              justifyContent: 'center',
+              alignItems: 'center',
             }}>
+            <ActivityIndicator color={Color.white} size={'large'} />
             <CustomText
               style={{
-                fontSize: moderateScale(18, 0.6),
-                color: Color.black,
-                textAlign: 'left',
-              }}
-              isBold>
-              {item?.item?.name}
-            </CustomText>
-            <CustomText
-              style={{
-                fontSize: moderateScale(14, 0.6),
-                color: Color.veryLightGray,
-                textAlign: 'left',
+                color: Color.white,
+                fontSize: moderateScale(13, 0.6),
               }}>
-              39M Posts
+              Please wait
             </CustomText>
           </View>
-
-          <TouchableOpacity activeOpacity={0.8}>
-            <LinearGradient
-              style={styles.LinearGradient}
-              start={{x: 0, y: 0}}
-              end={{x: 1, y: 0}}
-              colors={['#e9f4ff', '#e8f4ff']}>
-              <CustomText
-                isBold
+        ) : (
+          <>
+            <View style={styles.container}>
+              <View style={styles.LinearGradient1}>
+                <CustomImage
+                  resizeMode="cover"
+                  source={{
+                    uri: `${baseUrl}/${feedDetails?.image}`,
+                  }}
+                  style={{height: '100%', width: '100%'}}
+                />
+              </View>
+              <View
                 style={{
-                  fontSize: moderateScale(15, 0.6),
-                  color: '#0942a0',
+                  width: windowWidth * 0.5,
+                  marginLeft: moderateScale(15, 0.3),
                 }}>
-                Follow
-              </CustomText>
-            </LinearGradient>
-          </TouchableOpacity>
-        </View>
+                <CustomText
+                  style={{
+                    fontSize: moderateScale(18, 0.6),
+                    color: Color.black,
+                    textAlign: 'left',
+                  }}
+                  isBold>
+                  {feedDetails?.name}
+                </CustomText>
+                <CustomText
+                  style={{
+                    fontSize: moderateScale(14, 0.6),
+                    color: Color.veryLightGray,
+                    textAlign: 'left',
+                  }}>
+                  {feedDetails?.total_posts}
+                </CustomText>
+              </View>
 
-        <TabView
-          navigationState={{index, routes}}
-          renderScene={renderScene}
-          onIndexChange={setIndex}
-          initialLayout={{width: windowWidth}}
-          renderTabBar={renderTabBar}
-        />
+              <TouchableOpacity onPress={() => Follow()} activeOpacity={0.8}>
+                <LinearGradient
+                  style={styles.LinearGradient}
+                  start={{x: 0, y: 0}}
+                  end={{x: 1, y: 0}}
+                  colors={['#e9f4ff', '#e8f4ff']}>
+                  <CustomText
+                    isBold
+                    style={{
+                      fontSize: moderateScale(15, 0.6),
+                      color: '#0942a0',
+                    }}>
+                    {isLoading ? (
+                      <ActivityIndicator size={'small'} color={'#0942a0'} />
+                    ) : isFollow instanceof Object  ? (
+                      'Following'
+                    ) : (
+                      'follow'
+                    )}
+                  </CustomText>
+                </LinearGradient>
+              </TouchableOpacity>
+            </View>
+
+            <TabView
+              navigationState={{index, routes}}
+              renderScene={renderScene}
+              onIndexChange={setIndex}
+              initialLayout={{width: windowWidth}}
+              renderTabBar={renderTabBar}
+            />
+          </>
+        )}
       </ImageBackground>
     </>
   );
@@ -394,7 +443,7 @@ const styles = StyleSheet.create({
     fontSize: 15,
     color: Color.black,
   },
-  headerview1:{
+  headerview1: {
     flexDirection: 'row',
     justifyContent: 'space-evenly',
     width: windowWidth,
@@ -403,8 +452,10 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     borderBottomWidth: 1,
     borderColor: Color.veryLightGray,
+    // position:'absolute',
+    // left:20,
   },
-  headerview2:{
+  headerview2: {
     flexDirection: 'row',
     justifyContent: 'space-evenly',
     width: windowWidth * 0.82,
@@ -413,28 +464,33 @@ const styles = StyleSheet.create({
     backgroundColor: '#eff3f6',
     alignItems: 'center',
   },
-  container:{
+  container: {
     flexDirection: 'row',
-    paddingLeft: moderateScale(15, 0.6),
+    paddingHorizontal: moderateScale(10, 0.6),
+    // paddingLeft: moderateScale(15, 0.6),
     paddingTop: moderateScale(10, 0.6),
     width: windowWidth,
     backgroundColor: Color.white,
     alignItems: 'center',
   },
-  LinearGradient1:{
+  LinearGradient1: {
     width: windowWidth * 0.19,
     height: windowHeight * 0.09,
-    alignItems: 'center',
-    justifyContent: 'center',
+    // alignItems: 'center',
+    // justifyContent: 'center',
     borderRadius: moderateScale(15, 0.3),
-  },  
+    overflow: 'hidden',
+    // backgroundColor:'red'
+  },
   LinearGradient: {
-    width: windowWidth * 0.18,
-    height: windowHeight * 0.05,
+    padding: moderateScale(10, 0.6),
+    // width: windowWidth * 0.18,
+    // height: windowHeight * 0.05,
     backgroundColor: Color.black,
     alignItems: 'center',
     justifyContent: 'center',
     borderRadius: moderateScale(10, 0.3),
+    // marginRight:moderateScale(10,.3)
   },
 });
 

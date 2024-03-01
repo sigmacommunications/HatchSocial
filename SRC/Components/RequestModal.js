@@ -23,7 +23,6 @@ import { useIsFocused } from '@react-navigation/native';
 const RequestModal = ({
   isVisible,
   setIsVisible,
-  text,
   bubbleData, 
   selectedBubbleId,
   item,
@@ -119,7 +118,7 @@ const RequestModal = ({
               textAlign: 'center',
             }}
             isBold>
-            you need admins permission to get into the {text}
+            you need admins permission to get into this bubble
           </CustomText>
         </View>
 

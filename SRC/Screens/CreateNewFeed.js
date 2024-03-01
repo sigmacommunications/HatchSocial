@@ -53,23 +53,28 @@ const CreateNewFeed = () => {
   const addFeeds = async () => {
     const url = 'auth/feed';
     const formData = new FormData();
+
+    // const hashTagArray= hashtags.split('');
     // console.log("🚀 ~ addFeeds ~ formData:", formData)
     const body = {
       profile_id: profileData?.id,
       name: feedsTitle,
-      hashtags: hashtags,
+      // hashtags: hashtags,
       description: Details,
-      photo: image,
+      image: image,
     };
+    hashtags.forEach((tag, index) => {
+      formData.append(`hashtags[${index}]`, tag);
+    });
     for (let key in body) {
       formData.append(key, body[key]);
     }
-    // return console.log("🚀 ~ addFeeds ~ body:", formData)
+  console.log("🚀 ~ addFeeds ~ body:", formData)
     setisLoading(true);
     const response = await Post(url, formData, apiHeader(token));
     setisLoading(false);
     if (response != undefined) {
-      // return console.log("🚀 ~ addFeeds ~ response:", response?.data)
+      // return console.log("🚀 ~ addFeeds ~ response:",  response?.data);
       Platform.OS == 'android'
         ? ToastAndroid.show('feed created successfully',ToastAndroid.SHORT)
         : Alert.alert('feed created successfully');

@@ -45,7 +45,6 @@ const RoundMenu = ({
   setIsVisible,
   setBubbleData,
   setclicked,
-  setText,
   setSelectedBubbleId,
 }) => {
   // console.log("🚀 ~ content:", content?.length)
@@ -58,7 +57,7 @@ const RoundMenu = ({
   const touchStart = useRef(undefined);
   const center = {x: size / 2, y: size / 2};
   const radius = size / 3;
-  const divisionAngle = content.length ? 360 / content.length : 0;
+  const divisionAngle = content.length > 0 ? 360 / content.length : 0;
   // console.log("🚀 ~ divisionAngle:", divisionAngle)
   const [offsetAngle, setOffsetAngle] = useState(0);
   const [pointsDone, setPointsDone] = useState(false);
@@ -212,13 +211,8 @@ const RoundMenu = ({
           <Animatable.View
             ref={outerContainerRef}
             style={styles({size, backgroundColor}).container}>
-            {[...content.slice(0,9)].map((el, i) => {
-              // console.log(
-              //   '🚀 ~ {content.map ~ el:',
-              //   el?.item?.community_owner?.id,
-              //   profileData?.id,
-              //   el?.bubble
-              // );
+            {content.map((el, i) => {
+             
               const [x, y] = pointOnCircle({
                 radius,
                 angle:
@@ -299,6 +293,12 @@ const RoundMenu = ({
                     ]}>
                     <TouchableOpacity
                       onPress={() => {
+                        if(el.onPress){
+                          el.onPress()
+                        }
+                        else{
+
+                        
                         if (el?.bubble && el?.private) {
                           console.log('here')
                           console.log('Hrere=========>>>>>>', el?.item);
@@ -307,14 +307,12 @@ const RoundMenu = ({
                             el?.item?.follow?.status == 'follow' ||
                             el?.item?.follow?.status == 'blocked'
                           ) {
-                            setText('bubble');
                             setSelectedBubbleId(el?.id);
                             setclicked(true);
                             setBubbleData(el?.item);
                           } else {
                             setIsVisible(true);
                             setSelectedBubbleId(el?.id);
-                            setText('bubble');
                             setBubbleData(el?.item);
                           }
                         } else if (el?.bubble && !el?.private) {
@@ -323,12 +321,10 @@ const RoundMenu = ({
                           setSelectedBubbleId(el?.id);
                         } else if (!el?.bubble && !el?.private) {
                           // setIsVisible(true);
-                          navigation.navigate('PostScreen' , {item : el});
-                          setText('feed');
+                          navigation.navigate('PostScreen' , {item : el?.item});
                         }
-                        //  else if (!el?.bubble) {
-                        //   el?.onPress();
-                        // }
+                      }
+                       
                       }}
                       key={i}
                       activeOpacity={1}
@@ -364,7 +360,7 @@ const RoundMenu = ({
                       )}
                       <Image
                         source={el.source}
-                        style={{width: '100%', height: '100%'}}
+                        style={{width: '100%', height: '100%' , backgroundColor : 'white'}}
                       />
                       <View
                         style={{     

@@ -9,6 +9,7 @@ import {
   ScrollView,
   View,
   ActivityIndicator,
+  FlatList,
 } from 'react-native';
 import Color from '../Assets/Utilities/Color';
 import CustomStatusBar from '../Components/CustomStatusBar';
@@ -25,15 +26,19 @@ import {useSelector} from 'react-redux';
 import TextInputWithTitle from '../Components/TextInputWithTitle';
 import ImagePickerModal from '../Components/ImagePickerModal';
 import CustomImage from '../Components/CustomImage';
-import {Post} from '../Axios/AxiosInterceptorFunction';
+import {Get, Post} from '../Axios/AxiosInterceptorFunction';
 import {useNavigation} from '@react-navigation/native';
 import OptionsMenu from 'react-native-options-menu';
+import MentionModal from '../Components/MentionModal';
+import {Text} from 'react-native-svg';
+import Feather from 'react-native-vector-icons/Feather'
+import HashtagModal from '../Components/HashtagModal';
 
 const AddPost = props => {
   const bubbleId = props?.route?.params?.bubbleId;
   // return console.log("🚀 ~ AddPost ~ bubbleId:", bubbleId)
   const data = props?.route?.params?.data;
-  console.log("🚀 ~ AddPost ~ data:", data)
+  console.log('🚀 ~ AddPost ~ data:', data);
   const themeColor = useSelector(state => state.authReducer.ThemeColor);
   const privacy = useSelector(state => state.authReducer.privacy);
   const token = useSelector(state => state.authReducer.token);
@@ -49,7 +54,8 @@ const AddPost = props => {
   );
   const [imagePickerVisible, setImagePickerVisible] = useState(false);
   const [videoPicker, setVideoPicker] = useState(false);
-  const [hashtag, setHashtag] = useState({});
+  const [hashtag, setHashtag] = useState([]);
+  console.log('🚀 ~ AddPost ~ hashtag =================>:', hashtag);
   const [video, setVideo] = useState({});
   const [videos, setVideos] = useState(
     data?.post_videos ? data?.post_videos : [],
@@ -57,6 +63,13 @@ const AddPost = props => {
   const [hashtags, setHashtags] = useState(
     data?.hashtags ? JSON.parse(data?.hashtags) : [],
   );
+  const [hashtagList, setHashtagList] = useState(false);
+  const [isVisible, setIsVisible] = useState(false);
+
+  const [feedList, setFeedList] = useState([]);
+  console.log('🚀 ~ AddPost ~ feedList====================>:', feedList);
+
+  const [isLoading, setIsLoading] = useState(false);
 
   const navigation = useNavigation();
 
@@ -117,7 +130,7 @@ const AddPost = props => {
 
     setLoading(true);
     const response = await Post(url, formData, apiHeader(token));
-   console.log(
+    console.log(
       '🚀 ~ file: AddPost.js:115 ~ AddPost ~ response:',
       response?.data,
     );
@@ -202,6 +215,21 @@ const AddPost = props => {
         : Alert.alert('you can select only five images');
     }
   };
+
+  const getHashtags = async () => {
+    const url = 'auth/hashtags_list';
+    setIsLoading(true);
+    const response = await Get(url, token);
+    setIsLoading(false);
+    if (response != undefined) {
+      console.log('🚀 ~ getfeed ~ response:', response?.data?.feeds_info);
+      // setFeedList(response?.data?.feeds_info);
+    }
+  };
+
+  useEffect(() => {
+    getHashtags();
+  }, []);
 
   return (
     <>
@@ -447,11 +475,29 @@ const AddPost = props => {
             })}
           </View>
 
+          <View style={{
+            flexDirection:'row',
+            // backgroundColor:'red',
+            alignItems:'center',
+            // width:windowWidth*0.9
+          }}>
+
           <CustomText
             style={[styles.title, {marginTop: moderateScale(10, 0.3)}]}
             isBold={true}
             children={'Add hashtag'}
           />
+          <Icon
+          onPress={() => {
+            setIsVisible(true)
+          }}
+          name={'plus'}
+          as={Feather}
+          color={Color.black}
+          size={22}
+          
+          />
+          </View>
           <View style={styles.mapview}>
             {hashtags.map(item => {
               return (
@@ -467,14 +513,33 @@ const AddPost = props => {
               );
             })}
           </View>
-          <View style={styles.hashtagview}>
-            <TextInputWithTitle
+          {/* <View style={styles.hashtagview}>
+            <TouchableOpacity
+              onPress={() => {
+                setHashtagList(!hashtagList);
+              }}
+              style={{
+                backgroundColor: 'white',
+                width: windowWidth * 0.7,
+                height: windowHeight * 0.06,
+                justifyContent: 'center',
+                paddingHorizontal: moderateScale(10, 0.6),
+                borderRadius: moderateScale(10, 0.6),
+              }}>
+              <CustomText
+                style={{
+                  color: Color.themeLightGray,
+                  fontSize: moderateScale(12, 0.6),
+                }}>
+                #hashtags
+              </CustomText>
+            {/* <TextInputWithTitle
               secureText={false}
               placeholder={'#Hashtags'}
               setText={setHashtag}
               value={hashtag}
               viewHeight={0.06}
-              viewWidth={0.7}
+              viewWidth={0.65}
               inputWidth={0.65}
               backgroundColor={'white'}
               border={1}
@@ -482,8 +547,10 @@ const AddPost = props => {
               color={themeColor[1]}
               placeholderColor={Color.themeLightGray}
               borderRadius={moderateScale(10, 0.3)}
-            />
-            <CustomButton
+            /> 
+            </TouchableOpacity>
+
+           <CustomButton
               text={'Add'}
               textColor={themeColor[1]}
               width={windowWidth * 0.2}
@@ -505,8 +572,76 @@ const AddPost = props => {
               bgColor={['#FFFFFF', '#FFFFFF']}
               isGradient
               isBold={true}
-            />
-          </View>
+            /> 
+          </View> */}
+          {/* {hashtagList == true && (
+            <View
+              style={{
+                flexWrap: 'wrap',
+                height: windowHeight * 0.2,
+                width: windowWidth * 0.7,
+                backgroundColor: 'white',
+                borderRadius: moderateScale(15, 0.6),
+              }}>
+              {feedList?.map((item, index) => {
+                console.log("🚀 ~ {feedList?.map ~ item=========================> is here:", item)
+                return (
+                  <TouchableOpacity
+                    onPress={() => {
+                      if (hashtag?.includes(item)) {
+                        const temp = [...hashtag];
+                        setHashtag(
+                          temp?.filter((item1, item) => item1 == item),
+                        );
+                      } else {
+                        setHashtag(prev => [...prev, item]);
+                        setHashtag('');
+                      }
+                    }}
+                    style={{
+                      paddingHorizontal: moderateScale(5, 0.6),
+                      paddingVertical: moderateScale(5, 0.6),
+                      // backgroundColor:'red',
+                      flexDirection: 'row',
+                    }}>
+                    <View
+                      style={{
+                        paddingHorizontal: moderateScale(5, 0.6),
+                        paddingVertical: moderateScale(5, 0.6),
+                        // backgroundColor:'red',
+                        flexDirection: 'row',
+                      }}>
+                      <View
+                        style={{
+                          height: windowHeight * 0.05,
+                          width: windowHeight * 0.05,
+                          borderRadius: (windowHeight * 0.05) / 2,
+                          overflow: 'hidden',
+                        }}>
+                        <CustomImage
+                          style={{
+                            height: '100%',
+                            width: '100%',
+                          }}
+                          source={require('../Assets/Images/dummyUser1.png')}
+                        />
+                      </View>
+                      <CustomText
+                        style={{
+                          marginHorizontal: moderateScale(4, 0.3),
+                          padding: moderateScale(6, 0.6),
+                          // backgroundColor: Color.themeColor,
+                          fontSize: moderateScale(11, 0.6),
+                          borderRadius: moderateScale(8, 0.6),
+                        }}>
+                        {item}
+                      </CustomText>
+                    </View>
+                  </TouchableOpacity>
+                );
+              })}
+            </View>
+          )} */}
 
           {/* <View style={styles.conatiner}></View> */}
 
@@ -551,6 +686,10 @@ const AddPost = props => {
         type={'video'}
         setShow={setVideoPicker}
         setFileObject={setVideo}
+      />
+      <HashtagModal
+      isVisible={isVisible}
+      setIsVisible={setIsVisible}
       />
     </>
   );
