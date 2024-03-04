@@ -27,16 +27,18 @@ import {Get, Post} from '../Axios/AxiosInterceptorFunction';
 import {Image} from 'react-native-svg';
 import {baseUrl} from '../Config';
 import CustomImage from '../Components/CustomImage';
+import moment from 'moment';
 
 const PostScreen = props => {
   const item = props?.route?.params?.item;
-  // console.log(`${baseUrl}/${item?.image}` , item);
+  // console.log(`${baseUrl}/${item?.image}` , item?.id);
   const profileData = useSelector(state => state.commonReducer.selectedProfile);
   const privacy = useSelector(state => state.authReducer.privacy);
   const token = useSelector(state => state.authReducer.token);
   const [isLoading, setIsLoading] = useState(false);
   const [feedDetails, setFeedDetails] = useState({});
   const [isFollow, setIsFollow] = useState(null);
+  const [postData, setPostData] = useState([]);
   const [index, setIndex] = useState(0);
   const [routes] = useState([
     {key: 'first', title: 'Top'},
@@ -243,9 +245,26 @@ const PostScreen = props => {
     const response = await Get(url, token);
     setIsLoading(false);
     if (response != undefined) {
-    return  console.log('🚀 ~ getPosts ~ response:================>', response?.data?.feeds_info);
+      //  console.log(
+      //   '🚀 ~ getPosts ~ response:================>',
+      //   response?.data?.feeds_info,
+      // );
       setFeedDetails(response?.data?.feeds_info);
-      setIsFollow(response?.data?.feeds_info?.follow)
+      setIsFollow(response?.data?.feeds_info?.follow);
+    }
+  };
+
+  const postList = async () => {
+    const url = `auth/post-by-feed/${item?.id}?profile_id=${profileData?.id}`;
+    setIsLoading(true);
+    const response = await Get(url, token);
+    setIsLoading(false);
+    if (response != undefined) {
+      console.log(
+        '🚀 ~ postList ~ response=======================>:',
+        response?.data?.feeds_info?.data,
+      );
+      setPostData(response?.data?.feeds_info?.data);
     }
   };
 
@@ -261,20 +280,27 @@ const PostScreen = props => {
   const FirstRoute = () => (
     <FlatList
       // scrollEnabled={false}
-      data={PostData}
+      data={postData}
       contentContainerStyle={{
         paddingBottom: moderateScale(80, 0.3),
       }}
       renderItem={({item, index}) => {
-        return <PostComponent data={item} />;
+        return (
+          <PostComponent
+            data={item}
+            setData={setPostData}
+            wholeData={postData}
+          />
+        );
       }}
     />
   );
 
   const SecondRoute = () => (
     <FlatList
+      data={postData}
       // scrollEnabled={false}
-      data={PostData}
+      // data={postData.filter((item , index)=> moment(item?.created_at).fromNow())}
       contentContainerStyle={{
         paddingBottom: moderateScale(80, 0.3),
       }}
@@ -291,6 +317,7 @@ const PostScreen = props => {
 
   useEffect(() => {
     getDetails();
+    postList();
   }, []);
 
   return (
@@ -384,32 +411,33 @@ const PostScreen = props => {
                     color: Color.veryLightGray,
                     textAlign: 'left',
                   }}>
-                  {feedDetails?.total_posts}
+                  {feedDetails?.total_posts} Posts
                 </CustomText>
               </View>
-
-              <TouchableOpacity onPress={() => Follow()} activeOpacity={0.8}>
-                <LinearGradient
-                  style={styles.LinearGradient}
-                  start={{x: 0, y: 0}}
-                  end={{x: 1, y: 0}}
-                  colors={['#e9f4ff', '#e8f4ff']}>
-                  <CustomText
-                    isBold
-                    style={{
-                      fontSize: moderateScale(15, 0.6),
-                      color: '#0942a0',
-                    }}>
-                    {isLoading ? (
-                      <ActivityIndicator size={'small'} color={'#0942a0'} />
-                    ) : isFollow instanceof Object  ? (
-                      'Following'
-                    ) : (
-                      'follow'
-                    )}
-                  </CustomText>
-                </LinearGradient>
-              </TouchableOpacity>
+              {profileData?.id != feedDetails?.profile_id && (
+                <TouchableOpacity onPress={() => Follow()} activeOpacity={0.8}>
+                  <LinearGradient
+                    style={styles.LinearGradient}
+                    start={{x: 0, y: 0}}
+                    end={{x: 1, y: 0}}
+                    colors={['#e9f4ff', '#e8f4ff']}>
+                    <CustomText
+                      isBold
+                      style={{
+                        fontSize: moderateScale(15, 0.6),
+                        color: '#0942a0',
+                      }}>
+                      {isLoading ? (
+                        <ActivityIndicator size={'small'} color={'#0942a0'} />
+                      ) : isFollow instanceof Object ? (
+                        'Following'
+                      ) : (
+                        'follow'
+                      )}
+                    </CustomText>
+                  </LinearGradient>
+                </TouchableOpacity>
+              )}
             </View>
 
             <TabView

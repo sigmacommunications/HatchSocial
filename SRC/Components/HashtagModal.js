@@ -1,331 +1,318 @@
-import { View, Text, FlatList, ActivityIndicator } from 'react-native'
-import React, { useState } from 'react'
+import {
+  View,
+  Text,
+  FlatList,
+  ActivityIndicator,
+  TouchableOpacity,
+  Platform,
+  ToastAndroid,
+} from 'react-native';
+import React, {useEffect, useState} from 'react';
 import Modal from 'react-native-modal';
 import TextInputWithTitle from './TextInputWithTitle';
 import CustomText from './CustomText';
-import { ScaledSheet, moderateScale } from 'react-native-size-matters';
+import {ScaledSheet, moderateScale} from 'react-native-size-matters';
 import Color from '../Assets/Utilities/Color';
-import { windowHeight, windowWidth } from '../Utillity/utils';
+import {apiHeader, windowHeight, windowWidth} from '../Utillity/utils';
 import CustomButton from './CustomButton';
-import Feather from 'react-native-vector-icons/Feather'
+import Feather from 'react-native-vector-icons/Feather';
+import CustomImage from './CustomImage';
+import {color} from 'react-native-reanimated';
+import {baseUrl} from '../Config';
+import {Get, Post} from '../Axios/AxiosInterceptorFunction';
+import {useSelector} from 'react-redux';
+import {Icon} from 'native-base';
 
-
-const HashtagModal = ({isVisible ,setIsVisible}) => {
+const HashtagModal = ({isVisible, setIsVisible, hashtag, setHashtag}) => {
+  const token = useSelector(state => state.authReducer.token);
+  const themeColor = useSelector(state => state.authReducer.ThemeColor);
   const [timerId, setTimerId] = useState(null);
+  const [feedList, setFeedList] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
   const [search, setSearch] = useState('');
 
+  const handleInputChange = text => {
+    setSearch(text);
+    if (timerId) {
+      clearTimeout(timerId);
+    }
+    const newTimerId = setTimeout(() => {
+      console.log('gere');
+      getHashtags();
+    }, 2000);
 
+    setTimerId(newTimerId);
+  };
 
+  const getHashtags = async () => {
+    const url = `auth/hashtags_list`;
+    const body = {
+      search_text: search,
+    };
+    console.log('🚀 ~ getHashtags ~ body:', body);
+    setIsLoading(true);
 
-    const handleInputChange = text => {
-        setSearch(text);
-        if (timerId) {
-          clearTimeout(timerId);
-        }
-        const newTimerId = setTimeout(() => {
-          SearchMembers(text);
-        }, 300);
-    
-        setTimerId(newTimerId);
-      };
+    const response = await Post(url, body, apiHeader(token));
+    setIsLoading(false);
+    if (response != undefined) {
+      console.log('🚀 ~ getHashtags ~ response:', response?.data?.feeds_info);
+      setFeedList(response?.data?.feeds_info);
+    }
+  };
+
+  useEffect(() => {
+    if (isVisible) {
+      getHashtags();
+    }
+  }, [isVisible]);
 
   return (
-  
-     <Modal
-        isVisible={isVisible}
-        onBackdropPress={() => {
-          setIsVisible(false);
-        }}
-        style={{
-          justifyContent: 'center',
-          alignItems: 'center',
-          // backgroundColor:'red',
-          // paddingVertical:moderateScale(20,.6),
-        }}>
-        <View style={styles.container}>
-          <CustomText
-            style={[styles.modalHeader, 
-                // {backgroundColor: themeColor[1]}
-            ]}
-            isBold>
-            Invite Members
-          </CustomText>
-
-          <TextInputWithTitle
-            iconName={'search'}
-            iconType={Feather}
-            secureText={false}
-            placeholder={'Alchole'}
-            setText={handleInputChange}
-            value={search}
-            viewHeight={0.05}
-            viewWidth={0.8}
-            inputWidth={0.7}
-            border={1}
-            borderColor={Color.veryLightGray}
-            marginTop={moderateScale(15, 0.3)}
-            // backgroundColor={'black'}
-            // color={themeColor[1]}
-            placeholderColor={Color.veryLightGray}
-            borderRadius={moderateScale(25, 0.3)}
-          />
-
-          <FlatList
-            // data={newData}
-            showsVerticalScrollIndicator={false}
-            contentContainerStyle={{
-              // marginBottom: moderateScale(10, 0.3),
-              paddingBottom: moderateScale(70, 0.6),
-              marginTop: moderateScale(10, 0.3),
-            }}
+    <Modal
+      isVisible={isVisible}
+      onBackdropPress={() => {
+        setIsVisible(false);
+      }}
+      style={{
+        justifyContent: 'center',
+        alignItems: 'center',
+      }}>
+      <View style={styles.container}>
+        {isLoading ? (
+          <View
             style={{
-              height: windowHeight * 0.5,
-            }}
-            renderItem={({item, index}) => {
-              return (
-                <TouchableOpacity
-                  activeOpacity={0.8}
-                  style={styles.row}
-                  onPress={() => {
-                    if (
-                      invitedPeople?.some((data, index) => data?.id == item?.id)
-                    ) {
-                      const tempData = [...invitedPeople];
-                      tempData.splice(
-                        invitedPeople?.findIndex(
-                          (data, index) => data?.id == item?.id,
-                        ),
-                        1,
-                      );
-                      setInvitedPeople(tempData);
-                    } else {
-                      setInvitedPeople(prev => [...prev, item]);
-                    }
-                  }}>
-                  <View style={styles.profileSection2}>
-                    <CustomImage
-                      source={{uri: `${baseUrl}/${item.photo}`}}
-                      style={{
-                        height: '100%',
-                        width: '100%',
-                      }}
-                      resizeMode="contain"
-                    />
-                  </View>
-
-                  <View
-                    style={{
-                      marginLeft: moderateScale(15, 0.6),
-                      justifyContent: 'center',
-                    }}>
-                    <CustomText
-                      style={{
-                        fontSize: moderateScale(13, 0.6),
-                        color: '#000',
-                        textAlign: 'left',
-                      }}
-                      isBold>
-                      {/* {item?.name} */}
-                    </CustomText>
-                    <CustomText
-                      style={{
-                        fontSize: moderateScale(9, 0.6),
-                        textAlign: 'left',
-                        color: '#000',
-                      }}>
-                      {item.Tags}
-                    </CustomText>
-                  </View>
-                  {invitedPeople?.some(
-                    (data, index) => data?.id == item?.id,
-                  ) && (
-                    <View
-                      style={[
-                        styles.checkIcon,
-                        {
-                        //   backgroundColor: themeColor[1],
-                          position: 'absolute',
-                          right: 10,
-                          top: 5,
-                          borderRadius: moderateScale(10, 0.6),
-                          height: moderateScale(20, 0.6),
-                          width: moderateScale(20, 0.6),
-                        },
-                      ]}>
-                      <Icon
-                        name="check"
-                        as={AntDesign}
-                        color={'white'}
-                        size={4}
-                        zIndex={1}
-                        onPress={() => {
-                          const tempData = [...invitedPeople];
-                          tempData.splice(
-                            invitedPeople?.findIndex(
-                              (data, index) => data?.id == item?.id,
-                            ),
-                            1,
-                          );
-                          setInvitedPeople(tempData);
-                        }}
-                      />
-                    </View>
-                  )}
-                </TouchableOpacity>
-              );
-            }}
-          />
-          {/* {invitedPeople?.length > 0 && (
-            <View style={styles.invite}>
-              <CustomButton
-                text={
-                  loadingInvite ? (
-                    <ActivityIndicator color={'#01E8E3'} size={'small'} />
-                  ) : (
-                    'invite'
-                  )
-                }
-                textColor={'white'}
-                width={windowWidth * 0.4}
-                height={windowHeight * 0.05}
-                // marginTop={moderateScale(20, 0.3)}
-                onPress={() => {
-                  invitedPeople.length > 0 && SendInvite();
-                }}
-                bgColor={themeColor}
-                borderRadius={moderateScale(30, 0.3)}
-                isGradient
+              width: windowWidth * 0.85,
+              height: windowHeight * 0.7,
+              justifyContent: 'center',
+              alignItems: 'center',
+            }}>
+            <ActivityIndicator size="large" color={themeColor[0]} />
+            <CustomText
+              style={{
+                color: themeColor[0],
+                fontSize: moderateScale(13, 0.6),
+              }}>
+              loading...
+            </CustomText>
+          </View>
+        ) : (
+          <>
+            <View
+              style={{
+                // backgroundColor:'red',
+                alignItems: 'center',
+              }}>
+              <TextInputWithTitle
+                secureText={false}
+                placeholder={'Alchole'}
+                setText={handleInputChange}
+                value={search}
+                viewHeight={0.05}
+                viewWidth={0.8}
+                inputWidth={0.75}
+                border={1}
+                borderColor={Color.veryLightGray}
+                marginTop={moderateScale(15, 0.3)}
+                placeholderColor={Color.veryLightGray}
+                borderRadius={moderateScale(25, 0.3)}
               />
             </View>
-          )} */}
-        </View>
-      </Modal>
-   
-  )
-}
 
-export default HashtagModal
+            <FlatList
+              data={feedList}
+              showsVerticalScrollIndicator={false}
+              contentContainerStyle={{
+                marginBottom: moderateScale(10, 0.3),
+                marginTop: moderateScale(10, 0.3),
+              }}
+              renderItem={({item, index}) => {
+                return (
+                  <TouchableOpacity
+                    onPress={() => {
+                      console.log('here is selected hashtag');
+                      // }
+                      if (
+                        hashtag?.some((item1, index) => item1?.id == item?.id)
+                      ) {
+                        setHashtag(prevHashtags =>
+                          prevHashtags.filter(
+                            (item2, index) => item2?.id !== item?.id,
+                          ),
+                        );
+                      } else {
+                        setHashtag(prevHashtags => [...prevHashtags, item]);
+                        // setIsSelected(hashtag)
+                      }
+                    }}
+                    style={{
+                      width : '100%',
+                      // backgroundColor : 'green',
+                      paddingHorizontal: moderateScale(5, 0.6),
+                      paddingVertical: moderateScale(5, 0.6),
+                      flexDirection: 'row',
+                      alignItems : 'center'
+                    }}>
+                   
+                      <View
+                        style={{
+                          height: windowHeight * 0.07,
+                          width: windowHeight * 0.07,
+                          borderRadius: (windowHeight * 0.07) / 2,
+                          overflow: 'hidden',
+                        }}>
+                        <CustomImage
+                          style={{
+                            height: '100%',
+                            width: '100%',
+                          }}
+                          source={{uri : `${baseUrl}/${item?.image}`}}
+                        />
+                      </View>
+                      <View style={{
+                        width : windowWidth * .6,
+                        height : windowHeight * 0.06,
+                        marginLeft : moderateScale(5,0.6)
+                        // backgroundColor : 'red'
+                      }}>
+                        <CustomText
+                        numberOfLines={1}
+                          style={{
+                            marginHorizontal: moderateScale(4, 0.3),
+                            color: Color.black,
+                            fontSize: moderateScale(13, 0.6),
+                            //  backgroundColor:'red',
+                          }}>
+                          {item?.name}
+                        </CustomText>
+                        <View
+                          style={{
+                            backgroundColor: themeColor[1],
+                            borderRadius: moderateScale(8, 0.6),
+                            marginHorizontal: moderateScale(4, 0.3),
+                            position : 'absolute',
+                            bottom : 0,
+                            paddingHorizontal : moderateScale(5,0.6),
+                            paddingVertical : moderateScale(3,0.6)
+
+                          }}>
+                        <CustomText
+                          style={{
+                            // backgroundColor : 'red',
+                            fontSize: moderateScale(11, 0.6),
+                          }}>
+                          {item?.title}
+                        </CustomText>
+                        </View>
+                      </View>
+                      {hashtag?.some(
+                        (item1, index) => item1?.id == item?.id,
+                      ) && (
+                        <Icon
+                          style={{
+                            // backgroundColor:'red',
+                            position: 'absolute',
+                            right: 10,
+                            top: 30,
+                          }}
+                          name={'check'}
+                          as={Feather}
+                          size={18}
+                          color={themeColor[1]}
+                        />
+                      )}
+                  </TouchableOpacity>
+                );
+              }}
+            />
+
+            <CustomButton
+              text={'Close'}
+              textColor={'white'}
+              width={windowWidth * 0.6}
+              height={windowHeight * 0.05}
+              fontSize={moderateScale(13, 0.6)}
+              onPress={() => {
+                setIsVisible(false);
+              }}
+              marginBottom={moderateScale(10, 0.3)}
+              bgColor={['#01E8E3', '#1296AF']}
+              isGradient
+              isBold={true}
+            />
+          </>
+        )}
+      </View>
+    </Modal>
+  );
+};
+
+export default HashtagModal;
 const styles = ScaledSheet.create({
-    checkIcon: {
-      backgroundColor: Color.white,
-      borderRadius: moderateScale(12.5, 0.6),
-      height: moderateScale(25, 0.6),
-      justifyContent: 'center',
-      alignItems: 'center',
-      width: moderateScale(25, 0.6),
-      padding: moderateScale(3, 0.6),
-    },
-    followCount: {
-      fontSize: moderateScale(20, 0.6),
-      color: 'black',
-      marginRight: moderateScale(8, 0.3),
-      //   width: windowWidth*0.9,
-      textAlign: 'center',
-    },
-    followText: {
-      fontSize: moderateScale(14, 0.6),
-      color: Color.white,
-      marginRight: moderateScale(8, 0.3),
-      textAlign: 'center',
-    },
-    downIcon: {
-      backgroundColor: Color.white,
-      borderRadius: (windowWidth * 0.11) / 2,
-      height: windowWidth * 0.11,
-      justifyContent: 'center',
-      marginLeft: moderateScale(8, 0.3),
-      alignItems: 'center',
-      width: windowWidth * 0.11,
-      padding: moderateScale(3, 0.6),
-    },
-    loaderView: {
-      // backgroundColor: 'red',
-      width: windowWidth,
-      height: windowHeight * 0.4,
-      justifyContent: 'center',
-    },
-    eventText: {
-      fontSize: moderateScale(14, 0.6),
-  
-      marginHorizontal: moderateScale(8, 0.3),
-      width: windowWidth * 0.22,
-      marginLeft: moderateScale(10, 0.3),
-      paddingVertical: moderateScale(5, 0.6),
-      borderRadius: moderateScale(5, 0.6),
-      textAlign: 'center',
-      alignItems: 'center',
-    },
-    container: {
-      width: windowWidth * 0.85,
-      // height: windowHeight * 0.55,
-      // paddingVertical: moderateScale(20, 0.6),
-      backgroundColor: Color.white,
-      borderRadius: moderateScale(10, 0.6),
-      justifyContent: 'center',
-      alignItems: 'center',
-      overflow: 'hidden',
-    },
-    ct: {
-      fontSize: moderateScale(17, 0.6),
-      color: 'black',
-      marginRight: moderateScale(8, 0.3),
-      textAlign: 'center',
-    },
-    profileSection2: {
-      height: windowHeight * 0.05,
-      width: windowHeight * 0.05,
-      backgroundColor: '#fff',
-      borderRadius: (windowHeight * 0.05) / 2,
-      borderWidth: 2,
-      borderColor: Color.green,
-      justifyContent: 'center',
-      overflow: 'hidden',
-      // alignSelf: 'center',
-    },
-    modalHeader: {
-      color: 'black',
-      fontSize: moderateScale(15, 0.6),
-      width: '100%',
-      textAlign: 'center',
-      color: 'white',
-      // backgroundColor: themeColor[1],
-      padding: moderateScale(10, 0.6),
-    },
-    row: {
-      width: windowWidth * 0.85,
-      height: windowHeight * 0.06,
-      flexDirection: 'row',
-      alignItems: 'center',
-      paddingLeft: moderateScale(14, 0.6),
-      marginVertical: moderateScale(2, 0.3),
-      // backgroundColor:'red',
-    },
-    container2: {
-      flexDirection: 'row',
-      justifyContent: 'space-between',
-      marginTop: moderateScale(30, 0.3),
-      paddingHorizontal: moderateScale(30, 0.6),
-    },
-    textwithicon: {
-      flexDirection: 'row',
-      justifyContent: 'center',
-      marginTop: moderateScale(30, 0.3),
-    },
-    followbtn: {
-      flexDirection: 'row',
-      justifyContent: 'center',
-      marginTop: moderateScale(30, 0.3),
-    },
-    mapview: {
-      width: windowWidth,
-      marginTop: moderateScale(10, 0.3),
-      // paddingHorizontal: moderateScale(10, 0.6),
-      // marginLeft:moderateScale(10,.3)
-    },
-    invite: {
-      position: 'absolute',
-      alignSelf: 'center',
-      bottom: 20,
-      backgroundColor: 'transparent',
-    },
-})
+  container: {
+    width: windowWidth * 0.85,
+    height: windowHeight * 0.6,
+    // paddingVertical: moderateScale(20, 0.6),
+    backgroundColor: Color.white,
+    borderRadius: moderateScale(10, 0.6),
+    // alignItems: 'center',
+    // backgroundColor:'green'
+    // overflow: 'hidden',
+  },
+
+  profileSection2: {
+    height: windowHeight * 0.05,
+    width: windowHeight * 0.05,
+    backgroundColor: '#fff',
+    borderRadius: (windowHeight * 0.05) / 2,
+    borderWidth: 2,
+    borderColor: Color.green,
+    justifyContent: 'center',
+    overflow: 'hidden',
+    // alignSelf: 'center',
+  },
+  modalHeader: {
+    color: 'black',
+    fontSize: moderateScale(15, 0.6),
+    width: '100%',
+    textAlign: 'center',
+    // color: 'white',
+    backgroundColor: Color.themeColor[1],
+    padding: moderateScale(10, 0.6),
+  },
+  row: {
+    width: windowWidth * 0.85,
+    height: windowHeight * 0.06,
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingLeft: moderateScale(14, 0.6),
+    marginVertical: moderateScale(2, 0.3),
+    backgroundColor: 'red',
+  },
+  container2: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginTop: moderateScale(30, 0.3),
+    paddingHorizontal: moderateScale(30, 0.6),
+  },
+  textwithicon: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    marginTop: moderateScale(30, 0.3),
+  },
+  followbtn: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    marginTop: moderateScale(30, 0.3),
+  },
+  mapview: {
+    width: windowWidth,
+    marginTop: moderateScale(10, 0.3),
+    // paddingHorizontal: moderateScale(10, 0.6),
+    // marginLeft:moderateScale(10,.3)
+  },
+  invite: {
+    position: 'absolute',
+    alignSelf: 'center',
+    bottom: 20,
+    backgroundColor: 'transparent',
+  },
+});

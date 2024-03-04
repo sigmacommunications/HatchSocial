@@ -24,6 +24,10 @@ import {useSelector} from 'react-redux';
 import {Post} from '../Axios/AxiosInterceptorFunction';
 import {baseUrl} from '../Config';
 import {useNavigation} from '@react-navigation/native';
+import RequestModal from '../Components/RequestModal';
+import { BlurView } from '@react-native-community/blur';
+import CustomButton from '../Components/CustomButton';
+import navigationService from '../navigationService';
 
 const BubbleSearch = () => {
   const navigation = useNavigation();
@@ -34,6 +38,10 @@ const BubbleSearch = () => {
   const [isSelected, setIsSelected] = useState('bubbles');
   const [data, setData] = useState({});
   const [search, setSearch] = useState('');
+  const [selectedBubbleId, setSelectedBubbleId] = useState(null);
+  const [clicked, setclicked] = useState(false);
+  const [bubbleData, setBubbleData] = useState({});
+  const [isVisible, setIsVisible] = useState(false);
   // const SearchData = [
   //   {
   //     id: 1,
@@ -262,17 +270,47 @@ const BubbleSearch = () => {
               marginTop: moderateScale(10, 0.3),
             }}
             renderItem={({item, index}) => {
-              console.log('🚀 ~ BubbleSearch ~ item=======> here:', `${baseUrl}/${item.image}`);
+              console.log('🚀 ~ BubbleSearch ~ item=======> here:', item?.follow);
               return (
                 <TouchableOpacity
                   style={styles.row}
-                  onPress={() =>
-                    isSelected == 'feeds' &&
-                    navigation.navigate('PostScreen', {
-                      item: data?.feeds,
-                      fromSearch: true,
-                    })
-                  }>
+                  onPress={() =>{
+
+
+                    if (item?.bubble && item?.privacy.toLowerCase() == 'yes') {
+                      console.log('this true 1');
+                      console.log('Hrere=========>>>>>>', item);
+                      if (
+                        item?.profile_id == profileData?.id ||
+                        item?.follow?.status == 'follow' ||
+                        item?.follow?.status == 'blocked'
+                      ) {
+                      console.log('this true 2');
+
+                        setSelectedBubbleId(item?.id);
+                        setclicked(true);
+                        setBubbleData(item);
+                      } else {
+                      console.log('this true 3');
+
+                        setIsVisible(true);
+                        setSelectedBubbleId(item?.id);
+                        setBubbleData(item);
+                      }
+                    } else if (item?.bubble && item?.privacy.toLowerCase() == 'no') {
+                      console.log('this true 4');
+
+                      setclicked(true);
+                      setSelectedBubbleId(item?.id);
+                    } else if (isSelected == 'feeds') {
+                      navigation.navigate('PostScreen', {item: item});
+                    }
+
+
+
+
+                 
+                  }}>
                   <View
                     style={[
                       styles.profileSection2,
@@ -335,6 +373,51 @@ const BubbleSearch = () => {
             )}
           />
         </View>
+      {clicked && (
+        <BlurView
+          // intensity={100}
+          style={styles.blurView}
+          blurRadius={5}
+          blurType={'light'}>
+          <View style={styles.container3}>
+            <CustomButton
+              text={'Home'}
+              textColor={themeColor[1]}
+              width={windowWidth * 0.7}
+              height={windowHeight * 0.06}
+              marginTop={moderateScale(20, 0.3)}
+              onPress={() => {
+                // disptach(setUserToken({token : 'fasdasd awdawdawdada'}))
+                setclicked(false);
+                navigation.navigate('Bubble', {id: selectedBubbleId});
+              }}
+              bgColor={['#FFFFFF', '#FFFFFF']}
+              borderRadius={moderateScale(30, 0.3)}
+              isGradient
+            />
+
+            <CustomButton
+              text={'Close'}
+              textColor={themeColor[1]}
+              width={windowWidth * 0.7}
+              height={windowHeight * 0.06}
+              marginTop={moderateScale(20, 0.3)}
+              onPress={() => {
+                setclicked(false);
+              }}
+              bgColor={['#FFFFFF', '#FFFFFF']}
+              borderRadius={moderateScale(30, 0.3)}
+              isGradient
+            />
+          </View>
+        </BlurView>
+      )}
+      <RequestModal
+        selectedBubbleId={selectedBubbleId}
+        setIsVisible={setIsVisible}
+        isVisible={isVisible}
+        bubbleData={bubbleData}
+      />
       </ImageBackground>
     </>
   );
@@ -425,4 +508,28 @@ const styles = StyleSheet.create({
   txt: {
     fontSize: moderateScale(13, 0.6),
   },
+  container2: {
+    width: windowWidth,
+    height: windowHeight * 0.9,
+    positon: 'absolute',
+    overflow: 'hidden',
+    flexDirection: 'row',
+    backgroundColor: 'rgba(0,0,0,.8)',
+  },
+  blurView: {
+    position: 'absolute',
+    height: windowHeight * 0.87,
+    width: windowWidth,
+    justifyContent: 'center',
+    alignItems: 'center',
+
+    bottom: 0,
+  },
+  container3: {
+    height: windowHeight * 0.8,
+    width: windowWidth,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+ 
 });

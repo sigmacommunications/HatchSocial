@@ -188,7 +188,7 @@ const CreateNewFeed = () => {
                   marginLeft: moderateScale(30, 0.3),
                 }}
                 isBold>
-                asign hashtags
+                assign hashtags
               </CustomText>
               <View style={styles.hashtagview}>
                 <TextInputWithTitle
@@ -220,8 +220,16 @@ const CreateNewFeed = () => {
                     // marginTop={moderateScale(30, 0.3)}
                     // marginBottom={moderateScale(50)}
                     onPress={() => {
-                      setHashTags(prev => [...prev, `#${feedTitle}`]);
-                      setFeedTitle('');
+                     if (feedTitle.split('')[0] != '#') {
+                        Platform.OS == 'android'
+                          ? ToastAndroid.show(
+                              'Letter must be start with #',
+                              ToastAndroid.SHORT,
+                            )
+                          : Alert.alert('Letter must be start with #');
+                      } else {
+                      setHashTags(prev => [...prev, `${feedTitle}`]);
+                      setFeedTitle('');}
                     }}
                   />
                 )}

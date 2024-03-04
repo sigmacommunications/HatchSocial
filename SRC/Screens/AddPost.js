@@ -31,14 +31,15 @@ import {useNavigation} from '@react-navigation/native';
 import OptionsMenu from 'react-native-options-menu';
 import MentionModal from '../Components/MentionModal';
 import {Text} from 'react-native-svg';
-import Feather from 'react-native-vector-icons/Feather'
+import Feather from 'react-native-vector-icons/Feather';
 import HashtagModal from '../Components/HashtagModal';
 
 const AddPost = props => {
   const bubbleId = props?.route?.params?.bubbleId;
-  // return console.log("🚀 ~ AddPost ~ bubbleId:", bubbleId)
+  console.log('🚀 ~ AddPost ~ bubbleId:', bubbleId);
   const data = props?.route?.params?.data;
-  console.log('🚀 ~ AddPost ~ data:', data);
+  const fromHome = props?.route?.params?.fromHome;
+  console.log('🚀 ~ fromHome:', fromHome);
   const themeColor = useSelector(state => state.authReducer.ThemeColor);
   const privacy = useSelector(state => state.authReducer.privacy);
   const token = useSelector(state => state.authReducer.token);
@@ -63,13 +64,10 @@ const AddPost = props => {
   const [hashtags, setHashtags] = useState(
     data?.hashtags ? JSON.parse(data?.hashtags) : [],
   );
-  const [hashtagList, setHashtagList] = useState(false);
+  console.log('🚀 ~ hashtags:', hashtags);
   const [isVisible, setIsVisible] = useState(false);
-
-  const [feedList, setFeedList] = useState([]);
-  console.log('🚀 ~ AddPost ~ feedList====================>:', feedList);
-
-  const [isLoading, setIsLoading] = useState(false);
+  const [text, setText] = useState('');
+  // console.log('🚀 ~ text:', text.split('')[0]);
 
   const navigation = useNavigation();
 
@@ -93,8 +91,10 @@ const AddPost = props => {
     const body = {
       caption: description,
       profile_id: profileData?.id,
-      community_id: bubbleId,
     };
+    if (bubbleId != undefined) {
+      body.community_id = bubbleId;
+    }
     if (images.length == 0 && videos.length == 0 && description == '') {
       Platform.OS == 'android'
         ? ToastAndroid.show(
@@ -121,12 +121,10 @@ const AddPost = props => {
           formData.append(`hashtags[${index}]`, hashtags[index]),
         );
       }
+     
     }
 
-    console.log(
-      '🚀 ~ file: AddPost.js:108 ~ AddPost ~ formData:',
-      JSON.stringify(formData, null, 2),
-    );
+   
 
     setLoading(true);
     const response = await Post(url, formData, apiHeader(token));
@@ -192,6 +190,45 @@ const AddPost = props => {
       navigation.goBack();
     }
   };
+  const UpdateFeedPost = async () => {
+    const url = 'auth/post';
+    const formData = new FormData();
+    const body = {
+      caption: description,
+      // hashtags: hashtags[0],
+      community_id: bubbleId,
+    };
+    if (images.length == 0 && videos.length == 0 && description == '') {
+      Platform.OS == 'android'
+        ? ToastAndroid.show(
+            ` please fill atleast one feild`,
+            ToastAndroid.SHORT,
+          )
+        : Alert.alert(` plaease fill atleast one feild`);
+    } else {
+      for (let key in body) {
+        formData.append(key, body[key]);
+      }
+      if (images.length > 0) {
+        images?.map((item, index) =>
+          formData.append(`image[${index}]`, images[index]),
+        );
+      }
+      if (videos.length > 0) {
+        videos?.map((item, index) =>
+          formData.append(`video[${index}]`, videos[index]),
+        );
+      }
+     
+    }
+
+    setLoading(true);
+    const response = await Post(url, formData, apiHeader(token));
+    setLoading(false);
+    if (response != undefined) {
+      navigation.goBack();
+    }
+  };
 
   const Video = () => {
     if (videos.length == 0 && images.length == 0) {
@@ -216,20 +253,57 @@ const AddPost = props => {
     }
   };
 
-  const getHashtags = async () => {
-    const url = 'auth/hashtags_list';
-    setIsLoading(true);
-    const response = await Get(url, token);
-    setIsLoading(false);
+  const AddFeedPost = async () => {
+    const url = 'auth/post-feed';
+    const formData = new FormData();
+    const body = {
+      caption: description,
+      profile_id: profileData?.id,
+    };
+    if (images.length == 0 && videos.length == 0 && description == '') {
+      Platform.OS == 'android'
+        ? ToastAndroid.show(
+            ` please fill atleast one feild`,
+            ToastAndroid.SHORT,
+          )
+        : Alert.alert(` plaease fill atleast one feild`);
+    } else {
+      for (let key in body) {
+        formData.append(key, body[key]);
+      }
+      if (images.length > 0) {
+        images?.map((item, index) =>
+          formData.append(`image[${index}]`, images[index]),
+        );
+      }
+      if (videos.length > 0) {
+        videos?.map((item, index) =>
+          formData.append(`video[${index}]`, videos[index]),
+        );
+      }
+
+      if (hashtag.length > 0) {
+        hashtag?.map((item, index) =>
+          formData.append(`hashtags[${index}]`, item?.id),
+        );
+      }
+    }
+
+      console.log(
+        '🚀 ~ file: AddPost.js:108 ~ AddPost ~ formData:',
+        JSON.stringify(formData, null, 2),
+      );
+
+    setLoading(true);
+    const response = await Post(url, formData, apiHeader(token));
+   
+    setLoading(false);
     if (response != undefined) {
-      console.log('🚀 ~ getfeed ~ response:', response?.data?.feeds_info);
-      // setFeedList(response?.data?.feeds_info);
+     
+      console.log('🚀 ~ AddPost ~ response:', response?.data);
+      navigation.goBack();
     }
   };
-
-  useEffect(() => {
-    getHashtags();
-  }, []);
 
   return (
     <>
@@ -279,132 +353,13 @@ const AddPost = props => {
             multiline
           />
 
-          {/* <CustomText
-            style={[styles.title, {marginTop: moderateScale(10, 0.3)}]}
-            isBold={true}
-            children={'Add Images'}
-          />
-          <View style={styles.imagesContainer}>
-            {images?.map(item => {
-              return (
-                <View style={styles.image}>
-                  <TouchableOpacity
-                    style={{
-                      position: 'absolute',
-                      right: 2,
-                      top: 2,
-                      zIndex: 1,
-                      // backgroundColor: 'green',
-                    }}
-                    onPress={() => {
-                      setImages(images.filter(data => data?.id != item?.id));
-                    }}>
-                    <Icon
-                      name={'cross'}
-                      color={Color.white}
-                      as={Entypo}
-                      onPress={() => {
-                        setImages(
-                          images.filter(data => data?.uri != item?.uri),
-                        );
-                      }}
-                    />
-                  </TouchableOpacity>
-                  <CustomImage
-                    style={{width: '100%', height: '100%'}}
-                    source={{uri: item?.uri ? item?.uri : item?.name}}
-                  />
-                </View>
-              );
-            })}
-            {images.length < 5 && (
-              <TouchableOpacity
-                style={styles.plus}
-                onPress={() => {
-                  if (images.length < 5) {
-                    setImagePickerVisible(true);
-                  } else {
-                    Platform.OS == 'android'
-                      ? ToastAndroid.show(
-                          'you can select only five images.',
-                          ToastAndroid.SHORT,
-                        )
-                      : Alert.alert('you can select only five images');
-                  }
-                }}>
-                <Icon
-                  name="plus"
-                  as={Entypo}
-                  size={25}
-                  color={'black'}
-                  onPress={() => {
-                    if (images.length < 5) {
-                      setImagePickerVisible(true);
-                    } else {
-                      Platform.OS == 'android'
-                        ? ToastAndroid.show(
-                            'you can select only five images.',
-                            ToastAndroid.SHORT,
-                          )
-                        : Alert.alert('you can select only five images.');
-                    }
-                  }}
-                />
-              </TouchableOpacity>
-            )}
-          </View>
-          <CustomText
-            style={[styles.title, {marginTop: moderateScale(10, 0.3)}]}
-            isBold={true}
-            children={'Add Video'}
-          />
-          <View style={styles.imagesContainer}>
-            {videos?.map(item => {
-              return <VideoComponent item={item} />;
-            })}
-            {videos.length < 5 && (
-              <TouchableOpacity
-                style={styles.plus}
-                onPress={() => {
-                  if (videos.length < 5) {
-                    setVideoPicker(true);
-                  } else {
-                    Platform.OS == 'android'
-                      ? ToastAndroid.show(
-                          'you can select only five images.',
-                          ToastAndroid.SHORT,
-                        )
-                      : Alert.alert('you can select only five images');
-                  }
-                }}>
-                <Icon
-                  name="plus"
-                  as={Entypo}
-                  size={25}
-                  color={'black'}
-                  onPress={() => {
-                    if (videos.length < 5) {
-                      setVideoPicker(true);
-                    } else {
-                      Platform.OS == 'android'
-                        ? ToastAndroid.show(
-                            'you can select only five images.',
-                            ToastAndroid.SHORT,
-                          )
-                        : Alert.alert('you can select only five images.');
-                    }
-                  }}
-                />
-              </TouchableOpacity>
-            )}
-          </View> */}
           <View
             style={{
               flexDirection: 'row',
               justifyContent: 'space-between',
               width: windowWidth * 0.9,
               paddingVertical: moderateScale(10, 0.6),
-              alignItems: 'space-between',
+              alignItems: 'center',
               // backgroundColor:'red'
             }}>
             <CustomText
@@ -475,175 +430,122 @@ const AddPost = props => {
             })}
           </View>
 
-          <View style={{
-            flexDirection:'row',
-            // backgroundColor:'red',
-            alignItems:'center',
-            // width:windowWidth*0.9
-          }}>
-
-          <CustomText
-            style={[styles.title, {marginTop: moderateScale(10, 0.3)}]}
-            isBold={true}
-            children={'Add hashtag'}
-          />
-          <Icon
-          onPress={() => {
-            setIsVisible(true)
-          }}
-          name={'plus'}
-          as={Feather}
-          color={Color.black}
-          size={22}
-          
-          />
-          </View>
-          <View style={styles.mapview}>
-            {hashtags.map(item => {
-              return (
+          {fromHome ? (
+            <>
+              <View
+                style={{
+                  flexDirection: 'row',
+                  // backgroundColor:'red',
+                  alignItems: 'center',
+                  justifyContent: 'space-between',
+                  width: windowWidth * 0.92,
+                }}>
                 <CustomText
                   style={[
-                    styles.mapText,
+                    styles.title,
                     {
-                      backgroundColor: themeColor[1],
+                      marginTop: moderateScale(10, 0.3),
+                      width: windowWidth * 0.5,
                     },
-                  ]}>
-                  {item}
-                </CustomText>
-              );
-            })}
-          </View>
-          {/* <View style={styles.hashtagview}>
-            <TouchableOpacity
-              onPress={() => {
-                setHashtagList(!hashtagList);
-              }}
-              style={{
-                backgroundColor: 'white',
-                width: windowWidth * 0.7,
-                height: windowHeight * 0.06,
-                justifyContent: 'center',
-                paddingHorizontal: moderateScale(10, 0.6),
-                borderRadius: moderateScale(10, 0.6),
-              }}>
-              <CustomText
-                style={{
-                  color: Color.themeLightGray,
-                  fontSize: moderateScale(12, 0.6),
-                }}>
-                #hashtags
-              </CustomText>
-            {/* <TextInputWithTitle
-              secureText={false}
-              placeholder={'#Hashtags'}
-              setText={setHashtag}
-              value={hashtag}
-              viewHeight={0.06}
-              viewWidth={0.65}
-              inputWidth={0.65}
-              backgroundColor={'white'}
-              border={1}
-              borderColor={'#FFFFFF'}
-              color={themeColor[1]}
-              placeholderColor={Color.themeLightGray}
-              borderRadius={moderateScale(10, 0.3)}
-            /> 
-            </TouchableOpacity>
+                  ]}
+                  isBold={true}
+                  children={'Add hashtag'}
+                />
+                <Icon
+                  onPress={() => {
+                    setIsVisible(true);
+                  }}
+                  name={'plus'}
+                  as={Feather}
+                  color={Color.black}
+                  size={22}
+                />
+              </View>
+              <View style={styles.mapview}>
+                {hashtag?.map((item, index) => {
+                  // console.log("🚀 ~ {hashtag?.map ~ item:===========>", item)
+                  return (
+                    <CustomText
+                      style={[
+                        styles.mapText,
+                        {
+                          backgroundColor: themeColor[1],
+                        },
+                      ]}>
+                      {item?.title}
+                    </CustomText>
+                  );
+                })}
+              </View>
+            </>
+          ) : (
+            <>
+              <View style={styles.hashtagview}>
+                <TextInputWithTitle
+                  secureText={false}
+                  placeholder={'#Hashtags'}
+                  setText={setText}
+                  value={text}
+                  viewHeight={0.06}
+                  viewWidth={0.65}
+                  inputWidth={0.65}
+                  backgroundColor={'white'}
+                  border={1}
+                  borderColor={'#FFFFFF'}
+                  color={themeColor[1]}
+                  placeholderColor={Color.themeLightGray}
+                  borderRadius={moderateScale(10, 0.3)}
+                />
 
-           <CustomButton
-              text={'Add'}
-              textColor={themeColor[1]}
-              width={windowWidth * 0.2}
-              height={windowHeight * 0.05}
-              fontSize={moderateScale(13, 0.6)}
-              onPress={() => {
-                if (hashtag == '') {
-                  Platform.OS == 'android'
-                    ? ToastAndroid.show(
-                        'Please add any hashtag',
-                        ToastAndroid.SHORT,
-                      )
-                    : Alert.alert('Please add any hashtag');
-                } else {
-                  setHashtags(prev => [hashtag, ...prev]);
-                  setHashtag('');
-                }
-              }}
-              bgColor={['#FFFFFF', '#FFFFFF']}
-              isGradient
-              isBold={true}
-            /> 
-          </View> */}
-          {/* {hashtagList == true && (
-            <View
-              style={{
-                flexWrap: 'wrap',
-                height: windowHeight * 0.2,
-                width: windowWidth * 0.7,
-                backgroundColor: 'white',
-                borderRadius: moderateScale(15, 0.6),
-              }}>
-              {feedList?.map((item, index) => {
-                console.log("🚀 ~ {feedList?.map ~ item=========================> is here:", item)
-                return (
-                  <TouchableOpacity
-                    onPress={() => {
-                      if (hashtag?.includes(item)) {
-                        const temp = [...hashtag];
-                        setHashtag(
-                          temp?.filter((item1, item) => item1 == item),
-                        );
-                      } else {
-                        setHashtag(prev => [...prev, item]);
-                        setHashtag('');
-                      }
-                    }}
-                    style={{
-                      paddingHorizontal: moderateScale(5, 0.6),
-                      paddingVertical: moderateScale(5, 0.6),
-                      // backgroundColor:'red',
-                      flexDirection: 'row',
-                    }}>
-                    <View
-                      style={{
-                        paddingHorizontal: moderateScale(5, 0.6),
-                        paddingVertical: moderateScale(5, 0.6),
-                        // backgroundColor:'red',
-                        flexDirection: 'row',
-                      }}>
-                      <View
-                        style={{
-                          height: windowHeight * 0.05,
-                          width: windowHeight * 0.05,
-                          borderRadius: (windowHeight * 0.05) / 2,
-                          overflow: 'hidden',
-                        }}>
-                        <CustomImage
-                          style={{
-                            height: '100%',
-                            width: '100%',
-                          }}
-                          source={require('../Assets/Images/dummyUser1.png')}
-                        />
-                      </View>
-                      <CustomText
-                        style={{
-                          marginHorizontal: moderateScale(4, 0.3),
-                          padding: moderateScale(6, 0.6),
-                          // backgroundColor: Color.themeColor,
-                          fontSize: moderateScale(11, 0.6),
-                          borderRadius: moderateScale(8, 0.6),
-                        }}>
-                        {item}
-                      </CustomText>
-                    </View>
-                  </TouchableOpacity>
-                );
-              })}
-            </View>
-          )} */}
-
-          {/* <View style={styles.conatiner}></View> */}
+                <CustomButton
+                  text={'Add'}
+                  textColor={themeColor[1]}
+                  width={windowWidth * 0.2}
+                  height={windowHeight * 0.05}
+                  fontSize={moderateScale(13, 0.6)}
+                  onPress={() => {
+                    if (text == '') {
+                      Platform.OS == 'android'
+                        ? ToastAndroid.show(
+                            'Please add any hashtag',
+                            ToastAndroid.SHORT,
+                          )
+                        : Alert.alert('Please add any hashtag');
+                    } else if (text.split('')[0] != '#') {
+                      Platform.OS == 'android'
+                        ? ToastAndroid.show(
+                            'Letter must be start with #',
+                            ToastAndroid.SHORT,
+                          )
+                        : Alert.alert('Letter must be start with #');
+                    } else {
+                      setHashtags(prev => [text, ...prev]);
+                      setText('');
+                    }
+                  }}
+                  bgColor={['#FFFFFF', '#FFFFFF']}
+                  isGradient
+                  isBold={true}
+                />
+              </View>
+              <View style={styles.mapview}>
+                {hashtags?.map((item, index) => {
+                  // console.log("🚀 ~ {hashtag?.map ~ item:===========>", item)
+                  return (
+                    <CustomText
+                      style={[
+                        styles.mapText,
+                        {
+                          backgroundColor: themeColor[1],
+                        },
+                      ]}>
+                      {item}
+                    </CustomText>
+                  );
+                })}
+              </View>
+            </>
+          )}
 
           <View style={styles.postView}>
             <CustomButton
@@ -662,9 +564,9 @@ const AddPost = props => {
               // marginTop={moderateScale(40, 0.3)}
               onPress={() => {
                 if (data) {
-                  UpdatePost();
+                 fromHome ? UpdateFeedPost() : UpdatePost();
                 } else {
-                  AddPost();
+                  fromHome ? AddFeedPost() : AddPost();
                 }
               }}
               bgColor={['#FFFFFF', '#FFFFFF']}
@@ -688,8 +590,10 @@ const AddPost = props => {
         setFileObject={setVideo}
       />
       <HashtagModal
-      isVisible={isVisible}
-      setIsVisible={setIsVisible}
+        setHashtag={setHashtag}
+        hashtag={hashtag}
+        isVisible={isVisible}
+        setIsVisible={setIsVisible}
       />
     </>
   );

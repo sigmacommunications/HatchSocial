@@ -93,7 +93,7 @@ const Feeds = props => {
        scrollEventThrottle={16}
         viewabilityConfigCallbackPairs={viewabilityConfigCallbackPairs.current}
         showsVerticalScrollIndicator={false}
-        data={posts.slice(index)}
+        data={posts?.slice(index)}
         renderItem={({item, index}) => {
           return (
             <FeedContainer source={item?.post_videos[0]?.name} item={item} />

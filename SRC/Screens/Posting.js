@@ -116,7 +116,7 @@ const Posting = () => {
           marginTop={moderateScale(10, 0.3)}
           onPress={() => {
             // disptach(setUserToken({token : 'fasdasd awdawdawdada'}))
-            navigationService.navigate('AddPost');
+            navigationService.navigate('AddPost', {fromHome : true});
           }}
           bgColor={['#FFFFFF', '#FFFFFF']}
           borderRadius={moderateScale(30, 0.3)}

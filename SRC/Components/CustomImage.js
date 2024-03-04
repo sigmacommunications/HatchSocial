@@ -19,7 +19,7 @@ const CustomImage = (props) => {
         style={style}
         source={errorLoadingProfileImage ? errorImageSource : source}
         onError={(p) => {
-          console.log("🚀 ~ CustomImage ~ p:", p)
+          // console.log("🚀 ~ CustomImage ~ p:", p)
           setErrorLoadingProfileImage(true);
         }}
       />
