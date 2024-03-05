@@ -42,7 +42,7 @@ import {Icon} from 'native-base';
 import ImagePickerModal from '../Components/ImagePickerModal';
 import {Post} from '../Axios/AxiosInterceptorFunction';
 import {setSelectedProfileData} from '../Store/slices/common';
-import {profilePicUrl} from '../Config';
+import {baseUrl, profilePicUrl} from '../Config';
 import ResetProfilePassword from '../Components/ResetProfilePassword';
 import {useNavigation} from '@react-navigation/native';
 
@@ -251,7 +251,7 @@ const Profile = props => {
                   Object.keys(image).length > 0
                     ? {uri: image?.uri}
                     : profileData?.photo
-                    ? {uri: profileData?.photo}
+                    ? {uri: `${baseUrl}/${profileData?.photo}`}
                     : require('../Assets/Images/dummyman1.png')
                 }
                 style={{

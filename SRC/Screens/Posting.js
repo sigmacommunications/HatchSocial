@@ -122,6 +122,26 @@ const Posting = () => {
           borderRadius={moderateScale(30, 0.3)}
           isGradient
         />
+        {/* <CustomButton
+          text={
+            isLoading ? (
+              <ActivityIndicator color={'#01E8E3'} size={'small'} />
+            ) : (
+              'My post'
+            )
+          }
+          textColor={themeColor[1]}
+          width={windowWidth * 0.7}
+          height={windowHeight * 0.06}
+          marginTop={moderateScale(10, 0.3)}
+          onPress={() => {
+            // disptach(setUserToken({token : 'fasdasd awdawdawdada'}))
+            navigationService.navigate('MyPost', {fromHome : true});
+          }}
+          bgColor={['#FFFFFF', '#FFFFFF']}
+          borderRadius={moderateScale(30, 0.3)}
+          isGradient
+        /> */}
        
       </ImageBackground>
     </>

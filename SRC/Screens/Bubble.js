@@ -513,6 +513,7 @@ const Bubble = props => {
                         textAlign: 'left',
                       }}
                       isBold>
+                        
                       {/* {item?.name} */}
                     </CustomText>
                     <CustomText

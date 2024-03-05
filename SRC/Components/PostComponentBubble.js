@@ -106,6 +106,7 @@ const PostComponentBubble = ({data, bubbleInfo, deletePost, forApproval , setDat
             style={{
               width: windowWidth * 0.65,
               justifyContent: 'center',
+              // backgroundColor:'red'
             }}>
             <CustomText
               isBold
@@ -156,7 +157,7 @@ const PostComponentBubble = ({data, bubbleInfo, deletePost, forApproval , setDat
                   height: windowHeight * 0.3,
                 }}>
                 <CustomImage
-                  source={{uri: data?.post_images[0]?.name}}
+                  source={{uri: `${baseUrl}/${data?.post_images[0]?.name}`}}
                   style={{
                     height: '100%',
                     width: '100%',

@@ -19,9 +19,11 @@ import navigationService from '../navigationService';
 import {useNavigation} from '@react-navigation/native';
 import Color from '../Assets/Utilities/Color';
 import {useSelector} from 'react-redux';
+import { baseUrl } from '../Config';
 
 const AccountDetails = () => {
   const profileData = useSelector(state => state.commonReducer.selectedProfile);
+  console.log("🚀 ~ AccountDetails ~ profileData=========>:", profileData)
   const themeColor = useSelector(state => state.authReducer.ThemeColor);
   const privacy = useSelector(state => state.authReducer.privacy);
   const navigation = useNavigation();
@@ -63,7 +65,7 @@ const AccountDetails = () => {
           <CustomImage
             source={
               profileData?.photo
-                ? {uri: `${profileData?.photo}`}
+                ?{uri: `${baseUrl}/${profileData?.photo}`}
                 : require('../Assets/Images/dummyman1.png')
             }
             style={{

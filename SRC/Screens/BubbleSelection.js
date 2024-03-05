@@ -144,13 +144,13 @@ const BubbleSelection = () => {
   };
 
   const getBubble = async () => {
-    const url = `auth/community/${profileData?.id}`;
+    const url = `auth/community_list/${profileData?.id}`;
     setIsLaoding(true);
     console.log('🚀 ~ getBubble ~ url:', url);
     const response = await Get(url, token);
     setIsLaoding(false);
     if (response != undefined) {
-      // console.log("🚀 ~ getBubble ~ response===================>:", response?.data)
+      console.log("🚀 ~ getBubble ~ response===================>:", response?.data)
       setBubble(response?.data?.data);
     }
   };
@@ -162,14 +162,15 @@ const BubbleSelection = () => {
   const MultiAddCommunity = async () => {
     const url = `auth/community_multi_request`;
     const communityid = selectedBubble?.map((item, index) => {
-      // console.log("🚀 ~ communityid ~ item======================>:", item)
       return item?.id;
+      console.log("🚀 ~ communityid ~ item======================>:", item)
     });
     const body = {
       status: 'request',
       community_id: communityid,
       profile_id: profileData?.id,
     };
+    console.log("🚀 ~ MultiAddCommunity ~ body=================>:", body)
     setIsLaoding(true);
     const response = await Post(url, body, apiHeader(token));
     setIsLaoding(false);

@@ -161,7 +161,7 @@ const InterestSelection = () => {
     const response = await Get(url, token);
     setIsLaoding(false);
     if (response != undefined) {
-      // console.log("🚀 ~ file: InterestsSelection.js:165 ~ getInterest ~ response:", response?.data)
+     console.log("🚀 ~ file: InterestsSelection.js:165 ~ getInterest ~ response:", response?.data)
       setInterestListing(response?.data?.post_info);
     }
   };

@@ -7,10 +7,11 @@ import {
   TouchableOpacity,
   FlatList,
   TextInput,
+  ScrollView,
 } from 'react-native';
 import React, {useState} from 'react';
 const {height, width} = Dimensions.get('window');
-import {moderateScale} from 'react-native-size-matters';
+import {moderateScale, moderateVerticalScale} from 'react-native-size-matters';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import {SearchData} from '../dummyData/SearchData';
 import CustomStatusBar from '../Components/CustomStatusBar';
@@ -25,9 +26,10 @@ import {Post} from '../Axios/AxiosInterceptorFunction';
 import {baseUrl} from '../Config';
 import {useNavigation} from '@react-navigation/native';
 import RequestModal from '../Components/RequestModal';
-import { BlurView } from '@react-native-community/blur';
+import {BlurView} from '@react-native-community/blur';
 import CustomButton from '../Components/CustomButton';
 import navigationService from '../navigationService';
+import {mode} from 'native-base/lib/typescript/theme/tools';
 
 const BubbleSearch = () => {
   const navigation = useNavigation();
@@ -36,7 +38,7 @@ const BubbleSearch = () => {
   const privacy = useSelector(state => state.authReducer.privacy);
   const token = useSelector(state => state.authReducer.token);
   const [isSelected, setIsSelected] = useState('bubbles');
-  const [data, setData] = useState({});
+  const [data, setData] = useState([]);
   const [search, setSearch] = useState('');
   const [selectedBubbleId, setSelectedBubbleId] = useState(null);
   const [clicked, setclicked] = useState(false);
@@ -143,7 +145,11 @@ const BubbleSearch = () => {
     const response = await Post(url, body, apiHeader(token));
 
     if (response != undefined) {
-      console.log('Search : ===> ', response.data);
+      // return console.log("🚀 ~ BubbleSearch ~ data====================.>:", data?.feeds)
+      console.log(
+        'Search : ===> ',
+        JSON.stringify(response?.data?.feeds, null, 2),
+      );
       setData(response?.data);
     }
   };
@@ -195,14 +201,14 @@ const BubbleSearch = () => {
             <CustomImage
               source={
                 profileData?.photo
-                  ? {uri: profileData?.photo}
+                  ? {uri: `${baseUrl}/${profileData?.photo}`}
                   : require('../Assets/Images/dummyman1.png')
               }
               style={{
                 height: '100%',
                 width: '100%',
               }}
-              resizeMode="contain"
+              // resizeMode="contain"
             />
           </View>
 
@@ -262,7 +268,7 @@ const BubbleSearch = () => {
             // backgroundColor: 'red',
           }}>
           <FlatList
-            data={isSelected === 'bubbles' ? data?.community_info : data?.feeds}
+            data={isSelected == 'bubbles' ? data?.community_info : data?.feeds}
             showsVerticalScrollIndicator={false}
             contentContainerStyle={{
               marginBottom: moderateScale(10, 0.3),
@@ -270,46 +276,52 @@ const BubbleSearch = () => {
               marginTop: moderateScale(10, 0.3),
             }}
             renderItem={({item, index}) => {
-              console.log('🚀 ~ BubbleSearch ~ item=======> here:', item?.follow);
+              console.log(
+                '🚀 ~ BubbleSearch ~ item=======> here:',
+                item
+              );
               return (
                 <TouchableOpacity
+                  activeOpacity={0.9}
+                  disabled
                   style={styles.row}
-                  onPress={() =>{
-
-
-                    if (item?.bubble && item?.privacy.toLowerCase() == 'yes') {
-                      console.log('this true 1');
-                      console.log('Hrere=========>>>>>>', item);
+                  onPress={() => {
+                    if (isSelected == 'bubbles') {
                       if (
-                        item?.profile_id == profileData?.id ||
-                        item?.follow?.status == 'follow' ||
-                        item?.follow?.status == 'blocked'
+                        item?.bubble &&
+                        item?.privacy.toLowerCase() == 'yes'
                       ) {
-                      console.log('this true 2');
+                        console.log('this true 1');
+                        console.log('Hrere=========>>>>>>', item);
+                        if (
+                          item?.profile_id == profileData?.id ||
+                          item?.follow?.status == 'follow' ||
+                          item?.follow?.status == 'blocked'
+                        ) {
+                          console.log('this true 2');
 
-                        setSelectedBubbleId(item?.id);
+                          setSelectedBubbleId(item?.id);
+                          setclicked(true);
+                          setBubbleData(item);
+                        } else {
+                          console.log('this true 3');
+
+                          setIsVisible(true);
+                          setSelectedBubbleId(item?.id);
+                          setBubbleData(item);
+                        }
+                      } else if (
+                        item?.bubble &&
+                        item?.privacy.toLowerCase() == 'no'
+                      ) {
+                        console.log('this true 4');
+
                         setclicked(true);
-                        setBubbleData(item);
-                      } else {
-                      console.log('this true 3');
-
-                        setIsVisible(true);
                         setSelectedBubbleId(item?.id);
-                        setBubbleData(item);
                       }
-                    } else if (item?.bubble && item?.privacy.toLowerCase() == 'no') {
-                      console.log('this true 4');
-
-                      setclicked(true);
-                      setSelectedBubbleId(item?.id);
-                    } else if (isSelected == 'feeds') {
+                    } else {
                       navigation.navigate('PostScreen', {item: item});
                     }
-
-
-
-
-                 
                   }}>
                   <View
                     style={[
@@ -319,7 +331,7 @@ const BubbleSearch = () => {
                         : {borderRadius: moderateScale(10, 0.6)},
                     ]}>
                     <CustomImage
-                      source={{uri: `${baseUrl}/${item.image}`}}
+                      source={{uri: `${baseUrl}/${item?.image}`}}
                       style={{
                         height: '100%',
                         width: '100%',
@@ -332,6 +344,7 @@ const BubbleSearch = () => {
                     style={{
                       marginLeft: moderateScale(15, 0.6),
                       justifyContent: 'center',
+                      // backgroundColor:'red'
                     }}>
                     <CustomText
                       style={{
@@ -343,14 +356,32 @@ const BubbleSearch = () => {
                       {isSelected == 'feeds' ? item?.name : item?.title}
                     </CustomText>
                     {isSelected == 'feeds' && (
-                      <CustomText
+                      <ScrollView
+                        horizontal
                         style={{
-                          fontSize: moderateScale(9, 0.6),
-                          textAlign: 'left',
-                          color: '#000',
+                          width: windowWidth * 0.25,
+
+                          // backgroundColor : 'red'
+                        }}
+                        contentContainerStyle={{
+                          paddingRight: moderateScale(130, 0.6),
+                          gap: moderateScale(5, 0.6),
                         }}>
-                        {item.hashtags}
-                      </CustomText>
+                        {item?.hashtags?.map((item, index) => {
+                          return (
+                            <View style={styles.hashContainer}>
+                              <CustomText
+                                style={{
+                                  fontSize: moderateScale(9, 0.6),
+                                  textAlign: 'left',
+                                  color: '#000',
+                                }}>
+                                {item?.title}
+                              </CustomText>
+                            </View>
+                          );
+                        })}
+                      </ScrollView>
                     )}
                   </View>
                 </TouchableOpacity>
@@ -373,51 +404,51 @@ const BubbleSearch = () => {
             )}
           />
         </View>
-      {clicked && (
-        <BlurView
-          // intensity={100}
-          style={styles.blurView}
-          blurRadius={5}
-          blurType={'light'}>
-          <View style={styles.container3}>
-            <CustomButton
-              text={'Home'}
-              textColor={themeColor[1]}
-              width={windowWidth * 0.7}
-              height={windowHeight * 0.06}
-              marginTop={moderateScale(20, 0.3)}
-              onPress={() => {
-                // disptach(setUserToken({token : 'fasdasd awdawdawdada'}))
-                setclicked(false);
-                navigation.navigate('Bubble', {id: selectedBubbleId});
-              }}
-              bgColor={['#FFFFFF', '#FFFFFF']}
-              borderRadius={moderateScale(30, 0.3)}
-              isGradient
-            />
+        {clicked && (
+          <BlurView
+            // intensity={100}
+            style={styles.blurView}
+            blurRadius={5}
+            blurType={'light'}>
+            <View style={styles.container3}>
+              <CustomButton
+                text={'Home'}
+                textColor={themeColor[1]}
+                width={windowWidth * 0.7}
+                height={windowHeight * 0.06}
+                marginTop={moderateScale(20, 0.3)}
+                onPress={() => {
+                  // disptach(setUserToken({token : 'fasdasd awdawdawdada'}))
+                  setclicked(false);
+                  navigation.navigate('Bubble', {id: selectedBubbleId});
+                }}
+                bgColor={['#FFFFFF', '#FFFFFF']}
+                borderRadius={moderateScale(30, 0.3)}
+                isGradient
+              />
 
-            <CustomButton
-              text={'Close'}
-              textColor={themeColor[1]}
-              width={windowWidth * 0.7}
-              height={windowHeight * 0.06}
-              marginTop={moderateScale(20, 0.3)}
-              onPress={() => {
-                setclicked(false);
-              }}
-              bgColor={['#FFFFFF', '#FFFFFF']}
-              borderRadius={moderateScale(30, 0.3)}
-              isGradient
-            />
-          </View>
-        </BlurView>
-      )}
-      <RequestModal
-        selectedBubbleId={selectedBubbleId}
-        setIsVisible={setIsVisible}
-        isVisible={isVisible}
-        bubbleData={bubbleData}
-      />
+              <CustomButton
+                text={'Close'}
+                textColor={themeColor[1]}
+                width={windowWidth * 0.7}
+                height={windowHeight * 0.06}
+                marginTop={moderateScale(20, 0.3)}
+                onPress={() => {
+                  setclicked(false);
+                }}
+                bgColor={['#FFFFFF', '#FFFFFF']}
+                borderRadius={moderateScale(30, 0.3)}
+                isGradient
+              />
+            </View>
+          </BlurView>
+        )}
+        <RequestModal
+          selectedBubbleId={selectedBubbleId}
+          setIsVisible={setIsVisible}
+          isVisible={isVisible}
+          bubbleData={bubbleData}
+        />
       </ImageBackground>
     </>
   );
@@ -438,7 +469,13 @@ const styles = StyleSheet.create({
     paddingHorizontal: moderateScale(8, 0.3),
     marginTop: moderateScale(10, 0.3),
   },
-
+  hashContainer: {
+    backgroundColor: 'white',
+    paddingVertical: moderateScale(3, 0.6),
+    paddingHorizontal: moderateScale(5, 0.6),
+    borderRadius: moderateScale(10, 0.6),
+    height: moderateScale(25, 0.6),
+  },
   profileSection: {
     height: windowHeight * 0.08,
     width: windowHeight * 0.08,
@@ -531,5 +568,4 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
- 
 });

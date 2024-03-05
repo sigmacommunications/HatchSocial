@@ -31,8 +31,7 @@ import {useSelector} from 'react-redux';
 import moment from 'moment';
 import TextInputWithTitle from './TextInputWithTitle';
 
-const PostComponent = ({data , setData , wholeData}) => {
-  console.log("🚀 ~ PostComponent ~ data:", data?.hashtags[0])
+const PostComponent = ({data, setData, wholeData}) => {
   const refRBSheet = useRef();
   const token = useSelector(state => state.authReducer.token);
   const profileData = useSelector(state => state.commonReducer.selectedProfile);
@@ -43,26 +42,20 @@ const PostComponent = ({data , setData , wholeData}) => {
   const [yourComment, setYourComment] = useState('');
   const [comments, setComments] = useState(data?.comments);
 
-    const editPost = () => {
-      navigationService.navigate('AddPost', {data : data , fromHome : true});
-    };
+  const editPost = () => {
+    navigationService.navigate('AddPost', {data: data, fromHome: true});
+  };
 
- 
   const handledeletePost = async () => {
-    
     const url = `auth/post/${data?.id}`;
     setloading(true);
     const response = await Delete(url, apiHeader(token));
     setloading(false);
     if (response != undefined) {
-      console.log('🚀 ~ deletePost ~ response:', response?.data);
-      let temp = [...wholeData]
-      console.log("🚀 ~ handledeletePost ~ temp:", temp)
-      setData(temp.filter((item ,index)=>item?.id != data?.id))
-
+      let temp = [...wholeData];
+      setData(temp.filter((item, index) => item?.id != data?.id));
     }
-  
-};
+  };
 
   const likePost = async () => {
     const url = `auth/post_like`;
@@ -71,15 +64,10 @@ const PostComponent = ({data , setData , wholeData}) => {
       profile_id: profileData?.id,
     };
     setLike(!like);
-    // console.log('🚀 ~ likePost ~ body:', body);
     setloading(true);
     const response = await Post(url, body, apiHeader(token));
     setloading(false);
     if (response != undefined) {
-      // console.log(
-      //   '🚀 ~ file: FeedContainer.js:59 ~ likePost ~ response:',
-      //   response?.data,
-      // );
       Platform.OS == 'android'
         ? ToastAndroid.show('like added', ToastAndroid.SHORT)
         : Alert.alert('like added');
@@ -104,7 +92,6 @@ const PostComponent = ({data , setData , wholeData}) => {
     const response = await Post(url, body, apiHeader(token));
     setloading(false);
     if (response != undefined) {
-      console.log('🚀 ~ addComment ~ response:', response?.data);
       setComments(prev => [
         ...prev,
         {
@@ -190,14 +177,34 @@ const PostComponent = ({data , setData , wholeData}) => {
 
         <View style={styles.textView}>
           <CustomText style={styles.customT}>
-            {data?.caption }{'\n\n'}   
-            <CustomText
+            {data?.caption}
+            {'\n\n'}
+            {/* <CustomText
               style={{
                 color: Color.blue,
                 marginLeft: moderateScale(5, 0.6),
               }}>
               {data?.hashtags[0]?.post_hashtags[0]?.title}
-            </CustomText>
+            </CustomText> */}
+            <View style={{
+              flexDirection:'row',
+            }}>
+              {data?.hashtags?.map((item, index) => {
+                return (
+                  <View style={styles.hashContainer}>
+                    <CustomText
+                      style={{
+                        color: Color.blue,
+                        fontSize: moderateScale(12, 0.6),
+                        textAlign: 'left',
+                        // color: '#000',
+                      }}>
+                      {item?.post_hashtags[0]?.title}
+                    </CustomText>
+                  </View>
+                );
+              })}
+            </View>
           </CustomText>
         </View>
         {(data?.post_images || data?.post_videos) && (
@@ -320,10 +327,6 @@ const PostComponent = ({data , setData , wholeData}) => {
             <FlatList
               data={comments}
               renderItem={({item, index}) => {
-                console.log(
-                  '🚀 ~ PostComponent ~ item:',
-                  `${baseUrl}/${item?.profile_info?.photo}`,
-                );
                 return (
                   // <View style={{width: windowWidth}}>
                   <View style={styles.flatView}>
@@ -504,6 +507,17 @@ const styles = StyleSheet.create({
     // paddingHorizontal: moderateScale(10, 0.6),
     width: windowWidth,
     // backgroundColor: 'green',
+  },
+  hashContainer: {
+    // backgroundColor: Color.blue,
+    // flexDirection:'row',
+    paddingVertical: moderateScale(3, 0.6),
+    paddingHorizontal: moderateScale(5, 0.6),
+    borderRadius: moderateScale(10, 0.6),
+    height: moderateScale(25, 0.6),
+    borderColor:Color.blue,
+    borderWidth:1,
+    marginRight:moderateScale(5,.3)
   },
   Views: {
     // paddingVertical: moderateScale(5, 0.6),

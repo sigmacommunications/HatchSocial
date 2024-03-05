@@ -56,6 +56,7 @@ import InterestSelection from './Screens/InterestsSelection';
 import Activites from './Screens/Activites';
 import ResetPasscode from './Screens/ResetPassword';
 import Allcommunities from './Screens/Allcommunities';
+import MyPost from './Screens/MyPost';
 
 const AppNavigator = () => {
   // const isLogin = false;
@@ -152,6 +153,8 @@ const AppNavigator = () => {
           <RootNav.Screen name="Signup" component={Signup} />
           <RootNav.Screen name="ResetPassword" component={ResetPassword} />
           <RootNav.Screen name="ChangePassword" component={ChangePassword} />
+          {/* <RootNav.Screen name="MyPost" component={MyPost} /> */}
+
           <RootNav.Screen
             name="SubscriptionScreen"
             component={SubscriptionScreen}

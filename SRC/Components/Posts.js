@@ -119,7 +119,7 @@ const Posts = ({onPress, bubbleId, bubbleInfo}) => {
           <View style={styles.profileImage}>
             <CustomImage
               // source={require('../Assets/Images/fitness2.png')}
-              source={{uri: `${profileData?.photo}`}}
+              source={{uri: `${baseUrl}/${profileData?.photo}`}}
               style={{
                 height: '100%',
                 width: '100%',
@@ -181,7 +181,7 @@ const Posts = ({onPress, bubbleId, bubbleInfo}) => {
             );
           }}
           renderItem={({item, index}) => {
-            return <PostComponentBubble data={item} bubbleInfo={bubbleInfo} deletePost={getPostsDelete}/>;
+            return <PostComponentBubble data={item} bubbleInfo={bubbleInfo} deletePost={getPostsDelete} forApproval ={false} />;
           }}
         />
       )}

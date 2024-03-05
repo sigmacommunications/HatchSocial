@@ -22,6 +22,7 @@ import Video from 'react-native-video';
 const Home = ({bubbleId}) => {
   const profileData = useSelector(state => state.commonReducer.selectedProfile);
   const token = useSelector(state => state.authReducer.token);
+  console.log("🚀 ~ Home ~ token:", token)
   const [selectedTab, setSelectedTab] = useState('Activity');
   const [posts, setPosts] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
