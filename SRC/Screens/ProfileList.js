@@ -34,6 +34,7 @@ const ProfileList = () => {
   const token = useSelector(state => state.authReducer.token);
   console.log("🚀 ~ file: ProfileList.js:35 ~ ProfileList ~ token:", token)
   const [profileData, setProfileData] = useState([]);
+  console.log("🚀 ~ ProfileList ~ profileData----->:", profileData)
   const [isLoading, setIsLoading] = useState(false);
 
   const profileListing = async () => {
@@ -59,7 +60,7 @@ const ProfileList = () => {
         backgroundColor={Color.white}
         barStyle={'dark-content'}
       />
-      <Header right Title={'Profile List'} search />
+      <Header Title={'Profile List'} search showBack />
 
       <ImageBackground
         source={
@@ -95,7 +96,7 @@ const ProfileList = () => {
             renderItem={({item, index}) => {
               return (
                 <ProfileComponent
-                  item={item}
+                  item={item} 
                   check={item?.check}
                   close={item?.close}
                   edit={item?.edit}

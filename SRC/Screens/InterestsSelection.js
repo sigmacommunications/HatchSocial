@@ -26,8 +26,10 @@ import {Get, Post} from '../Axios/AxiosInterceptorFunction';
 import {setSelectedFeeds, setSelectedProfileData} from '../Store/slices/common';
 import CustomText from '../Components/CustomText';
 import { baseUrl } from '../Config';
+import { useNavigation } from '@react-navigation/native';
 
 const InterestSelection = () => {
+  const navigation = useNavigation()
   const privacy = useSelector(state => state.authReducer.privacy);
   const themeColor = useSelector(state => state.authReducer.ThemeColor);
   const token = useSelector(state => state.authReducer.token);
@@ -155,45 +157,45 @@ const InterestSelection = () => {
     // },
   ]);
 
-  const getInterest = async () => {
-    const url = `auth/interest_list`;
-    setIsLaoding(true);
-    const response = await Get(url, token);
-    setIsLaoding(false);
-    if (response != undefined) {
-     console.log("🚀 ~ file: InterestsSelection.js:165 ~ getInterest ~ response:", response?.data)
-      setInterestListing(response?.data?.post_info);
-    }
-  };
+  // const getInterest = async () => {
+  //   const url = `auth/interest_list`;
+  //   setIsLaoding(true);
+  //   const response = await Get(url, token);
+  //   setIsLaoding(false);
+  //   if (response != undefined) {
+  //    console.log("🚀 ~ file: InterestsSelection.js:165 ~ getInterest ~ response:", response?.data)
+  //     setInterestListing(response?.data?.post_info);
+  //   }
+  // };
  
 
-  const sendSelectedFeeds = async () => {
-    const url = 'auth/subscribe';
-    const body = {
-      id: profileData?.id,
-      interests: selectedBubble,
-    };
-    setIsLaoding(true);
-    const response = await Post(url, body, apiHeader(token));
-    setIsLaoding(false);
-    if (response != undefined) {
-      dispatch(setSelectedProfileData(response?.data?.profile_info));
-      dispatch(setInterestSelected(true));
-      Platform.OS == 'android'
-        ? ToastAndroid.show('Saved', ToastAndroid.SHORT)
-        : Alert.alert('Saved');
-    }
-  };
+  // const sendSelectedFeeds = async () => {
+  //   const url = 'auth/subscribe';
+  //   const body = {
+  //     id: profileData?.id,
+  //     interests: selectedBubble,
+  //   };
+  //   setIsLaoding(true);
+  //   const response = await Post(url, body, apiHeader(token));
+  //   setIsLaoding(false);
+  //   if (response != undefined) {
+  //     dispatch(setSelectedProfileData(response?.data?.profile_info));
+  //     dispatch(setInterestSelected(true));
+  //     Platform.OS == 'android'
+  //       ? ToastAndroid.show('Saved', ToastAndroid.SHORT)
+  //       : Alert.alert('Saved');
+  //   }
+  // };
 
-  useEffect(() => {
-    getInterest();
-  }, []);
+  // useEffect(() => {
+  //   getInterest();
+  // }, []);
 
   return (
     <ScreenBoiler
       statusBarBackgroundColor={'white'}
       statusBarContentStyle={'dark-content'}>
-      <Header right Title={'Interests'} />
+      <Header Title={'Interests'} />
       <ImageBackground
         source={
           privacy == 'private'
@@ -225,8 +227,13 @@ const InterestSelection = () => {
             height={windowHeight * 0.04}
             onPress={() => {
               if (selectedBubble.length > 0) {
+      // dispatch(setSelectedProfileData(response?.data?.profile_info));
+
+                dispatch(setInterestSelected(true))
+                navigation.navigate('BubbleSelection')
+
                 // setIsVisible(true)
-                sendSelectedFeeds();
+                // sendSelectedFeeds();
               } else {
                 Platform.OS == 'android'
                   ? ToastAndroid.show('Select any Bubble', ToastAndroid.SHORT)
@@ -266,7 +273,7 @@ const InterestSelection = () => {
           style={{
             width: windowWidth,
           }}>
-          {interestListing.map((item, index) => {
+          {BubbleImageArraty.map((item, index) => {
             return (
               <TouchableOpacity
               key={index}
@@ -327,7 +334,8 @@ const InterestSelection = () => {
 
                     setBubbleImageArraty(data);
                   }}
-                  source={item?.image ? {uri:`${baseUrl}/${item.image}`} :BubbleImageArraty[index]?.image}
+                  source={BubbleImageArraty[index]?.image}
+                  // source={item?.image ? {uri:`${baseUrl}/${item.image}`} :BubbleImageArraty[index]?.image}
                   style={{
                     width: '100%',
                     height: '100%',

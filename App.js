@@ -27,6 +27,8 @@ import ResetPassword from './SRC/Screens/ResetPassword';
 import ChangePassword from './SRC/Screens/ChangePassword';
 import Feeds from './SRC/Screens/Feeds';
 import FeedSelection from './SRC/Screens/FeedSelection';
+import Interests from './SRC/Screens/Interests';
+import MemberShip from './SRC/Screens/MemberShip';
 
 // import AppNavigator, {DrawerRoot} from './SRC/appNavigation';
 
@@ -77,8 +79,10 @@ const MainContainer = () => {
     return <SplashScreen />;
   }
   // return <FeedSelection/>;
-
+  // return <Interests/>
   return <AppNavigator />;
+  // return <MemberShip/>
+  
 };
 
 const useloader = value => {

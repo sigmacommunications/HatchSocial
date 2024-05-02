@@ -67,7 +67,7 @@ const Notifications = () => {
         backgroundColor={Color.white}
         barStyle={'dark-content'}
       />
-      <Header right Title={'Notifications'} showBack />
+      <Header  Title={'Notifications'} showBack />
 
       <ImageBackground
         source={

@@ -15,6 +15,7 @@ export default Color = {
   lightGrey: '#EBEBEB',
   veryLightGray: '#A8A8A8',
   green: '#33dd50',
+  neonGreen:"#39FF14",
   lightGreen: '#11A44C',
   themeGreen: '#72A131',
   // themeRed: '#FFCCCB',

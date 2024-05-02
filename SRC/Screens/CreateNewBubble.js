@@ -180,7 +180,7 @@ const CreateNewBubble = props => {
         backgroundColor={Color.white}
         barStyle={'dark-content'}
       />
-      <Header right Title={'Create new Bubble'} menu={true} />
+      <Header Title={'Create new Bubble'} showBack />
       <ScrollView>
         <ImageBackground
           source={

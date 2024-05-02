@@ -141,7 +141,7 @@ const FeedSelection = () => {
     <ScreenBoiler
       statusBarBackgroundColor={'white'}
       statusBarContentStyle={'dark-content'}>
-      <Header right Title={'Select Feeds'} />
+      <Header Title={'Select Feeds'} />
       <ImageBackground
         source={
           privacy == 'private'

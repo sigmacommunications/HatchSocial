@@ -42,6 +42,9 @@ const BubbleCard = ({
   getRequests,
   getList,
 }) => {
+  console.log("🚀 ~ ite======================>:", item)
+  console.log("🚀 ~ request================> request here:", request)
+  // console.log("🚀 ~ item:", item?.status)
   const profileData = useSelector(state => state.commonReducer.selectedProfile);
   const token = useSelector(state => state.authReducer.token);
   const [loading, setLoading] = useState(false);

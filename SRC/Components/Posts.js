@@ -29,6 +29,7 @@ import {baseUrl} from '../Config';
 // import { TextInput } from 'react-native-gesture-handler';
 
 const Posts = ({onPress, bubbleId, bubbleInfo}) => {
+  console.log("🚀 ~ Posts ~ bubbleInfo:", bubbleInfo)
   console.log('🚀 ~ Posts ~ bubbleInfo:', bubbleInfo?.follow?.role ,bubbleInfo?.profile_id == profileData?.id );
   const themeColor = useSelector(state => state.authReducer.ThemeColor);
   const privacy = useSelector(state => state.authReducer.privacy);
@@ -49,10 +50,10 @@ const Posts = ({onPress, bubbleId, bubbleInfo}) => {
     setIsLoading(false);
     if (response != undefined) {
       console.log("My console: ===> ", response?.data);
-      console.log(
-        '🚀 ~ file: Posts.js:46 ~ getPosts ~ response:',
-        JSON.stringify(response?.data?.post_info),
-      );
+      // console.log(
+      //   '🚀 ~ file: Posts.js:46 ~ getPosts ~ response:',
+      //   JSON.stringify(response?.data?.post_info),
+      // );
 
       setPosts(
         response?.data?.post_info?.filter(
@@ -78,7 +79,7 @@ const Posts = ({onPress, bubbleId, bubbleInfo}) => {
         getPosts();
       }
     } else {
-      alert("You don't have permission to delete this post.");
+      Alert.alert("You don't have permission to delete this post.");
     }
   };
   // console.log(bubbleInfo?.profile_id == profileData?.id ||

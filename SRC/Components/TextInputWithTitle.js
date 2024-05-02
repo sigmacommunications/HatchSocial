@@ -38,9 +38,9 @@ const TextInputWithTitle = props => {
               : moderateScale(10, 0.3),
             textAlign: 'left',
           }}>
-          {props?.title}
+          {`${props?.title}  ${props?.optional ? "(Optional)" : ''}`} 
         </CustomText>
-      )}
+              )}
       <View
         style={[
           styles.fieldSet,

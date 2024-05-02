@@ -58,7 +58,7 @@ const MemberList = props => {
         backgroundColor={Color.white}
         barStyle={'dark-content'}
       />
-      <Header right Title={'Member List'} search showBack />
+      <Header  Title={'Member List'}  showBack />
 
       <ImageBackground
         source={
@@ -80,7 +80,7 @@ const MemberList = props => {
               marginBottom: moderateScale(10, 0.3),
             }}
             renderItem={({item, index}) => {
-              console.log("🚀 ~ MemberList ~ item:", item?.status)
+              console.log("🚀 ~ MemberList ~ item==========> pro here:", item)
               return (
                 <>
                   <CardComponent

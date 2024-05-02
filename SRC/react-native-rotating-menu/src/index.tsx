@@ -46,8 +46,9 @@ const RoundMenu = ({
   setBubbleData,
   setclicked,
   setSelectedBubbleId,
+  borderColor
 }) => {
-  // console.log("🚀 ~ content:", content?.length)
+  // console.log("🚀 ~ content===================> here is content:", content)
   const navigation = useNavigation()   
   const innerContainerRef = useRef(null);
   const outerContainerRef = useRef(null);
@@ -192,6 +193,8 @@ const RoundMenu = ({
                 alignItems: 'center',
                 borderRadius: 500 / 2,
                 overflow: 'hidden',
+                borderColor :borderColor,
+                borderWidth :3
               }}>
               {centerContent}
             </Animatable.View>
@@ -212,7 +215,7 @@ const RoundMenu = ({
             ref={outerContainerRef}
             style={styles({size, backgroundColor}).container}>
             {content.map((el, i) => {
-            //  console.log("🚀 ~ {content.map ~ el:", el)
+             console.log("🚀 ~ {content.map ~ el=============> here i m:", el)
              
               const [x, y] = pointOnCircle({
                 radius,
@@ -360,6 +363,7 @@ const RoundMenu = ({
                         </View>
                       )}
                       <Image
+                          // source={require('./readme-images/centersize.jpg')}
                         source={el.source}
                         style={{width: '100%', height: '100%' , backgroundColor : 'white'}}
                       />
@@ -378,12 +382,12 @@ const RoundMenu = ({
                           alignItems: 'center',
                           justifyContent: 'center',
                         }}>
-                        <Text
+                        {/* <Text
                           style={{
                             fontSize: 10,
                           }}>
                           {el?.item?.title}
-                        </Text>
+                        </Text> */}
                       </View>
                     </TouchableOpacity>
                   </Animatable.View>

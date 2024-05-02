@@ -61,7 +61,8 @@ const Header = props => {
     {
       name: 'Membership',
       onPress: () => {
-        navigationService.navigate('SubscriptionScreen');
+        // navigationService.navigate('SubscriptionScreen');
+        navigationService.navigate('MemberShipScreen', {fromHeaderMenu:true});
         setModalVisible(!modalVisible);
       },
     },

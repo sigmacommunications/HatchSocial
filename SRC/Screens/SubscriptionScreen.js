@@ -32,7 +32,7 @@ const SubscriptionScreen = () => {
       backgroundColor={Color.white}
       barStyle={'dark-content'}
     />
-    <Header showBack Title={'MemberShip plan'} right  />
+    <Header showBack Title={'MemberShip plan'}/>
 
     <ImageBackground
      source={
@@ -90,9 +90,7 @@ const SubscriptionScreen = () => {
             return(
                 <CustomText isBold style={styles.text}>Select a membership plan</CustomText>
             )
-        }}
-        
-        />
+        }}/>
         </ImageBackground></>
   )
 }

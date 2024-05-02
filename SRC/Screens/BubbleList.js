@@ -24,6 +24,7 @@ import {useIsFocused} from '@react-navigation/native';
 const BubbleList = () => {
   const privacy = useSelector(state => state.authReducer.privacy);
   const [selectedTab, setSelectedTab] = useState(1);
+  console.log("🚀 ~ BubbleList ~ selectedTab:", selectedTab)
   const [yourBubbles, setYourBubbles] = useState([]);
   const [requests, setRequests] = useState([]);
   const [invitedBubbles, setInvitedBubbles] = useState([]);
@@ -32,6 +33,7 @@ const BubbleList = () => {
   const isFocused = useIsFocused();
 
   const profileData = useSelector(state => state.commonReducer.selectedProfile);
+  console.log("🚀 ~ BubbleList ~ profileData================>", profileData?.id)
   const token = useSelector(state => state.authReducer.token);
   console.log('🚀 ~ file: BubbleList.js:36 ~ BubbleList ~ token:', token);
 
@@ -52,18 +54,21 @@ const BubbleList = () => {
     const response = await Get(url, token);
     setIsLoading(false);
     if (response != undefined) {
-      console.log(
+     console.log(
         '🚀 ~ file: Events.js:34 ~ getEvents ~ response: =========>>>>>',
-        response?.data,
+        JSON.stringify(response?.data,null,2)
       );
       setInvitedBubbles(response?.data?.member_info);
     }
   };
 
   useEffect(() => {
-    getYourBubbles();
-    getInvitedBubbles();
-  }, [isFocused]);
+    if(selectedTab == 1){
+      getYourBubbles();
+    }else{
+      getInvitedBubbles();
+    }
+  }, [isFocused,selectedTab]);
 
   const BubbleListData = [
     {
@@ -164,7 +169,7 @@ const BubbleList = () => {
         backgroundColor={Color.white}
         barStyle={'dark-content'}
       />
-      <Header right Title={'Bubble List'} showBack search />
+      <Header  Title={'Bubble List'} showBack search />
 
       <ImageBackground
         source={

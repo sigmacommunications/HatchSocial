@@ -57,7 +57,7 @@ const ProfileType = () => {
         backgroundColor={Color.white}
         barStyle={'dark-content'}
       />
-      <Header right Title={'PROFILE TYPE'} />
+      <Header  Title={'PROFILE TYPE'} />
 
       <ImageBackground
         source={

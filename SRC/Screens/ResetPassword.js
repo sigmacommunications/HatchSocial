@@ -89,7 +89,7 @@ const ResetPasscode = props => {
         backgroundColor={Color.white}
         barStyle={'dark-content'}
       />
-      <Header right />
+      <Header />
       <ImageBackground
         source={
           privacy == 'private'

@@ -68,7 +68,8 @@ const ImagePickerModal = props => {
     //       })
     //     :
     launchImageLibrary(options, response => {
-      console.log('Here is the response =====', response)
+    console.log('Here is the response =====', response)
+      
       if (Platform.OS === 'ios') {
         setShow(false);
       }
@@ -77,8 +78,8 @@ const ImagePickerModal = props => {
       } else if (response.customButton) {
         alert(response.customButton);
       }
-      else if( response ?.assets && response?.assets[0]?.duration > 5){
-        alert('Video is too long');
+      else if( response?.assets && response?.assets[0]?.duration > 5){
+      alert('Video is too long');
 
       } 
       
@@ -124,11 +125,11 @@ const ImagePickerModal = props => {
       }
     }
     launchCamera(options, response => {
-      console.log('Response from camera    =====', response)
+       console.log('Response from camera    =====', response?.assets)
       if (Platform.OS == 'ios') {
         setShow(false);
       }
-      else if( response ?.assets && response?.assets[0]?.duration > 5){
+      else if( response?.assets && response?.assets[0]?.duration > 5){
         alert('Video is too long')
       }
       // if (response.didCancel) {

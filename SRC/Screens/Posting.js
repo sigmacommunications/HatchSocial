@@ -26,7 +26,7 @@ const Posting = () => {
         backgroundColor={Color.white}
         barStyle={'dark-content'}
       />
-      <Header right Title={'Posting'} />
+      <Header Title={'Posting'} />
 
       <ImageBackground
          source={
@@ -42,7 +42,7 @@ const Posting = () => {
           alignItems: 'center',
           justifyContent: 'center',
         }}>
-        <CustomButton
+        {/* <CustomButton
           text={
             isLoading ? (
               <ActivityIndicator color={'#01E8E3'} size={'small'} />
@@ -101,7 +101,7 @@ const Posting = () => {
           bgColor={['#FFFFFF', '#FFFFFF']}
           borderRadius={moderateScale(30, 0.3)}
           isGradient
-        />
+        /> */}
          <CustomButton
           text={
             isLoading ? (
@@ -122,7 +122,7 @@ const Posting = () => {
           borderRadius={moderateScale(30, 0.3)}
           isGradient
         />
-        {/* <CustomButton
+        <CustomButton
           text={
             isLoading ? (
               <ActivityIndicator color={'#01E8E3'} size={'small'} />
@@ -141,7 +141,7 @@ const Posting = () => {
           bgColor={['#FFFFFF', '#FFFFFF']}
           borderRadius={moderateScale(30, 0.3)}
           isGradient
-        /> */}
+        />
        
       </ImageBackground>
     </>

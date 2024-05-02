@@ -78,7 +78,7 @@ const LoginScreen = () => {
         backgroundColor={Color.white}
         barStyle={'dark-content'}
       />
-      <Header right />
+      <Header />
       <ScrollView>
         <ImageBackground
           source={
@@ -182,7 +182,7 @@ const LoginScreen = () => {
               isGradient
             />
           </View>
-          <View
+          {/* <View
             style={{
               flexDirection: 'row',
               justifyContent: 'space-between',
@@ -246,8 +246,8 @@ const LoginScreen = () => {
                 Public
               </CustomText>
             </View>
-          </View>
-          <CustomText
+          </View> */}
+          {/* <CustomText
             style={{
               color: Color.white,
               width: windowWidth,
@@ -256,8 +256,8 @@ const LoginScreen = () => {
             }}>
             {' '}
             Or sign in with
-          </CustomText>
-          <View
+          </CustomText> */}
+          {/* <View
             style={{
               flexDirection: 'row',
               width: windowWidth * 0.6,
@@ -306,7 +306,7 @@ const LoginScreen = () => {
                 style={{width: 20, height: 20}}
               />
             </View>
-          </View>
+          </View> */}
 
           <CustomButton
             text={'Sign up'}

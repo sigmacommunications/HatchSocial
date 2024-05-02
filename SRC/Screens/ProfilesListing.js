@@ -10,11 +10,13 @@ import {
   Platform,
   ToastAndroid,
   Alert,
+  ScrollView,
 } from 'react-native';
 import React, {useEffect, useState} from 'react';
 const {height, width} = Dimensions.get('window');
 import {moderateScale} from 'react-native-size-matters';
 import CustomStatusBar from '../Components/CustomStatusBar';
+import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import Header from '../Components/Header';
 import {apiHeader, windowHeight, windowWidth} from '../Utillity/utils';
 import CustomImage from '../Components/CustomImage';
@@ -34,12 +36,14 @@ import {
 import {setSelectedProfileData} from '../Store/slices/common';
 import navigationService from '../navigationService';
 import {baseUrl} from '../Config';
+import { Icon } from 'native-base';
 
 const ProfilesListing = props => {
   const back = props?.route?.params?.back;
   const profileData = useSelector(state => state.commonReducer.selectedProfile);
 
   const privacy = useSelector(state => state.authReducer.privacy);
+  console.log("🚀 ~ ProfilesListing ~ privacy:", privacy)
   const token = useSelector(state => state.authReducer.token);
   const [isLoading, setIsLoading] = useState(false);
   const [isVisible, setIsVisible] = useState(false);
@@ -74,6 +78,7 @@ const ProfilesListing = props => {
     const response = await Get(url, token);
     setIsLoading(false);
     if (response != undefined) {
+      console.log("🚀 ~ profileListing ~ response:", response?.data?.profile_info)
       setBubbleData(response?.data?.profile_info);
     }
   };
@@ -88,7 +93,7 @@ const ProfilesListing = props => {
         backgroundColor={Color.white}
         barStyle={'dark-content'}
       />
-      <Header right Title={'Profile List'} showBack={back} search />
+      <Header  Title={'Profile List'} showBack={back} search />
 
       <ImageBackground
         source={
@@ -107,11 +112,16 @@ const ProfilesListing = props => {
           style={styles.Text}>
           who's watching?
         </CustomText>
+            <ScrollView>
         <View style={styles.mapview}>
+        
+            
           <View style={styles.View}>
+
             {bubbleData?.map((item, index) => {
               return (
                 <>
+                
                   <TouchableOpacity
                     disabled={item?.id == selectedProfile?.id}
                     onPress={() => {
@@ -124,12 +134,32 @@ const ProfilesListing = props => {
                       paddingVertical: moderateScale(10, 0.3),
                       paddingHorizontal: moderateScale(30, 0.3),
                     }}>
+                    {item?.privacy === 'private' &&  <View style={{
+                         position: 'absolute',
+                         right: 28,
+                         top: 20,
+                         zIndex:1,
+                         backgroundColor: 'rgb(255,255,255)',
+                         justifyContent: 'center',
+                         alignItems: 'center',
+                         borderRadius: (windowWidth * 0.066) / 2,
+                         width: windowWidth * 0.066,
+                         height: windowWidth * 0.066,
+                        }}>
+                         <Icon
+                         as={MaterialCommunityIcons}
+                         name='lock-outline'
+                         size={moderateScale(16,0.4)}
+                         color={Color.black}
+                         />
+                        </View>}
                     <View
                       style={{
                         height: windowHeight * 0.12,
                         width: windowHeight * 0.12,
                         borderRadius: (windowHeight * 0.12) / 2,
                         overflow: 'hidden',
+                  
                       }}>
                       <CustomImage
                         onPress={() => {
@@ -150,9 +180,11 @@ const ProfilesListing = props => {
                   </TouchableOpacity>
                 </>
               );
+              
             })}
           </View>
         </View>
+            </ScrollView>
       </ImageBackground>
     </>
   );
@@ -188,7 +220,6 @@ const styles = StyleSheet.create({
     paddingBottom: 10,
     borderBottomWidth: 1,
     borderColor: 'rgba(255,255,255,0.5)',
-    // paddingBottom : 20,
   },
   Text: {
     fontSize: moderateScale(19, 0.6),
@@ -201,6 +232,8 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     flexDirection: 'row',
     flexWrap: 'wrap',
+    paddingBottom:moderateScale(22,0.2)
+
   },
   text2: {
     fontSize: moderateScale(15, 0.6),

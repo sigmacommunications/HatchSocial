@@ -45,6 +45,7 @@ import { setSelectedProfileData } from '../Store/slices/common';
 
 const ProfileComponent = ({
   item,
+  borderColor,
   pending,
   check,
   close,
@@ -79,7 +80,15 @@ const ProfileComponent = ({
           }
         }}>
         <View>
-          <View style={styles.profileSection}>
+          <View style={[styles.profileSection,{borderColor: item?.type == 'Content Creator'
+                ? Color.neonGreen
+                : item?.type == 'Business & Entrepreneurship'
+                ? Color.green
+                : item?.type == 'Community & Connection'
+                ? 'pink'
+                : item?.type == 'Learning & Exploring'
+                ? 'purple'
+                : 'black',}]}>
             <CustomImage
               source={{uri: `${baseUrl}/${item?.photo}`}}
               style={{width: '100%', height: '100%'}}
@@ -121,7 +130,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
     borderRadius: (windowWidth * 0.2) / 2,
     borderWidth: 3,
-    borderColor: '#33dd50',
+    // borderColor: '#33dd50',
     overflow: 'hidden',
   },
   view: {

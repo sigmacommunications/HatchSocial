@@ -42,12 +42,14 @@ const Bubble = props => {
   const token = useSelector(state => state.authReducer.token);
   const privacy = useSelector(state => state.authReducer.privacy);
   const profileData = useSelector(state => state.commonReducer.selectedProfile);
+  console.log("🚀 ~ Bubble ~ profileData:==============>", profileData?.id)
   const [isLoading, setIsLoading] = useState(false);
   const isFocused = useIsFocused();
   const [loadingInvite, setLoadingInvite] = useState(false);
   const [followLoading, setFollowLoading] = useState(false);
   const [isVisible, setIsVisible] = useState(false);
   const [bubbleInfo, setBubbleInfo] = useState({});
+  console.log("🚀 ~ Bubble ~ bubbleInfo:", bubbleInfo)
   const [startFollowing, setStartFollowing] = useState(
     bubbleInfo?.follow?.status == 'follow' ? true : false,
   );
@@ -87,7 +89,7 @@ const Bubble = props => {
   };
 
   const SendInvite = async () => {
-    const url = 'auth/community_member/add';0
+    const url = 'auth/community_member/add';
     const invitedIds = invitedPeople.map((item, index) => {
       return item?.id;
     });
@@ -97,11 +99,16 @@ const Bubble = props => {
       community_id: bubbleId,
       invite_profile_id: profileData?.id,
     };
+  //  return console.log("🚀 ~ SendInvite ~ body:", body)
     setLoadingInvite(true);
     const response = await Post(url, body, apiHeader(token));
     setLoadingInvite(false);
     if (response != undefined) {
+    //  return console.log("🚀 ~ SendInvite ~ response========>:", response?.data)
       setIsVisible(false);
+      setSearch('')
+      setnewData([])
+      setInvitedPeople([])
       Platform.OS == 'android'
         ? ToastAndroid.show('Request has been sent', ToastAndroid.SHORT)
         : Alert.alert('Request has been sent');
@@ -139,16 +146,21 @@ const Bubble = props => {
     }
   };
 
+
+
+
+
+
   const InviteMember = () => {
     if (
       bubbleInfo?.profile_id == profileData?.id ||
-      // bubbleInfo?.follow?.role == 'member' ||
       bubbleInfo?.follow?.role == 'admin'
-      // bubbleInfo?.follow?.role == 'moderator'
     ) {
       setIsVisible(true);
     } else {
-      Alert.alert('you donot have permissions to invite the others');
+      Platform.OS == 'android'
+      ? ToastAndroid.show('Access Denied', ToastAndroid.SHORT)
+      : Alert.alert('Access Denied');
     }
   };
 
@@ -158,16 +170,20 @@ const Bubble = props => {
       ? navigationService.navigate('BubbleManagement', {bubbleInfo: bubbleInfo})
       : Platform.OS == 'android'
       ? ToastAndroid.show('Access Denied', ToastAndroid.SHORT)
-      : alert('Access Denied');
+      : Alert.alert('Access Denied');
   };
 
   const handleActivity = () => {
     console.log(bubbleInfo?.follow?.role)
-    bubbleInfo?.follow?.role.toLowerCase() != 'member'
-      ? navigationService.navigate('Activites', {bubbleInfo: bubbleInfo})
-      : Platform.OS == 'android'
-      ? ToastAndroid.show('Access Denied', ToastAndroid.SHORT)
-      : alert('Access Denied');
+   if(bubbleInfo?.follow?.role.toLowerCase() == 'member' || bubbleInfo?.follow == null){
+    Platform.OS == 'android'
+    ? ToastAndroid.show('Access Denied', ToastAndroid.SHORT)
+    : Alert.alert('Access Denied');
+   }
+   else{
+    navigationService.navigate('Activites', {bubbleInfo: bubbleInfo})
+   }
+    
   };
  
 
@@ -408,6 +424,7 @@ const Bubble = props => {
                     onPress={() => {
                       navigationService.navigate('AddPost', {
                         bubbleId: bubbleId,
+                        bubbleInfo: bubbleInfo
                       });
                     }}
                   />
@@ -514,7 +531,7 @@ const Bubble = props => {
                       }}
                       isBold>
                         
-                      {/* {item?.name} */}
+                      {item?.name}
                     </CustomText>
                     <CustomText
                       style={{

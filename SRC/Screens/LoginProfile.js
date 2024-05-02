@@ -29,6 +29,7 @@ import CardComponent from '../Components/CardComponent';
 import Lottie from 'lottie-react-native';
 import {Get, Post} from '../Axios/AxiosInterceptorFunction';
 import {
+  setAccountPrivate,
   setBubbleSelected,
   setFeedsSelected,
   setInterestSelected,
@@ -40,8 +41,10 @@ import Modal from 'react-native-modal';
 import TextInputWithTitle from '../Components/TextInputWithTitle';
 import {baseUrl} from '../Config';
 import navigationService from '../navigationService';
+import { useNavigation } from '@react-navigation/native';
 
 const LoginProfile = props => {
+ const naviagtion= useNavigation();
   const item = props?.route?.params?.item;
   console.log('🚀 ~ file: LoginProfile.js:34 ~ LoginProfile ~ item============>:', item);
   const privacy = useSelector(state => state.authReducer.privacy);
@@ -51,6 +54,7 @@ const LoginProfile = props => {
   const [isLoading, setIsLoading] = useState(false);
   const [bubbleData, setBubbleData] = useState([]);
   const [modal, setModal] = useState(false);
+  const [isVisible, setIsVisible ] = useState(false);
   const [passCode, setPassCode] = useState('');
   const dispatch = useDispatch();
   const ProfileData = useSelector(state => state.commonReducer.selectedProfile);
@@ -75,11 +79,11 @@ const LoginProfile = props => {
     setIsLoading(false);
 
     if (response?.data?.success) {
-    //  return  console.log("🚀 ~ loginProfile ~ response:", response?.data)
+    //  return  console.log("🚀 ~ loginProfile ~ response:", response?.data?.profile_info)
       
       setPassCode('');
       setModal(false);
-      dispatch(setSelectedProfileData({}));
+      // dispatch(setSelectedProfileData({}));
       dispatch(setSelectedProfileData(response?.data?.profile_info));
       dispatch(setProfileSelcted(true));
       dispatch(
@@ -152,8 +156,10 @@ const LoginProfile = props => {
           isVisible={modal}
           hasBackdrop={true}
           onBackdropPress={() => {
-            // setModal(false);
-            // setIsVisible(false)
+            setModal(false);
+            // setIsVisible(false);
+            naviagtion.goBack();
+            dispatch(setAccountPrivate('public'))
           }}>
           <View
             style={styles.ctView}>

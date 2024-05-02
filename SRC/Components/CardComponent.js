@@ -39,15 +39,7 @@ const CardComponent = ({
   item,
   pending,
   bubbleInfo,
-  makeTeam,
-  setMakeTeam,
-  check,
-  close,
-  edit,
-  MemberList,
-  invited,
-  Requested,
-  blocked,
+ 
 }) => {
   const themeColor = useSelector(state => state.authReducer.ThemeColor);
   const token = useSelector(state => state.authReducer.token);
@@ -57,6 +49,7 @@ const CardComponent = ({
     item?.role,
     bubbleInfo?.profile_id,
     profileData?.id,
+    item?.status
   );
   const bedges =
     item?.role.toLowerCase() == 'member'

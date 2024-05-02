@@ -37,6 +37,9 @@ const BubbleManagement = (props) => {
   const themeColor = useSelector(state => state.authReducer.ThemeColor);
   const  token = useSelector(state => state.authReducer. token);
   const privacy = useSelector(state => state.authReducer.privacy);
+  const profileData = useSelector(state => state.commonReducer.selectedProfile);
+  console.log("🚀 ~ BubbleManagement ~ profileData:", profileData)
+
 
   const [isLoading , setIsLoading] = useState(false)
   const [adminCanCreateContent, setadminCanCreateContent] = useState(bubbleInfo?.admin_create_content);
@@ -93,7 +96,9 @@ const BubbleManagement = (props) => {
         backgroundColor={Color.white}
         barStyle={'dark-content'}
       />
-      <Header Title={'Bubble Management'} showBack />
+      <Header Title={
+        // profileData?.type === "Business & Entrepreneurship" ? 'Grow Bubble Tips':
+        'Bubble Management'} showBack />
       <ScrollView>
         <ImageBackground
           source={

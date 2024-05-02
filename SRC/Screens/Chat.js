@@ -89,7 +89,7 @@ const Chat = () => {
         backgroundColor={Color.white}
         barStyle={'dark-content'}
       />
-      <Header right Title={'Inbox'} />
+      <Header Title={'Inbox'} />
 
       <ImageBackground
         source={require('../Assets/Images/Main.png')}

@@ -34,7 +34,7 @@ const AccountDetails = () => {
         backgroundColor={Color.white}
         barStyle={'dark-content'}
       />
-      <Header right Title={'Account Details'} search />
+      <Header  Title={'Account Details'} search />
 
       <ImageBackground
         source={
@@ -53,13 +53,13 @@ const AccountDetails = () => {
             styles.profileSection,
             { borderColor:
               profileData?.type == 'Content Creator'
-                ? 'yellow'
+                ? Color.neonGreen
                 : profileData?.type == 'Business & Entrepreneurship'
                 ? Color.green
                 : profileData?.type == 'Community & Connection'
                 ? 'pink'
                 : profileData?.type == 'Learning & Exploring'
-                ? 'blue'
+                ? 'purple'
                 : 'black',},
           ]}>
           <CustomImage
@@ -101,7 +101,7 @@ const AccountDetails = () => {
           height={windowHeight * 0.06}
           marginTop={moderateScale(10, 0.3)}
           onPress={() => {
-            navigationService.navigate('Profile');
+            navigationService.navigate('Profile' ,{fromCreateNewProfile:true});
           }}
           fontSize={moderateScale(12, 0.6)}
           bgColor={['#FFFFFF', '#FFFFFF']}

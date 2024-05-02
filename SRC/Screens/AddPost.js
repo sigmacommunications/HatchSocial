@@ -36,6 +36,8 @@ import HashtagModal from '../Components/HashtagModal';
 
 const AddPost = props => {
   const bubbleId = props?.route?.params?.bubbleId;
+  const bubbleInfo = props?.route?.params?.bubbleInfo;
+  console.log("🚀 ~ bubbleInfo:", bubbleInfo)
   console.log('🚀 ~ AddPost ~ bubbleId:', bubbleId);
   const data = props?.route?.params?.data;
   const fromHome = props?.route?.params?.fromHome;
@@ -44,6 +46,7 @@ const AddPost = props => {
   const privacy = useSelector(state => state.authReducer.privacy);
   const token = useSelector(state => state.authReducer.token);
   const profileData = useSelector(state => state.commonReducer.selectedProfile);
+  console.log("🚀 ~ profileData:", profileData)
   const [selectedTab, setSelectedTab] = useState('Tag People');
   const [image, setImage] = useState({});
   const [images, setImages] = useState(
@@ -134,14 +137,15 @@ const AddPost = props => {
     );
     setLoading(false);
     if (response != undefined) {
+       if( bubbleInfo?.follow?.role !== "owner"){
       Platform.OS == 'android'
         ? ToastAndroid.show(
             'Post has been sent to bubble team for approval , it will be post in feed when approved',
             ToastAndroid.SHORT,
           )
-        : alert(
+        : Alert.alert(
             'Post has been sent to bubble team for approval , it will be post in feed when approved',
-          );
+          );}
       console.log('🚀 ~ AddPost ~ response:', response?.data);
       navigation.goBack();
     }
@@ -311,7 +315,7 @@ const AddPost = props => {
         backgroundColor={Color.white}
         barStyle={'dark-content'}
       />
-      <Header showBack Title={'ADD POST'} right />
+      <Header showBack Title={'ADD POST'}  />
       <ScrollView
         contentContainerStyle={{
           alignItems: 'center',

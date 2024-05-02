@@ -3,7 +3,8 @@ export const baseUrl = "https://hatch-social.ad-wize.net";
 // export const baseUrl = "https://stoic-herschel.23-83-37-162.plesk.page";
 
 export const imageUrl = `${baseUrl}/api/images/`;
-export const profilePicUrl = `${baseUrl}/uploads`
+export const profilePicUrl = `${baseUrl}/uploads`;
+export const centerImageUrl =  `${baseUrl}/` 
 
 export const apiDataLimit = 10;
 export const validateEmail = (email) => {

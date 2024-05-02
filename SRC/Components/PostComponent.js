@@ -30,14 +30,17 @@ import {Delete, Post} from '../Axios/AxiosInterceptorFunction';
 import {useSelector} from 'react-redux';
 import moment from 'moment';
 import TextInputWithTitle from './TextInputWithTitle';
+import Entypo from 'react-native-vector-icons/Entypo'
 
-const PostComponent = ({data, setData, wholeData}) => {
+const PostComponent = ({data, setData, wholeData, fromMyPost}) => {
+  console.log('🚀 ~ PostComponent ~ data:', data?.id);
   const refRBSheet = useRef();
   const token = useSelector(state => state.authReducer.token);
   const profileData = useSelector(state => state.commonReducer.selectedProfile);
   const MoreIcon = require('../Assets/Images/threedots.png');
 
-  const [like, setLike] = useState(data?.my_like != null);
+  const [like, setLike] = useState(data?.my_like ? data?.my_like : null);
+  console.log("🚀 ~ PostComponent ~ like:", like)
   const [loading, setloading] = useState(false);
   const [yourComment, setYourComment] = useState('');
   const [comments, setComments] = useState(data?.comments);
@@ -50,10 +53,13 @@ const PostComponent = ({data, setData, wholeData}) => {
     const url = `auth/post/${data?.id}`;
     setloading(true);
     const response = await Delete(url, apiHeader(token));
+    
     setloading(false);
     if (response != undefined) {
-      let temp = [...wholeData];
-      setData(temp.filter((item, index) => item?.id != data?.id));
+      console.log("🚀 ~ handledeletePost ~ response:", response?.data)
+      
+      // let temp = [...wholeData];
+      setData(wholeData.filter((item, index) => item?.id != data?.id));
     }
   };
 
@@ -122,7 +128,11 @@ const PostComponent = ({data, setData, wholeData}) => {
           ]}>
           <View style={styles.profileSection2}>
             <CustomImage
-              source={{uri: `${baseUrl}/${data?.profile_info?.photo}`}}
+              source={{
+                uri: fromMyPost
+                  ? `${baseUrl}/${data?.feed?.image}`
+                  : `${baseUrl}/${data?.profile_info?.photo}`,
+              }}
               style={{
                 height: '100%',
                 width: '100%',
@@ -141,9 +151,31 @@ const PostComponent = ({data, setData, wholeData}) => {
                 marginLeft: moderateScale(10, 0.6),
               },
             ]}>
-            <CustomText numberOfLines={2}>
-              {data?.profile_info?.name}
-            </CustomText>
+            <View
+              style={{
+                //             // backgroundColor:'red',
+                flexDirection: 'row',
+              }}>
+              <CustomText numberOfLines={2}>
+                {fromMyPost ? data?.feed?.name :data?.profile_info?.name}
+              </CustomText>
+              {fromMyPost == true && (
+                <>
+                  <Icon
+                    name={'triangle-right'}
+                    size={19}
+                    color={Color.mediumGray}
+                    as={Entypo}
+                  />
+                  <CustomText
+                    // isBold
+                    numberOfLines={2}>
+                    you
+                    {/* {item?.feed?.name} */}
+                  </CustomText>
+                </>
+              )}
+            </View>
 
             <View style={styles.btnView}>
               <CustomText
@@ -186,10 +218,21 @@ const PostComponent = ({data, setData, wholeData}) => {
               }}>
               {data?.hashtags[0]?.post_hashtags[0]?.title}
             </CustomText> */}
-            <View style={{
-              flexDirection:'row',
-            }}>
-              {data?.hashtags?.map((item, index) => {
+            <View
+              style={{
+                flexDirection: 'row',
+              }}>
+                {fromMyPost ?   <CustomText
+                      style={{
+                        color: Color.blue,
+                        fontSize: moderateScale(12, 0.6),
+                        textAlign: 'left',
+                        // color: '#000',
+                      }}>
+                      {data?.hashtags}
+                    </CustomText> :
+              data?.hashtags?.map((item, index) => {
+                console.log("🚀 ~ data?.hashtags?.map ~ item=======>:", item)
                 return (
                   <View style={styles.hashContainer}>
                     <CustomText
@@ -203,7 +246,8 @@ const PostComponent = ({data, setData, wholeData}) => {
                     </CustomText>
                   </View>
                 );
-              })}
+              })
+            }
             </View>
           </CustomText>
         </View>
@@ -275,6 +319,7 @@ const PostComponent = ({data, setData, wholeData}) => {
                 {data?.View} views
               </CustomText>
             )}
+            
           </View>
         </View>
 
@@ -291,9 +336,9 @@ const PostComponent = ({data, setData, wholeData}) => {
             style={styles.likebtn}>
             <Icon
               as={AntDesign}
-              name={like ? 'like1' : 'like2'}
+              name={like  ? 'like1' : 'like2'}
               size={23}
-              color={like ? '#2a95fd' : Color.themeBlack}
+              color={like  ? '#2a95fd' : Color.themeBlack}
               onPress={() => {
                 likePost();
               }}
@@ -515,9 +560,9 @@ const styles = StyleSheet.create({
     paddingHorizontal: moderateScale(5, 0.6),
     borderRadius: moderateScale(10, 0.6),
     height: moderateScale(25, 0.6),
-    borderColor:Color.blue,
-    borderWidth:1,
-    marginRight:moderateScale(5,.3)
+    borderColor: Color.blue,
+    borderWidth: 1,
+    marginRight: moderateScale(5, 0.3),
   },
   Views: {
     // paddingVertical: moderateScale(5, 0.6),

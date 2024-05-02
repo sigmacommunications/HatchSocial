@@ -27,10 +27,11 @@ const RequestModal = ({
   selectedBubbleId,
   item,
 }) => {
-  // console.log("🚀 ~ file: RequestModal.js:31 ~ bubbleData:", bubbleData?.follow?.status)
+  console.log("🚀 ~ file: RequestModal.js:31 ~ bubbleData:", bubbleData)
   const themeColor = useSelector(state => state.authReducer.ThemeColor);
   const [loading, setLoading] = useState(false);
   const profileData = useSelector(state => state.commonReducer.selectedProfile);
+  console.log("🚀 ~ profileData:", profileData?.id)
   const token = useSelector(state => state.authReducer.token);
   const [bubbleInfo, setBubbleInfo] = useState([]);
   const isFocused = useIsFocused()
@@ -47,6 +48,7 @@ const RequestModal = ({
       profile_id: [profileData?.id],
       community_id: selectedBubbleId,
     };
+
     setLoading(true);
     const response = await Post(url, body, apiHeader(token));
     setLoading(false);
@@ -57,7 +59,8 @@ const RequestModal = ({
         ? ToastAndroid.show('Request has been sent', ToastAndroid.SHORT)
         : Alert.alert('Request has been sent');
     }
-    setRequested(!requested);
+    // setRequested(!requested);
+    setRequested(prevRequest => !prevRequest);
   };
 
   useEffect(() => {
@@ -144,6 +147,7 @@ const RequestModal = ({
           elevation
           isGradient
           fontSize={moderateScale(14, 0.6)}
+          disabled={requested}
         />
       </View>
     </Modal>

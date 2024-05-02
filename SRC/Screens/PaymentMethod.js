@@ -427,7 +427,7 @@ const PaymentMethod = props => {
       backgroundColor={Color.white}
       barStyle={'dark-content'}
     />
-    <Header right Title={'Feed List'}  search showBack/>
+    <Header  Title={'Feed List'}  search showBack/>
 
     <ImageBackground
       source={

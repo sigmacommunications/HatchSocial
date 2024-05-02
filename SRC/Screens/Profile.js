@@ -49,8 +49,11 @@ import {useNavigation} from '@react-navigation/native';
 const Profile = props => {
   const navigation = useNavigation();
   const dispatch = useDispatch();
+  const fromCreateNewProfile =props?.route?.params?.fromCreateNewProfile
+  console.log("🚀 ~ Profile ~ fromCreateNewProfile:", fromCreateNewProfile)
   const item = props?.route?.params?.item;
   const category = props?.route?.params?.category;
+  const subscriptionPlan = props?.route?.params?.subscriptionPlan;
   const isEdit = props?.route?.params?.isEdit;
   const token = useSelector(state => state.authReducer.token);
   const profileData = useSelector(state => state.commonReducer.selectedProfile);
@@ -69,11 +72,19 @@ const Profile = props => {
   const [isModalVisible, setIsModalVisible] = useState(false);
 
   const [imagePickerModal, setImagePickerModal] = useState(false);
+  // const [type, setType] = useState(
+  //   profileData?.type
+  //     ? profileData?.type
+  //     : category 
+  //     ? category
+  //     : 'Select Profile Type',
+  // );
+  
   const [type, setType] = useState(
-    profileData?.type
-      ? profileData?.type
-      : category
-      ? category
+    
+  profileData?.type
+      ? profileData?.type 
+      : subscriptionPlan === 'Basic' ? "Learning & Exploring"
       : 'Select Profile Type',
   );
   const [image, setImage] = useState({});
@@ -84,12 +95,15 @@ const Profile = props => {
     const body = {
       name: username,
       type: type,
-      description: desc,
+
       privacy: selectedTab,
     };
 
     const formData = new FormData();
 
+    if (Object.keys(desc).length > 0) {
+      formData.append('description', desc);
+    }
     if (Object.keys(image).length > 0) {
       formData.append('photo', image);
     } else {
@@ -99,15 +113,21 @@ const Profile = props => {
     }
 
     for (let key in body) {
-      if (body[key] == '') {
+      console.log('🚀 ~ createProfile ~ key:', key);
+
+      if (body[key] == '' && key !== 'description') {
         return Platform.OS == 'android'
           ? ToastAndroid.show(`${key} cannot be empty`, ToastAndroid.SHORT)
           : Alert.alert(`${key} cannot be empty`);
       }
       formData.append(key, body[key]);
     }
-
-    if (desc.length < 30) {
+    if (type == 'Select Profile Type') {
+      return Platform.OS == 'android'
+        ? ToastAndroid.show(`Select Profile Type`, ToastAndroid.SHORT)
+        : Alert.alert(`Select Profile Type`);
+    }
+    if (desc && desc.length < 30) {
       return Platform.OS == 'android'
         ? ToastAndroid.show(`Description is too short`, ToastAndroid.SHORT)
         : Alert.alert(`Description is too short`);
@@ -152,12 +172,15 @@ const Profile = props => {
     const url = `auth/profile/${profileData?.id}?_method=PUT`;
     const body = {
       name: username,
-      description: desc,
+      // description: desc,
       privacy: selectedTab,
-      
     };
 
     const formData = new FormData();
+    if (Object.keys(desc).length > 0) {
+      formData.append('description', desc);
+    }
+
     if (Object.keys(image).length > 0) {
       formData.append('photo', image);
     }
@@ -171,11 +194,11 @@ const Profile = props => {
     }
 
     //decription validation
-    if (desc.length < 30) {
-      return Platform.OS == 'android'
-        ? ToastAndroid.show(`Description is too short`, ToastAndroid.SHORT)
-        : Alert.alert(`Description is too short`);
-    }
+    // if (desc.length < 30) {
+    //   return Platform.OS == 'android'
+    //     ? ToastAndroid.show(`Description is too short`, ToastAndroid.SHORT)
+    //     : Alert.alert(`Description is too short`);
+    // }
 
     //private and passcode validation
     if (privacy == 'private' && passCode == '') {
@@ -208,7 +231,6 @@ const Profile = props => {
         barStyle={'dark-content'}
       />
       <Header
-        right
         Title={isEdit ? 'Update Profile' : 'Create Profile'}
         showBack={true}
       />
@@ -235,22 +257,22 @@ const Profile = props => {
                 styles.profileSection,
                 {
                   borderColor:
-                    type == 'Content Creator'
-                      ? 'yellow'
-                      : type == 'Business & Entrepreneurship'
-                      ? Color.green
-                      : type == 'Community & Connection'
-                      ? 'pink'
-                      : type == 'Learning & Exploring'
-                      ? 'blue'
-                      : 'black',
+                  type == 'Content Creator'
+                  ? Color.neonGreen
+                  : type == 'Business & Entrepreneurship'
+                  ? Color.green
+                  : type == 'Community & Connection'
+                  ? 'pink'
+                  : type == 'Learning & Exploring'
+                  ? 'purple'
+                  : 'black',
                 },
               ]}>
               <CustomImage
                 source={
-                  Object.keys(image).length > 0
+                  Object.keys(image).length > 0 
                     ? {uri: image?.uri}
-                    : profileData?.photo
+                    : (profileData?.photo && isEdit)
                     ? {uri: `${baseUrl}/${profileData?.photo}`}
                     : require('../Assets/Images/dummyman1.png')
                 }
@@ -258,7 +280,7 @@ const Profile = props => {
                   height: '100%',
                   width: '100%',
                 }}
-                resizeMode={'stretch'}
+                resizeMode={'cover'}
               />
             </View>
             <TouchableOpacity
@@ -286,15 +308,15 @@ const Profile = props => {
               borderRadius: moderateScale(20, 0.6),
               borderLeftWidth: 4,
               borderColor:
-                type == 'Content Creator'
-                  ? 'yellow'
-                  : type == 'Business & Entrepreneurship'
-                  ? Color.green
-                  : type == 'Community & Connection'
-                  ? 'pink'
-                  : type == 'Learning & Exploring'
-                  ? 'blue'
-                  : 'black',
+              type == 'Content Creator'
+              ? Color.neonGreen
+              : type == 'Business & Enterpreneurship'
+              ? Color.green
+              : type == 'Community & Connection'
+              ? 'pink'
+              : type == 'Learning & Exploring'
+              ? 'purple'
+              : 'black',
               borderTopWidth: 4,
               paddingVertical: moderateScale(20, 0.3),
             }}
@@ -304,9 +326,9 @@ const Profile = props => {
                 alignSelf: 'center',
               }}>
               <TextInputWithTitle
-                title={'User Name'}
+                title={'Profile Name'}
                 secureText={false}
-                placeholder={'User Name'}
+                placeholder={'Profile Name'}
                 setText={setUserName}
                 value={username}
                 viewHeight={0.06}
@@ -332,9 +354,11 @@ const Profile = props => {
                 Profile Type
               </CustomText>
               <DropDownSingleSelect
-                array={[
+                array={
+                subscriptionPlan == "Basic" ? ['Learning & Exploring'] :  
+                  [
                   'Content Creator',
-                  'Business & Entrepreneurship',
+                  'Business & Enterpreneurship',
                   'Community & Connection',
                   'Learning & Exploring',
                 ]}
@@ -360,6 +384,7 @@ const Profile = props => {
               />
               <TextInputWithTitle
                 title={'Description '}
+                optional
                 secureText={false}
                 placeholder={'Description'}
                 setText={setDesc}

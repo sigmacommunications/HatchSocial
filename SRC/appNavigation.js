@@ -57,6 +57,7 @@ import Activites from './Screens/Activites';
 import ResetPasscode from './Screens/ResetPassword';
 import Allcommunities from './Screens/Allcommunities';
 import MyPost from './Screens/MyPost';
+import MemberShip from './Screens/MemberShip';
 
 const AppNavigator = () => {
   // const isLogin = false;
@@ -128,7 +129,8 @@ const AppNavigator = () => {
           />
           <RootNav.Screen name="Feeds" component={Feeds} />
 
-          <RootNav.Screen name="ProfileType" component={ProfileType} />
+          <RootNav.Screen name="ProfileType" component={MemberShip} />
+          {/* <RootNav.Screen name="ProfileType" component={ProfileType} /> */}
           <RootNav.Screen name="QuestionScreen" component={QuestionScreen} />
           <RootNav.Screen name="EventDetails" component={EventDetails} />
           <RootNav.Screen name="BubbleSearch" component={BubbleSearch} />
@@ -153,8 +155,8 @@ const AppNavigator = () => {
           <RootNav.Screen name="Signup" component={Signup} />
           <RootNav.Screen name="ResetPassword" component={ResetPassword} />
           <RootNav.Screen name="ChangePassword" component={ChangePassword} />
-          {/* <RootNav.Screen name="MyPost" component={MyPost} /> */}
-
+          <RootNav.Screen name="MyPost" component={MyPost} />
+          <RootNav.Screen name="MemberShipScreen" component={MemberShip} />
           <RootNav.Screen
             name="SubscriptionScreen"
             component={SubscriptionScreen}

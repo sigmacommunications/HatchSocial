@@ -152,7 +152,7 @@ const Inbox = () => {
         backgroundColor={Color.white}
         barStyle={'dark-content'}
       />
-      <Header right Title={'Inbox'} search />
+      <Header  Title={'Inbox'} search />
 
       <ImageBackground
        source={

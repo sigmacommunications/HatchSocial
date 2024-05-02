@@ -9,6 +9,7 @@ const CustomText = (props) => {
       onPress={onPress}
       style={[
         {
+
           textTransform: "capitalize",
           // textAlign:'center',
           // textTransform: "capitalize",

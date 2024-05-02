@@ -161,7 +161,7 @@ const QuestionScreen = props => {
         backgroundColor={Color.white}
         barStyle={'dark-content'}
       />
-      <Header right menu={true} />
+      <Header/>
 
       <ImageBackground
         source={

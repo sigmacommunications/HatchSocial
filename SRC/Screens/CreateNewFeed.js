@@ -88,7 +88,7 @@ const CreateNewFeed = () => {
         backgroundColor={Color.white}
         barStyle={'dark-content'}
       />
-      <Header right Title={'New Feed'} showBack />
+      <Header  Title={'New Feed'} showBack />
       <ScrollView>
         <ImageBackground
           source={

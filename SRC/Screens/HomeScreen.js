@@ -39,13 +39,13 @@ import {useIsFocused} from '@react-navigation/native';
 
 
 import RoundMenu from '../react-native-rotating-menu/src';
-import { baseUrl } from '../Config';
+import { baseUrl ,centerImageUrl} from '../Config';
 
 const HomeScreen = props => {
   const privacy = useSelector(state => state.authReducer.privacy);
   const themeColor = useSelector(state => state.authReducer.ThemeColor);
   const profileData = useSelector(state => state.commonReducer.selectedProfile);
-  console.log("🚀 ~ HomeScreen ~ profileData:", profileData?.id)
+  console.log("🚀 ~ HomeScreen ~ profileData==========>:", profileData)
   const newSignUp = useSelector(state => state.authReducer.newSignUp);
   const token = useSelector(state => state.authReducer.token);
   console.log("🚀 ~ HomeScreen ~ token:", token)
@@ -55,6 +55,7 @@ const HomeScreen = props => {
   const [isLoading, setIsLoading] = useState(false);
   const [alignment, setAlignment] = useState('left');
   const [highlightedIcon, setHighlightedIcon] = useState(null);
+  // console.log("🚀 ~ HomeScreen ~ highlightedIcon=======>:", highlightedIcon)
   const [isVisible, setIsVisible] = useState(false);
   const [text, setText] = useState('');
   const isFocused = useIsFocused();
@@ -189,6 +190,7 @@ const HomeScreen = props => {
 
       <ImageBackground
         source={
+          // require('../Assets/Images/activity1.png')
           privacy == 'private'
             ? require('../Assets/Images/theme2.jpg')
             : require('../Assets/Images/Main.png')
@@ -196,7 +198,9 @@ const HomeScreen = props => {
         resizeMode={'cover'}
         style={styles.container}>
         {highlightedIcon && (
-          <View style={styles.highlightedIcon}>{highlightedIcon}</View>
+          <View style={[styles.highlightedIcon , { transform: [{scaleX: -1 }] }]}>
+            {highlightedIcon}
+            </View>
         )}
        
 
@@ -258,17 +262,33 @@ const HomeScreen = props => {
                 },
               ]}>
               <RoundMenu
+                borderColor={profileData?.type == 'Content Creator'
+                ? Color.neonGreen
+                : profileData?.type == 'Business & Entrepreneurship'
+                ? Color.green
+                : profileData?.type == 'Community & Connection'
+                ? 'pink'
+                : profileData?.type == 'Learning & Exploring'
+                ? 'purple'
+                : 'black'}
                 centerContent={
-                  <ImageBackground
-                    source={profileData?.photo ? {uri : `${profileData?.photo}`} : require('../Assets/Images/dummyman1.png')}
-                    resizeMode="cover"
-                    style={styles.centerImage}
-                  />
+                  // <View>
+
+                    <ImageBackground
+                 
+                      source={
+                        profileData?.photo ? {uri : `${centerImageUrl}${profileData?.photo}`} : 
+                        require('../Assets/Images/dummyman1.png')}
+                      resizeMode="cover"
+                      style={styles.centerImage}
+                    />
+                    // </View>
                 }
-                largeImageSize={width / 2.5}
+                largeImageSize={width / 3.5}
                 content={content}
                 contentContainerStyle={{
-                  borderWidth: 3,
+                  // borderWidth: 3,
+                  // borderColor:'red'
                 }}
                 profileData={profileData}
                 setHighlightedIcon={setHighlightedIcon}
@@ -384,7 +404,7 @@ const styles = ScaledSheet.create({
   profileContainer: {
     width: windowWidth * 0.1,
     height: windowHeight * 0.9,
-
+// backgroundColor :'red',
     alignItems: 'center',
     zIndex: 1,
     position: 'absolute',
@@ -419,16 +439,20 @@ const styles = ScaledSheet.create({
     zIndex: 1,
     position: 'absolute',
     justifyContent: 'center',
+    // backgroundColor :'red'
   },
   centerImage: {
     width: '100%',
     height: '100%',
+    // overflow:'hidden'
+    // backgroundColor :'red'
   },
   container: {
     width: windowWidth,
     height: windowHeight * 0.9,
     overflow: 'hidden',
     justifyContent: 'center',
+    // backgroundColor :'red',
   },
   highlightedIcon: {
     width: windowWidth,
@@ -436,6 +460,8 @@ const styles = ScaledSheet.create({
     position: 'absolute',
     zIndex: 0,
     top: -40,
+    // top :50,
+    // backgroundColor :'red' 
   },
   container2: {
     width: windowWidth,
@@ -443,7 +469,7 @@ const styles = ScaledSheet.create({
     positon: 'absolute',
     overflow: 'hidden',
     flexDirection: 'row',
-    backgroundColor: 'rgba(0,0,0,.8)',
+    backgroundColor: 'rgba(0,0,0,.)',
   },
   blurView: {
     position: 'absolute',
@@ -465,7 +491,7 @@ const styles = ScaledSheet.create({
     height: windowHeight * 0.75,
     alignItems: 'center',
     justifyContent: 'center',
-
+// backgroundColor :'red',
     zIndex: 2,
   },
   animatedView: {

@@ -120,7 +120,7 @@ const AddCard = () => {
           backgroundColor={Color.white}
           barStyle={'dark-content'}
         />
-        <Header right Title={'Add Card'} />
+        <Header Title={'Add Card'} />
   
         <ImageBackground
           source={

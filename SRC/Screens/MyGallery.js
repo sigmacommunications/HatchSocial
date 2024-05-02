@@ -91,7 +91,7 @@ const MyGallery = () => {
         backgroundColor={Color.white}
         barStyle={'dark-content'}
       />
-      <Header right Title={'My Gallery'} search />
+      <Header Title={'My Gallery'} search />
       <ImageBackground
         source={
           privacy == 'private'

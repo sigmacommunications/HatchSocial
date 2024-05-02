@@ -167,7 +167,7 @@ const BubbleSearch = () => {
         backgroundColor={Color.white}
         barStyle={'dark-content'}
       />
-      <Header right Title={'Search'} />
+      <Header Title={'Search'} />
 
       <ImageBackground
         source={
@@ -187,15 +187,15 @@ const BubbleSearch = () => {
               styles.profileSection,
               {
                 borderColor:
-                  profileData?.type == 'Content Creator'
-                    ? 'yellow'
-                    : profileData?.type == 'Business & Entrepreneurship'
-                    ? Color.green
-                    : profileData?.type == 'Community & Connection'
-                    ? 'pink'
-                    : profileData?.type == 'Learning & Exploring'
-                    ? 'blue'
-                    : 'black',
+                profileData?.type == 'Content Creator'
+                ? Color.neonGreen
+                : profileData?.type == 'Business & Entrepreneurship'
+                ? Color.green
+                : profileData?.type == 'Community & Connection'
+                ? 'pink'
+                : profileData?.type == 'Learning & Exploring'
+                ? 'purple'
+                : 'black',
               },
             ]}>
             <CustomImage
