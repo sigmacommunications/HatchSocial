@@ -287,11 +287,11 @@ const RoundMenu = ({
                           ? elContainerSize / 2
                           : elContainerSize / 5,
                         borderWidth:
-                          elContainerSize == x / 3 ||
+                          elContainerSize == x /3 ||
                           elContainerSize ==
                             (Dimensions.get('window').width - x) / 3
-                            ? 3
-                            : 1,
+                            ? 4.5
+                            : 4,
                         overflow: 'hidden',
                       },
                     ]}>

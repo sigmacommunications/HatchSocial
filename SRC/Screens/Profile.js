@@ -54,6 +54,7 @@ const Profile = props => {
   const item = props?.route?.params?.item;
   const category = props?.route?.params?.category;
   const subscriptionPlan = props?.route?.params?.subscriptionPlan;
+  console.log("🚀 ~ Profile ~ subscriptionPlan:", subscriptionPlan)
   const isEdit = props?.route?.params?.isEdit;
   const token = useSelector(state => state.authReducer.token);
   const profileData = useSelector(state => state.commonReducer.selectedProfile);
