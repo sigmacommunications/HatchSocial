@@ -49,7 +49,7 @@ const RequestModal = ({isVisible, setIsVisible, item}) => {
     } else {
     
       dispatch(setAccountPrivate('public'));
-      dispatch(setQuestionAnswered(item?.qa_status));
+      // dispatch(setQuestionAnswered(item?.qa_status));
       dispatch(setSelectedProfileData(item));
       dispatch(setProfileSelcted(true));
       dispatch(

@@ -55,6 +55,7 @@ const ProfileComponent = ({
   Requested,
   blocked,
 }) => {
+  console.log("🚀 ~ item:", item)
   const themeColor = useSelector(state => state.authReducer.ThemeColor);
   const token = useSelector(state => state.authReducer.token);
   const profileData = useSelector(state => state.commonReducer.profileData);
@@ -73,9 +74,22 @@ const ProfileComponent = ({
             dispatch(setSelectedProfileData({}));
           } else {
             dispatch(setAccountPrivate('public'));
-            dispatch(setQuestionAnswered(item?.qa_status));
+            // dispatch(setQuestionAnswered(item?.qa_status));
             dispatch(setSelectedProfileData(item));
             dispatch(setProfileSelcted(true));
+            dispatch(
+              setInterestSelected
+              (
+                item?.interests?.length == 0 ? false : true,
+              ),
+            );
+            dispatch(
+              setBubbleSelected(
+                item?.community_list?.length == 0
+                  ? false
+                  : true,
+              ),
+            );
             navigationService.navigate('TabNavigation')
           }
         }}>

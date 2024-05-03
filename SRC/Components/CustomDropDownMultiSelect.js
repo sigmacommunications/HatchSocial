@@ -6,7 +6,7 @@ import {moderateScale} from 'react-native-size-matters';
 import {useSelector} from 'react-redux';
 import { windowWidth } from '../Utillity/utils';
 
-const CustomDropDownMultiSelect = ({min, max, item, setItem, array, title , maxHeight , marginTop , containerStyle}) => {
+const CustomDropDownMultiSelect = ({min, max, item, setItem, array, title , maxHeight , marginTop , containerStyle }) => {
   const userRole = useSelector(state => state.commonReducer.selectedRole); 
   const themeColor = useSelector(state => state.authReducer.ThemeColor);
   // const {min, max, item, setItem, array, title} = props;
@@ -14,25 +14,26 @@ const CustomDropDownMultiSelect = ({min, max, item, setItem, array, title , maxH
     <View style={{
       // padding : 5,
       width : containerStyle?.width,
-      marginTop : moderateScale(10,0.3)
+      marginTop : marginTop ? marginTop : moderateScale(10,0.3)
     }}>
       <MultiSelect
         items={array}
         onSelectedItemsChange={selectedItems => {
+          console.log("🚀 ~ CustomDropDownMultiSelect ~ selectedItems:", selectedItems)
           setItem(selectedItems);
         }}
         selectedItems={item}
         selectText={title}
         searchInputPlaceholderText={'Search items ...'}
         textInputProps={{autoFocus: false}}
-        hideDropdown
+        // hideDropdown
         tagRemoveIconColor={ userRole == 'Qbid Member' ?  Color.blue : themeColor[1]}
         tagBorderColor={ userRole == 'Qbid Member' ?  Color.blue : Color.white}
         tagTextColor={ userRole == 'Qbid Member' ?  Color.white : Color.white}
-        
+       
         displayKey="name"
         uniqueKey="id"
-        // hideSubmitButton
+        // hideDropdown
         submitButtonColor={themeColor[1]}
         submitButtonText={'Done'}
         styleMainWrapper={{
@@ -53,6 +54,7 @@ const CustomDropDownMultiSelect = ({min, max, item, setItem, array, title , maxH
           borderTopStartRadius: 10,
           height: moderateScale(50, 0.3),
           fontSize: moderateScale(50, 0.3),
+          
         }}
         selectedItemIconColor={themeColor[1]}
         selectedItemTextColor={themeColor[1]}
@@ -86,6 +88,7 @@ const CustomDropDownMultiSelect = ({min, max, item, setItem, array, title , maxH
         }}
         styleRowList={{
           height: moderateScale(40, 0.3),
+
           // fontSize: moderateScale(20, 0.3),
           justifyContent: 'center',
           borderBottomColor: Color.lightGrey,
@@ -106,7 +109,7 @@ const CustomDropDownMultiSelect = ({min, max, item, setItem, array, title , maxH
 const styles = StyleSheet.create({
   container: {
     marginTop: Dimensions.get('window').height * 0.01,
-    backgroundColor : 'transprent',
+    // backgroundColor : 'red',
    },
   text: {
     fontWeight: 'bold',

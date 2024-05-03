@@ -58,6 +58,7 @@ import ResetPasscode from './Screens/ResetPassword';
 import Allcommunities from './Screens/Allcommunities';
 import MyPost from './Screens/MyPost';
 import MemberShip from './Screens/MemberShip';
+import Interests from './Screens/Interests';
 
 const AppNavigator = () => {
   // const isLogin = false;
@@ -104,7 +105,7 @@ const AppNavigator = () => {
     : profileSelected == false
     ? 'ProfilesListing'
     : interestSelected == false
-    ? 'InterestSelection'
+    ? 'Interests'
     : bubbleSelected == false
     ? 'BubbleSelection'
     : 'TabNavigation';
@@ -117,8 +118,8 @@ const AppNavigator = () => {
           screenOptions={{headerShown: false}}>
           <RootNav.Screen name="LoginScreen" component={LoginScreen} />
           <RootNav.Screen
-            name="InterestSelection"
-            component={InterestSelection}
+            name="Interests"
+            component={Interests}
           />
           <RootNav.Screen name="BubbleSelection" component={BubbleSelection} />
           <RootNav.Screen name="PostScreen" component={PostScreen} />

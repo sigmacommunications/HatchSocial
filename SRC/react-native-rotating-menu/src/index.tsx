@@ -215,7 +215,7 @@ const RoundMenu = ({
             ref={outerContainerRef}
             style={styles({size, backgroundColor}).container}>
             {content.map((el, i) => {
-             console.log("🚀 ~ {content.map ~ el=============> here i m:", el)
+            //  console.log("🚀 ~ {content.map ~ el=============> here i m:", el)
              
               const [x, y] = pointOnCircle({
                 radius,

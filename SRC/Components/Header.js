@@ -20,6 +20,7 @@ import {
   setBubbleCreated,
   setBubbleSelected,
   setFeedsSelected,
+  setInterestSelected,
   setNewSignUp,
   setNumOfProfiles,
   setProfileSelcted,
@@ -81,14 +82,15 @@ const Header = props => {
         dispatch(setBubbleSelected(false));
         dispatch(setProfileSelcted(false));
         dispatch(setNumOfProfiles(0));
-        dispatch(setFeedsSelected(false));
+      dispatch(setFeedsSelected(false));
         setModalVisible(!modalVisible);
         dispatch(setAccountPrivate('public'));
-        dispatch(setQuestionAnswered(false));
+        // dispatch(setQuestionAnswered(false));
         dispatch(setBubbleCreated(false));
         dispatch(setNewSignUp(false));
         dispatch(setSelectedBubbles(false));
         dispatch(setSelectedProfileData({}))
+        dispatch(setInterestSelected(false));
 
         // navigationService.navigate('LoginScreen');
       },
