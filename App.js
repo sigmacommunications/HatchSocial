@@ -29,6 +29,9 @@ import Feeds from './SRC/Screens/Feeds';
 import FeedSelection from './SRC/Screens/FeedSelection';
 import Interests from './SRC/Screens/Interests';
 import MemberShip from './SRC/Screens/MemberShip';
+import InterestSelection from './SRC/Screens/InterestsSelection';
+import FeedsAndBubbles from './SRC/Screens/FeedsAndBubbles';
+import SpotifyScreen from './SRC/Screens/SpotifyScreen';
 
 // import AppNavigator, {DrawerRoot} from './SRC/appNavigation';
 
@@ -81,7 +84,9 @@ const MainContainer = () => {
   // return <FeedSelection/>;
   // return <Interests/>
   return <AppNavigator />;
-  // return <MemberShip/>
+  // return <SpotifyScreen/>
+  // return <Feeds/>
+  // return <InterestSelection/>
   
 };
 

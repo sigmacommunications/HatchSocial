@@ -19,7 +19,7 @@ import {useSelector} from 'react-redux';
 import {useIsFocused} from '@react-navigation/native';
 import Video from 'react-native-video';
 
-const Home = ({bubbleId}) => {
+const Home = ({bubbleId }) => {
   const profileData = useSelector(state => state.commonReducer.selectedProfile);
   const token = useSelector(state => state.authReducer.token);
   console.log("🚀 ~ Home ~ token:", token)
@@ -74,6 +74,8 @@ const Home = ({bubbleId}) => {
     },
   ]);
 
+
+  
   return (
     <>
       <View
@@ -82,6 +84,9 @@ const Home = ({bubbleId}) => {
           marginLeft: moderateScale(10, 0.3),
           marginRight: moderateScale(10, 0.3),
         }}>
+          <CustomText>
+            hello
+          </CustomText>
         {/* <View style={styles.image1}>
           <CustomImage
             source={require('../Assets/Images/fitness2.png')}
@@ -200,10 +205,11 @@ const Home = ({bubbleId}) => {
         ) : (
           <FlatList
             numColumns={3}
+            // data={PostData}
             data={posts}
             showsVerticalScrollIndicator={false}
             renderItem={({item, index}) => {
-              // return console.log("🚀 ~ file: Home.js:210 ~ Home ~ item:", item)
+              // return console.log("🚀 ~ file: Home.js:210 ~ Home ~ item:", item?.post_videos)
               return (
                 <TouchableOpacity
                   style={styles.activityImage}
@@ -211,6 +217,7 @@ const Home = ({bubbleId}) => {
                     navigationService.navigate('Feeds', {
                       id: item?.post_videos[0]?.name,
                       item: item,
+                      // PostData :PostData,
                       posts: posts,
                       index: index,
                     });
@@ -220,7 +227,7 @@ const Home = ({bubbleId}) => {
                     resizeMode={'cover'}  
                     mute={true}
                     // controls={true}
-                    // source={require('../Assets/Images/video1.mp4')}
+                    // source={item?.post_videos}
                     source={{uri:item?.post_videos[0]?.name}}
 
                     style={{

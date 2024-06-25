@@ -17,25 +17,24 @@ import CustomImage from '../Components/CustomImage';
 import TextInputWithTitle from '../Components/TextInputWithTitle';
 import CustomText from '../Components/CustomText';
 import Header from '../Components/Header';
-import DropDownSingleSelect from '../Components/DropDownSingleSelect';
 import {useSelector} from 'react-redux';
 import CustomButton from '../Components/CustomButton';
 import navigationService from '../navigationService';
 import ImagePickerModal from '../Components/ImagePickerModal';
 import {Icon} from 'native-base';
 import Entypo from 'react-native-vector-icons/Entypo';
-import {Post} from '../Axios/AxiosInterceptorFunction';
+import {Get, Post} from '../Axios/AxiosInterceptorFunction';
+import SelectInterestDropdown from '../Components/SelectInterestDropdown';
 
-const CreateNewFeed = () => {
+const CreateNewFeed = props => {
+  const fromInterest = props?.route?.params?.fromInterest;
+  const selectedInterest = props?.route?.params?.selectedInterest;
+  const token = useSelector(state => state.authReducer.token);
+  const profileData = useSelector(state => state.commonReducer.selectedProfile);
   const themeColor = useSelector(state => state.authReducer.ThemeColor);
   const privacy = useSelector(state => state.authReducer.privacy);
+
   const [feedTitle, setFeedTitle] = useState('');
-  // console.log("🚀 ~ CreateNewFeed ~ feedTitle:", feedTitle)
-  const profileData = useSelector(state => state.commonReducer.selectedProfile);
-  // console.log("🚀 ~ CreateNewFeed ~ profileData:", profileData)
-  const token = useSelector(state => state.authReducer.token);
-  // console.log("🚀 ~ CreateNewFeed ~ token:", token)
-  // console.log("🚀 ~ CreateNewFeed ~ feedTitle:", feedTitle)
   const [description, setDescription] = useState('');
   const [Details, setDetails] = useState('');
   const [radio, setRadio] = useState('');
@@ -44,9 +43,8 @@ const CreateNewFeed = () => {
   const [showModal, setShowModal] = useState(false);
   const [hashtags, setHashTags] = useState([]);
   const [feedsTitle, setFeedsTitle] = useState([]);
-  // console.log("🚀 ~ CreateNewFeed ~ hashtags:", hashtags)
-  // console.log("🚀 ~ CreateNewFeed ~ feedsTitle:", feedsTitle)
-
+  const [interests, setInterests] = useState([]);
+  const [selectedInterests, setSelectedInterests] = useState({});
   const architecture = ['#architecture', 'ABC', 'BCD', 'CDE'];
   const [dropDownValue, setDropDownValue] = useState('#Architecture');
 
@@ -55,7 +53,6 @@ const CreateNewFeed = () => {
     const formData = new FormData();
 
     // const hashTagArray= hashtags.split('');
-    // console.log("🚀 ~ addFeeds ~ formData:", formData)
     const body = {
       profile_id: profileData?.id,
       name: feedsTitle,
@@ -69,18 +66,30 @@ const CreateNewFeed = () => {
     for (let key in body) {
       formData.append(key, body[key]);
     }
-  console.log("🚀 ~ addFeeds ~ body:", formData)
     setisLoading(true);
     const response = await Post(url, formData, apiHeader(token));
     setisLoading(false);
     if (response != undefined) {
-      // return console.log("🚀 ~ addFeeds ~ response:",  response?.data);
       Platform.OS == 'android'
-        ? ToastAndroid.show('feed created successfully',ToastAndroid.SHORT)
+        ? ToastAndroid.show('feed created successfully', ToastAndroid.SHORT)
         : Alert.alert('feed created successfully');
       navigationService.navigate('HomeScreen');
     }
   };
+
+  const getInterest = async () => {
+    const url = `auth/interest_list`;
+    setisLoading(true);
+    const response = await Get(url, token);
+    setisLoading(false);
+    if (response != undefined) {
+      setInterests(response?.data?.interest_info);
+    }
+  };
+
+  useEffect(() => {
+    getInterest();
+  }, []);
 
   return (
     <>
@@ -88,7 +97,7 @@ const CreateNewFeed = () => {
         backgroundColor={Color.white}
         barStyle={'dark-content'}
       />
-      <Header  Title={'New Feed'} showBack />
+      <Header Title={'New Feed'} showBack />
       <ScrollView>
         <ImageBackground
           source={
@@ -103,16 +112,7 @@ const CreateNewFeed = () => {
             alignItems: 'center',
           }}>
           <View style={styles.topContainer}>
-            <View
-              style={
-                {
-                  // borderWidth : 1,
-                  // paddingRight : moderateScale(7,0.6),
-                  // paddingBottom : moderateScale(7,0.6),
-                  // paddingVertical:moderateScale(10,.6),
-                  // backgroundColor:'green '
-                }
-              }>
+            <View>
               <View
                 style={[
                   {
@@ -140,8 +140,6 @@ const CreateNewFeed = () => {
                     }}
                   />
                 ) : (
-                  // <TouchableOpacity activeOpacity={0.7} style={styles.image}>
-
                   <Icon
                     name={'camera'}
                     as={Entypo}
@@ -150,21 +148,26 @@ const CreateNewFeed = () => {
                       setShowModal(true);
                     }}
                   />
-
-                  // </TouchableOpacity>
                 )}
               </View>
-              <CustomText
+              <View
                 style={{
-                  textAlign: 'left',
-                  // width: windowWidth * 0.5,
-                  marginTop: moderateScale(10, 0.3),
-                  fontSize: moderateScale(15, 0.6),
-                  marginLeft: moderateScale(30, 0.3),
-                }}
-                isBold>
+                  paddingHorizontal: moderateScale(15, 0.6),
+                  paddingVertical: moderateScale(20, 0.6),
+                }}>
+                <SelectInterestDropdown
+                  interestsArray={interests}
+                  item={selectedInterests}
+                  setItem={setSelectedInterests}
+                  fromInterest={fromInterest}
+                  selectedInterest={selectedInterest}
+                />
+              </View>
+
+              <CustomText style={styles.heading1} isBold>
                 feed title
               </CustomText>
+
               <View style={styles.hashtagview}>
                 <TextInputWithTitle
                   titleText={'Feed Title'}
@@ -179,15 +182,7 @@ const CreateNewFeed = () => {
                   style={{fontWeight: 'bold'}}
                 />
               </View>
-              <CustomText
-                style={{
-                  textAlign: 'left',
-                  // width: windowWidth * 0.5,
-                  marginTop: moderateScale(20, 0.3),
-                  fontSize: moderateScale(15, 0.6),
-                  marginLeft: moderateScale(30, 0.3),
-                }}
-                isBold>
+              <CustomText style={styles.heading2} isBold>
                 assign hashtags
               </CustomText>
               <View style={styles.hashtagview}>
@@ -217,10 +212,8 @@ const CreateNewFeed = () => {
                     paddingHorizontal={10}
                     bgColor={'#FFFFFF'}
                     borderRadius={moderateScale(30, 0.3)}
-                    // marginTop={moderateScale(30, 0.3)}
-                    // marginBottom={moderateScale(50)}
                     onPress={() => {
-                     if (feedTitle.split('')[0] != '#') {
+                      if (feedTitle.split('')[0] != '#') {
                         Platform.OS == 'android'
                           ? ToastAndroid.show(
                               'Letter must be start with #',
@@ -228,8 +221,9 @@ const CreateNewFeed = () => {
                             )
                           : Alert.alert('Letter must be start with #');
                       } else {
-                      setHashTags(prev => [...prev, `${feedTitle}`]);
-                      setFeedTitle('');}
+                        setHashTags(prev => [...prev, `${feedTitle}`]);
+                        setFeedTitle('');
+                      }
                     }}
                   />
                 )}
@@ -269,7 +263,6 @@ const CreateNewFeed = () => {
               placeholderColor={Color.themeLightGray}
               borderBottomWidth={1}
               borderColor={Color.lightGrey}
-              // backgroundColor={Color.black}
               multiline
             />
           </View>
@@ -338,16 +331,13 @@ const CreateNewFeed = () => {
             textColor={themeColor[1]}
             width={windowWidth * 0.4}
             height={windowHeight * 0.06}
-            // marginTop={moderateScale(10, 0.3)}
             bgColor={['#FFFFFF', '#FFFFFF']}
             borderRadius={moderateScale(30, 0.3)}
             isGradient
             isBold={true}
             marginTop={moderateScale(30, 0.3)}
-            // marginBottom={moderateScale(50)}
             onPress={() => {
               addFeeds();
-              // navigationService.navigate('HomeScreen');
             }}
           />
         </ImageBackground>
@@ -365,11 +355,8 @@ const styles = ScaledSheet.create({
   line: {
     width: windowWidth * 0.9,
     height: windowHeight * 0.0004,
-    // paddingVertical: moderateScale(15, 0.6),
     backgroundColor: 'white',
     alignSelf: 'center',
-    // borderRadius: moderateScale(15, 0.6),
-    // alignItems: 'center',
     marginTop: moderateScale(20, 0.3),
   },
   textInput: {
@@ -399,7 +386,6 @@ const styles = ScaledSheet.create({
 
   Heading: {
     fontSize: moderateScale(20, 0.3),
-    // fontWeight: 'bold',
     color: '#ffffff',
 
     alignSelf: 'flex-start',
@@ -415,7 +401,6 @@ const styles = ScaledSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     width: windowWidth * 0.9,
-    // marginTop: moderateScale(10,0.3),
   },
   txt4: {
     color: Color.purple,
@@ -449,14 +434,9 @@ const styles = ScaledSheet.create({
   },
   topContainer: {
     width: windowWidth,
-    // height: windowHeight * 0.28,
-    // flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
     paddingHorizontal: moderateScale(10, 0.6),
-    // marginTop: moderateScale(20, 0.3),
-    // marginLeft: moderateScale(-20, 0.3),
-    // backgroundColor: 'black',
     paddingVertical: moderateScale(10, 0.6),
   },
   radioButtonContainer: {
@@ -492,7 +472,6 @@ const styles = ScaledSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    //  backgroundColor : 'red',
     alignSelf: 'center',
     borderBottomWidth: 1,
     borderColor: Color.lightGrey,
@@ -501,7 +480,6 @@ const styles = ScaledSheet.create({
     width: windowWidth * 0.8,
     flexWrap: 'wrap',
     flexDirection: 'row',
-    // backgroundColor:'red'
   },
   mapview2: {
     paddingHorizontal: moderateScale(10, 0.6),
@@ -512,25 +490,31 @@ const styles = ScaledSheet.create({
     marginHorizontal: moderateScale(5, 0.3),
     marginTop: moderateScale(8, 0.3),
   },
+  heading1: {
+    textAlign: 'left',
+    marginTop: moderateScale(10, 0.3),
+    fontSize: moderateScale(15, 0.6),
+    marginLeft: moderateScale(30, 0.3),
+  },
+  heading2: {
+    textAlign: 'left',
+    marginTop: moderateScale(20, 0.3),
+    fontSize: moderateScale(15, 0.6),
+    marginLeft: moderateScale(30, 0.3),
+  },
   descriptionview: {
-    // width: windowWidth * 0.9,
     height: windowHeight * 0.14,
     marginTop: moderateScale(10, 0.3),
-    // backgroundColor:'red',
-    // marginLeft: moderateScale(-20, 0.3),
   },
   descriptiontext: {
     textAlign: 'left',
-    // width: windowWidth * 0.5,
     fontSize: moderateScale(15, 0.6),
-    // marginLeft: moderateScale(30, 0.3),
   },
   privacyview: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     width: windowWidth * 0.9,
     alignSelf: 'center',
-    // backgroundColor:'red',
     marginTop: moderateScale(30, 0.3),
   },
 });

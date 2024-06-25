@@ -163,7 +163,7 @@ const BubbleSelection = () => {
     const url = `auth/community_multi_request`;
     const communityid = selectedBubble?.map((item, index) => {
       return item?.id;
-      console.log("🚀 ~ communityid ~ item======================>:", item)
+     
     });
     const body = {
       status: 'request',

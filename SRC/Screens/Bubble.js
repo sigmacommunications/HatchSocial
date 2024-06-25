@@ -35,21 +35,26 @@ import OptionsMenu from 'react-native-options-menu';
 import {Get, Post} from '../Axios/AxiosInterceptorFunction';
 import {useIsFocused, useNavigation} from '@react-navigation/native';
 import {baseUrl} from '../Config';
+import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 
 const Bubble = props => {
   const bubbleId = props?.route?.params?.id;
+  console.log("🚀 ~ Bubble ~ bubbleId:", bubbleId)
+  const fromHome = props?.route?.params?.fromHome;
+  console.log("🚀 ~ Bubble ~ fromHome========  >>>>>>>>>:", fromHome)
   const themeColor = useSelector(state => state.authReducer.ThemeColor);
   const token = useSelector(state => state.authReducer.token);
   const privacy = useSelector(state => state.authReducer.privacy);
   const profileData = useSelector(state => state.commonReducer.selectedProfile);
-  console.log("🚀 ~ Bubble ~ profileData:==============>", profileData?.id)
+
+  const navigation = useNavigation();
+
   const [isLoading, setIsLoading] = useState(false);
   const isFocused = useIsFocused();
   const [loadingInvite, setLoadingInvite] = useState(false);
   const [followLoading, setFollowLoading] = useState(false);
   const [isVisible, setIsVisible] = useState(false);
   const [bubbleInfo, setBubbleInfo] = useState({});
-  console.log("🚀 ~ Bubble ~ bubbleInfo:", bubbleInfo)
   const [startFollowing, setStartFollowing] = useState(
     bubbleInfo?.follow?.status == 'follow' ? true : false,
   );
@@ -61,7 +66,7 @@ const Bubble = props => {
   const [invitedPeople, setInvitedPeople] = useState([]);
 
   const MoreIcon = require('../Assets/Images/threedots.png');
-  const navigation =useNavigation()
+  console.log("jasjk")
 
   const handleInputChange = text => {
     setSearch(text);
@@ -99,16 +104,15 @@ const Bubble = props => {
       community_id: bubbleId,
       invite_profile_id: profileData?.id,
     };
-  //  return console.log("🚀 ~ SendInvite ~ body:", body)
+    //  return console.log("🚀 ~ SendInvite ~ body:", body)
     setLoadingInvite(true);
     const response = await Post(url, body, apiHeader(token));
     setLoadingInvite(false);
     if (response != undefined) {
-    //  return console.log("🚀 ~ SendInvite ~ response========>:", response?.data)
       setIsVisible(false);
-      setSearch('')
-      setnewData([])
-      setInvitedPeople([])
+      setSearch('');
+      setnewData([]);
+      setInvitedPeople([]);
       Platform.OS == 'android'
         ? ToastAndroid.show('Request has been sent', ToastAndroid.SHORT)
         : Alert.alert('Request has been sent');
@@ -146,11 +150,6 @@ const Bubble = props => {
     }
   };
 
-
-
-
-
-
   const InviteMember = () => {
     if (
       bubbleInfo?.profile_id == profileData?.id ||
@@ -159,13 +158,13 @@ const Bubble = props => {
       setIsVisible(true);
     } else {
       Platform.OS == 'android'
-      ? ToastAndroid.show('Access Denied', ToastAndroid.SHORT)
-      : Alert.alert('Access Denied');
+        ? ToastAndroid.show('Access Denied', ToastAndroid.SHORT)
+        : Alert.alert('Access Denied');
     }
   };
 
   const BubbleMangement = () => {
-    console.log(bubbleInfo?.follow?.role)
+    console.log(bubbleInfo?.follow?.role);
     bubbleInfo?.follow?.role == 'owner'
       ? navigationService.navigate('BubbleManagement', {bubbleInfo: bubbleInfo})
       : Platform.OS == 'android'
@@ -174,24 +173,32 @@ const Bubble = props => {
   };
 
   const handleActivity = () => {
-    console.log(bubbleInfo?.follow?.role)
-   if(bubbleInfo?.follow?.role.toLowerCase() == 'member' || bubbleInfo?.follow == null){
-    Platform.OS == 'android'
-    ? ToastAndroid.show('Access Denied', ToastAndroid.SHORT)
-    : Alert.alert('Access Denied');
-   }
-   else{
-    navigationService.navigate('Activites', {bubbleInfo: bubbleInfo})
-   }
-    
+    console.log(bubbleInfo?.follow?.role);
+    if (
+      bubbleInfo?.follow?.role.toLowerCase() == 'member' ||
+      bubbleInfo?.follow == null
+    ) {
+      Platform.OS == 'android'
+        ? ToastAndroid.show('Access Denied', ToastAndroid.SHORT)
+        : Alert.alert('Access Denied');
+    } else {
+      navigationService.navigate('Activites', {bubbleInfo: bubbleInfo});
+    }
   };
- 
+
+  const BubbleTimeOut = async () => {
+    const url = `auth/community_out/${bubbleId}?profile_id=${profileData?.id}`;
+    setIsLoading(true);
+    const response = await Get(url, token);
+    setIsLoading(false);
+    if (response != undefined) {
+      navigation.goBack();
+    }
+  };
 
   useEffect(() => {
     getBubbleDetails();
   }, [isFocused]);
-
-
 
   return (
     <>
@@ -199,7 +206,29 @@ const Bubble = props => {
         backgroundColor={Color.white}
         barStyle={'dark-content'}
       />
-      <Header Title="Bubble" showBack />
+
+      <View style={styles.HeaderView}>
+        <Icon
+          onPress={() => {
+            !fromHome ?
+            BubbleTimeOut() :
+            navigation.goBack()
+          }}
+          style={styles.icon1}
+          name="arrow-back-ios"
+          as={MaterialIcons}
+          color={Color.themeColor}
+          size={moderateScale(20, 0.6)}
+        />
+        <CustomText
+          numberOfLines={1}
+          isBold
+          style={{
+            width: windowWidth * 0.55,
+           fontSize: moderateScale(20, 0.6)}}>
+          Bubble
+        </CustomText>
+      </View>
       <ImageBackground
         source={
           privacy == 'private'
@@ -218,21 +247,8 @@ const Bubble = props => {
               <ActivityIndicator color={Color.white} size={'large'} />
             </View>
           ) : bubbleInfo?.follow?.status == 'blocked' ? (
-            <View
-              style={{
-                width: windowWidth,
-                // height : moderateScale(20,0.6),
-                backgroundColor: Color.red,
-                alignItems: 'center',
-                paddingVertical: moderateScale(5, 0.6),
-              }}>
-              <CustomText
-                style={{
-                  color: Color.white,
-                  width: windowWidth * 0.9,
-                  textAlign: 'center',
-                  fontSize: moderateScale(12, 0.6),
-                }}>
+            <View style={styles.blockView}>
+              <CustomText style={styles.blockText}>
                 It seems like you have breach community guidline thus you are
                 temporary blocked by our team
               </CustomText>
@@ -240,7 +256,6 @@ const Bubble = props => {
           ) : (
             <>
               <ImageBackground
-                //  source={require('../Assets/Images/fitness.png')}
                 source={
                   bubbleInfo?.image
                     ? {uri: `${baseUrl}/${bubbleInfo?.image}`}
@@ -361,8 +376,12 @@ const Bubble = props => {
                         tintColor: '#000',
                       }}
                       destructiveIndex={1}
-                      options={['Invite Member', 'Bubble Management' , 'See Activity' ]}
-                      actions={[InviteMember, BubbleMangement , handleActivity ]}
+                      options={[
+                        'Invite Member',
+                        'Bubble Management',
+                        'See Activity',
+                      ]}
+                      actions={[InviteMember, BubbleMangement, handleActivity]}
                     />
                   </TouchableOpacity>
                 </View>
@@ -424,7 +443,7 @@ const Bubble = props => {
                     onPress={() => {
                       navigationService.navigate('AddPost', {
                         bubbleId: bubbleId,
-                        bubbleInfo: bubbleInfo
+                        bubbleInfo: bubbleInfo,
                       });
                     }}
                   />
@@ -446,8 +465,6 @@ const Bubble = props => {
         style={{
           justifyContent: 'center',
           alignItems: 'center',
-          // backgroundColor:'red',
-          // paddingVertical:moderateScale(20,.6),
         }}>
         <View style={styles.container}>
           <CustomText
@@ -469,7 +486,6 @@ const Bubble = props => {
             border={1}
             borderColor={Color.veryLightGray}
             marginTop={moderateScale(15, 0.3)}
-            // backgroundColor={'black'}
             color={themeColor[1]}
             placeholderColor={Color.veryLightGray}
             borderRadius={moderateScale(25, 0.3)}
@@ -479,7 +495,6 @@ const Bubble = props => {
             data={newData}
             showsVerticalScrollIndicator={false}
             contentContainerStyle={{
-              // marginBottom: moderateScale(10, 0.3),
               paddingBottom: moderateScale(70, 0.6),
               marginTop: moderateScale(10, 0.3),
             }}
@@ -530,7 +545,6 @@ const Bubble = props => {
                         textAlign: 'left',
                       }}
                       isBold>
-                        
                       {item?.name}
                     </CustomText>
                     <CustomText
@@ -620,11 +634,25 @@ const styles = ScaledSheet.create({
     width: moderateScale(25, 0.6),
     padding: moderateScale(3, 0.6),
   },
+  blockView: {
+    width: windowWidth,
+    backgroundColor: Color.red,
+    alignItems: 'center',
+    paddingVertical: moderateScale(5, 0.6),
+  },
+  HeaderView: {
+    height: windowHeight * 0.1,
+    width: windowWidth,
+    paddingHorizontal: moderateScale(15, 0.6),
+    flexDirection: 'row',
+    backgroundColor: 'white',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+  },
   followCount: {
     fontSize: moderateScale(20, 0.6),
     color: 'black',
     marginRight: moderateScale(8, 0.3),
-    //   width: windowWidth*0.9,
     textAlign: 'center',
   },
   followText: {
@@ -644,10 +672,15 @@ const styles = ScaledSheet.create({
     padding: moderateScale(3, 0.6),
   },
   loaderView: {
-    // backgroundColor: 'red',
     width: windowWidth,
     height: windowHeight * 0.4,
     justifyContent: 'center',
+  },
+  blockText: {
+    color: Color.white,
+    width: windowWidth * 0.9,
+    textAlign: 'center',
+    fontSize: moderateScale(12, 0.6),
   },
   eventText: {
     fontSize: moderateScale(14, 0.6),
@@ -662,8 +695,6 @@ const styles = ScaledSheet.create({
   },
   container: {
     width: windowWidth * 0.85,
-    // height: windowHeight * 0.55,
-    // paddingVertical: moderateScale(20, 0.6),
     backgroundColor: Color.white,
     borderRadius: moderateScale(10, 0.6),
     justifyContent: 'center',
@@ -685,7 +716,6 @@ const styles = ScaledSheet.create({
     borderColor: Color.green,
     justifyContent: 'center',
     overflow: 'hidden',
-    // alignSelf: 'center',
   },
   modalHeader: {
     color: 'black',
@@ -693,7 +723,6 @@ const styles = ScaledSheet.create({
     width: '100%',
     textAlign: 'center',
     color: 'white',
-    // backgroundColor: themeColor[1],
     padding: moderateScale(10, 0.6),
   },
   row: {
@@ -703,7 +732,6 @@ const styles = ScaledSheet.create({
     alignItems: 'center',
     paddingLeft: moderateScale(14, 0.6),
     marginVertical: moderateScale(2, 0.3),
-    // backgroundColor:'red',
   },
   container2: {
     flexDirection: 'row',
@@ -724,8 +752,6 @@ const styles = ScaledSheet.create({
   mapview: {
     width: windowWidth,
     marginTop: moderateScale(10, 0.3),
-    // paddingHorizontal: moderateScale(10, 0.6),
-    // marginLeft:moderateScale(10,.3)
   },
   invite: {
     position: 'absolute',

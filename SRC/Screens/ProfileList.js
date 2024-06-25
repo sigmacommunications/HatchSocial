@@ -7,7 +7,7 @@ import {
   FlatList,
   Image,
   TouchableOpacity,
-  ActivityIndicator
+  ActivityIndicator,
 } from 'react-native';
 import React, {useState, useEffect} from 'react';
 const {height, width} = Dimensions.get('window');
@@ -32,9 +32,9 @@ const ProfileList = () => {
   const navigation = useNavigation();
   const privacy = useSelector(state => state.authReducer.privacy);
   const token = useSelector(state => state.authReducer.token);
-  console.log("🚀 ~ file: ProfileList.js:35 ~ ProfileList ~ token:", token)
+  console.log('🚀 ~ file: ProfileList.js:35 ~ ProfileList ~ token:', token);
   const [profileData, setProfileData] = useState([]);
-  console.log("🚀 ~ ProfileList ~ profileData----->:", profileData)
+  console.log('🚀 ~ ProfileList ~ profileData----->:', profileData);
   const [isLoading, setIsLoading] = useState(false);
 
   const profileListing = async () => {
@@ -43,7 +43,10 @@ const ProfileList = () => {
     const response = await Get(url, token);
     setIsLoading(false);
     if (response != undefined) {
-    console.log("🚀 ~ file: ProfileList.js:44 ~ profileListing ~ response:", response?.data?.profile_info[0])
+      console.log(
+        '🚀 ~ file: ProfileList.js:44 ~ profileListing ~ response:',
+        JSON.stringify(response?.data?.profile_info, null, 2),
+      );
       setProfileData(response?.data?.profile_info);
     }
   };
@@ -51,8 +54,6 @@ const ProfileList = () => {
   useEffect(() => {
     profileListing();
   }, []);
-
-
 
   return (
     <>
@@ -73,7 +74,7 @@ const ProfileList = () => {
           width: windowWidth * 1,
           height: windowHeight * 0.9,
           alignItems: 'center',
-          justifyContent:'center'
+          justifyContent: 'center',
         }}>
         {/* <View
           style={{
@@ -84,55 +85,53 @@ const ProfileList = () => {
             backgroundColor:'green',
             marginTop: moderateScale(10, 0.3),
           }}> */}
-            {
-              isLoading  ?  
-              <ActivityIndicator size={'large'} color={'white'}/> :
+        {isLoading ? (
+          <ActivityIndicator size={'large'} color={'white'} />
+        ) : (
           <FlatList
-          showsVerticalScrollIndicator={false}
+            showsVerticalScrollIndicator={false}
             data={profileData}
             contentContainerStyle={{
-              paddingBottom: moderateScale(30, 0.3)
+              paddingBottom: moderateScale(30, 0.3),
             }}
             renderItem={({item, index}) => {
               return (
                 <ProfileComponent
-                  item={item} 
+                  item={item}
                   check={item?.check}
                   close={item?.close}
                   edit={item?.edit}
                   pending={item?.pending}
-
                 />
               );
             }}
-            ListFooterComponent={() => 
-                <View
-              style={{
-                backgroundColor: 'white',
-                padding: moderateScale(11, 0.3),
-                borderRadius: 11,
-                borderColor: Color.green,
-                borderWidth: 1,
-                width:windowWidth*0.4,
-                alignSelf:'center',
-                marginTop:moderateScale(15,0.6)
-              }}>
-              <CustomText
-                onPress={() => navigationService.navigate('Profile')}
+            ListFooterComponent={() => (
+              <View
                 style={{
-                  fontSize: moderateScale(13, 0.6),
-                  color: '#000',
-                  textAlign: 'center',
-                }}
-                isBold>
-
-                create new profile
-              </CustomText>
-            </View>}
+                  backgroundColor: 'white',
+                  padding: moderateScale(11, 0.3),
+                  borderRadius: 11,
+                  borderColor: Color.green,
+                  borderWidth: 1,
+                  width: windowWidth * 0.4,
+                  alignSelf: 'center',
+                  marginTop: moderateScale(15, 0.6),
+                }}>
+                <CustomText
+                  onPress={() => navigationService.navigate('Profile')}
+                  style={{
+                    fontSize: moderateScale(13, 0.6),
+                    color: '#000',
+                    textAlign: 'center',
+                  }}
+                  isBold>
+                  create new profile
+                </CustomText>
+              </View>
+            )}
           />
-            }
+        )}
         {/* </View> */}
-       
       </ImageBackground>
     </>
   );

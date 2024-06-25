@@ -1,4 +1,10 @@
-import {View, Text, TouchableOpacity, Image, ActivityIndicator} from 'react-native';
+import {
+  View,
+  Text,
+  TouchableOpacity,
+  Image,
+  ActivityIndicator,
+} from 'react-native';
 import React, {useState, useRef} from 'react';
 import Video from 'react-native-video';
 import Slider from '@react-native-community/slider';
@@ -7,13 +13,15 @@ import {moderateScale} from 'react-native-size-matters';
 import Color from '../Assets/Utilities/Color';
 import CustomImage from './CustomImage';
 import CustomText from './CustomText';
+import {baseUrl} from '../Config';
 
 const VideoController = ({item}) => {
+  console.log('🚀 ~ VideoController ~ item =====> kamal :', item);
   const [clicked, setClicked] = useState(false);
   const [paused, setPaused] = useState(true);
   const [progress, setProgress] = useState(null);
   const [fullScreen, setFullScreen] = useState(false);
-  const [loading, setLoading] = useState(false)
+  const [loading, setLoading] = useState(false);
   const videoRef = useRef();
 
   const format = secound => {
@@ -28,9 +36,10 @@ const VideoController = ({item}) => {
     <View
       style={{
         width: windowWidth,
-        backgroundColor: Color.white,
-        alignItems: 'center',
-        marginTop: moderateScale(10, 0.3),
+        // backgroundColor: Color.white,
+        // alignItems: 'center',
+        // marginTop: moderateScale(10, 0.3),
+        // backgroundColor: 'red',
       }}>
       <TouchableOpacity
         activeOpacity={0.9}
@@ -41,27 +50,41 @@ const VideoController = ({item}) => {
         <Video
           muted
           paused={paused}
-          source={{uri: item?.video}}
+          source={{
+            uri: 'http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4',
+          }}
+          // source={{uri: `${baseUrl}${item?.name}`}}
           ref={videoRef}
           onProgress={x => {
             setProgress(x);
+            console.log('heyyyyyyyyyyyyyyyyyyyyyyyyyyyyy' ,x)
           }}
-          onBuffer={() => console.log('buffering video')}
+          onBuffer={() => {
+            console.log('buffering video');
+            // setLoading(true);
+          }}
           style={{
             width: '100%',
-            height: '100%',
-            backgroundColor: Color.white,
+            height: '80%',
+            // backgroundColor: Color.white,
+          }}
+          
+          onLoadStart={data => {
+            console.log('video is loading ', data);
+          }}
+          onLoad={x => {
+            console.log('video successfully loaded ', x);
           }}
         />
-        {/* {loading  && <ActivityIndicator size={moderateScale(20,.6)} color={'white'} />} */}
-        {clicked && (
+        {/* {loading  && <ActivityIndicator size={moderateScale(20,.6)} color={'black'} />} */}
+        {/* {clicked && (
           <TouchableOpacity
             onPress={() => {
               setClicked(!clicked);
             }}
             style={{
               width: '100%',
-              height:'100%',
+              height: '100%',
               // height: windowWidth * 0.42,
               position: 'absolute',
               // top: moderateScale(22, 0.3),
@@ -135,7 +158,7 @@ const VideoController = ({item}) => {
               </CustomText>
             </View>
           </TouchableOpacity>
-        )}
+        )} */}
       </TouchableOpacity>
     </View>
   );

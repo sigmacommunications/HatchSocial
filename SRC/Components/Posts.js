@@ -26,15 +26,11 @@ import {Delete, Get} from '../Axios/AxiosInterceptorFunction';
 import {useIsFocused} from '@react-navigation/native';
 import {baseUrl} from '../Config';
 
-// import { TextInput } from 'react-native-gesture-handler';
 
 const Posts = ({onPress, bubbleId, bubbleInfo}) => {
-  console.log("🚀 ~ Posts ~ bubbleInfo:", bubbleInfo)
-  console.log('🚀 ~ Posts ~ bubbleInfo:', bubbleInfo?.follow?.role ,bubbleInfo?.profile_id == profileData?.id );
   const themeColor = useSelector(state => state.authReducer.ThemeColor);
   const privacy = useSelector(state => state.authReducer.privacy);
   const token = useSelector(state => state.authReducer.token);
-  console.log('🚀 ~ file: Posts.js:33 ~ Posts ~ token:', token);
   const profileData = useSelector(state => state.commonReducer.selectedProfile);
 
   const isFocused = useIsFocused();
@@ -49,12 +45,6 @@ const Posts = ({onPress, bubbleId, bubbleInfo}) => {
     const response = await Get(url, token);
     setIsLoading(false);
     if (response != undefined) {
-      console.log("My console: ===> ", response?.data);
-      // console.log(
-      //   '🚀 ~ file: Posts.js:46 ~ getPosts ~ response:',
-      //   JSON.stringify(response?.data?.post_info),
-      // );
-
       setPosts(
         response?.data?.post_info?.filter(
           item => item?.post_videos?.length == 0,
@@ -62,8 +52,10 @@ const Posts = ({onPress, bubbleId, bubbleInfo}) => {
       );
     }
   };
+
+
+  
   const getPostsDelete = async (id) => {
-    // return console.log("🚀 ~ getPostsDelete ~ id:", id)
     if (
       bubbleInfo?.follow?.role?.toLowerCase() != 'member'
     ) {

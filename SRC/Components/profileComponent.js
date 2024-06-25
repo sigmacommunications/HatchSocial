@@ -55,7 +55,7 @@ const ProfileComponent = ({
   Requested,
   blocked,
 }) => {
-  console.log("🚀 ~ item:", item)
+  // console.log("🚀 ~ item:", item)
   const themeColor = useSelector(state => state.authReducer.ThemeColor);
   const token = useSelector(state => state.authReducer.token);
   const profileData = useSelector(state => state.commonReducer.profileData);

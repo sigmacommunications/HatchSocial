@@ -33,20 +33,22 @@ import MentionModal from '../Components/MentionModal';
 import {Text} from 'react-native-svg';
 import Feather from 'react-native-vector-icons/Feather';
 import HashtagModal from '../Components/HashtagModal';
+import AntDesign from 'react-native-vector-icons/AntDesign'
 
 const AddPost = props => {
   const bubbleId = props?.route?.params?.bubbleId;
   const bubbleInfo = props?.route?.params?.bubbleInfo;
-  console.log("🚀 ~ bubbleInfo:", bubbleInfo)
-  console.log('🚀 ~ AddPost ~ bubbleId:', bubbleId);
   const data = props?.route?.params?.data;
   const fromHome = props?.route?.params?.fromHome;
-  console.log('🚀 ~ fromHome:', fromHome);
+
   const themeColor = useSelector(state => state.authReducer.ThemeColor);
   const privacy = useSelector(state => state.authReducer.privacy);
   const token = useSelector(state => state.authReducer.token);
+  console.log("🚀 ~ token:", token)
   const profileData = useSelector(state => state.commonReducer.selectedProfile);
-  console.log("🚀 ~ profileData:", profileData)
+
+  const navigation = useNavigation();
+
   const [selectedTab, setSelectedTab] = useState('Tag People');
   const [image, setImage] = useState({});
   const [images, setImages] = useState(
@@ -59,20 +61,15 @@ const AddPost = props => {
   const [imagePickerVisible, setImagePickerVisible] = useState(false);
   const [videoPicker, setVideoPicker] = useState(false);
   const [hashtag, setHashtag] = useState([]);
-  console.log('🚀 ~ AddPost ~ hashtag =================>:', hashtag);
   const [video, setVideo] = useState({});
   const [videos, setVideos] = useState(
-    data?.post_videos ? data?.post_videos : [],
+    data?.file ? data?.file : {},
   );
   const [hashtags, setHashtags] = useState(
     data?.hashtags ? JSON.parse(data?.hashtags) : [],
   );
-  console.log('🚀 ~ hashtags:', hashtags);
   const [isVisible, setIsVisible] = useState(false);
   const [text, setText] = useState('');
-  // console.log('🚀 ~ text:', text.split('')[0]);
-
-  const navigation = useNavigation();
 
   useEffect(() => {
     if (Object.keys(image).length > 0) {
@@ -83,7 +80,7 @@ const AddPost = props => {
 
   useEffect(() => {
     if (Object.keys(video).length > 0) {
-      setVideos(prev => [...prev, video]);
+      setVideos(video);
       setVideo({});
     }
   }, [video]);
@@ -94,6 +91,7 @@ const AddPost = props => {
     const body = {
       caption: description,
       profile_id: profileData?.id,
+      // type :'video'
     };
     if (bubbleId != undefined) {
       body.community_id = bubbleId;
@@ -109,25 +107,23 @@ const AddPost = props => {
       for (let key in body) {
         formData.append(key, body[key]);
       }
-      if (images.length > 0) {
-        images?.map((item, index) =>
-          formData.append(`image[${index}]`, images[index]),
-        );
-      }
-      if (videos.length > 0) {
-        videos?.map((item, index) =>
-          formData.append(`video[${index}]`, videos[index]),
-        );
+      // if (images.length > 0) {
+      //   images?.map((item, index) =>
+      //     formData.append(`image[${index}]`, images[index]),
+      //   );
+      // }
+      if (Object.Keys(videos).length > 0) {
+        // videos?.map((item, index) =>
+          formData.append(`file`, videos),
+          formData.append('type' ,'video')
+        // );
       }
       if (hashtags.length > 0) {
         hashtags?.map((item, index) =>
           formData.append(`hashtags[${index}]`, hashtags[index]),
         );
       }
-     
     }
-
-   
 
     setLoading(true);
     const response = await Post(url, formData, apiHeader(token));
@@ -137,15 +133,16 @@ const AddPost = props => {
     );
     setLoading(false);
     if (response != undefined) {
-       if( bubbleInfo?.follow?.role !== "owner"){
-      Platform.OS == 'android'
-        ? ToastAndroid.show(
-            'Post has been sent to bubble team for approval , it will be post in feed when approved',
-            ToastAndroid.SHORT,
-          )
-        : Alert.alert(
-            'Post has been sent to bubble team for approval , it will be post in feed when approved',
-          );}
+      if (bubbleInfo?.follow?.role !== 'owner') {
+        Platform.OS == 'android'
+          ? ToastAndroid.show(
+              'Post has been sent to bubble team for approval , it will be post in feed when approved',
+              ToastAndroid.SHORT,
+            )
+          : Alert.alert(
+              'Post has been sent to bubble team for approval , it will be post in feed when approved',
+            );
+      }
       console.log('🚀 ~ AddPost ~ response:', response?.data);
       navigation.goBack();
     }
@@ -223,7 +220,6 @@ const AddPost = props => {
           formData.append(`video[${index}]`, videos[index]),
         );
       }
-     
     }
 
     setLoading(true);
@@ -275,15 +271,17 @@ const AddPost = props => {
       for (let key in body) {
         formData.append(key, body[key]);
       }
-      if (images.length > 0) {
-        images?.map((item, index) =>
-          formData.append(`image[${index}]`, images[index]),
-        );
-      }
-      if (videos.length > 0) {
-        videos?.map((item, index) =>
-          formData.append(`video[${index}]`, videos[index]),
-        );
+      // if (images.length > 0) {
+      //   images?.map((item, index) =>
+      //     formData.append(`image[${index}]`, images[index]),
+      //   );
+      // }
+      if (Object.keys(videos).length > 0) {
+        // videos?.map((item, index) =>
+          formData.append(`file`, videos),
+          formData.append(`type`, 'video')
+
+        // );
       }
 
       if (hashtag.length > 0) {
@@ -293,18 +291,12 @@ const AddPost = props => {
       }
     }
 
-      console.log(
-        '🚀 ~ file: AddPost.js:108 ~ AddPost ~ formData:',
-        JSON.stringify(formData, null, 2),
-      );
-
     setLoading(true);
     const response = await Post(url, formData, apiHeader(token));
-   
+    console.log("🚀 ~ AddFeedPost ~ formData:", formData)
+
     setLoading(false);
     if (response != undefined) {
-     
-      console.log('🚀 ~ AddPost ~ response:', response?.data);
       navigation.goBack();
     }
   };
@@ -315,7 +307,7 @@ const AddPost = props => {
         backgroundColor={Color.white}
         barStyle={'dark-content'}
       />
-      <Header showBack Title={'ADD POST'}  />
+      <Header showBack Title={'ADD POST'} />
       <ScrollView
         contentContainerStyle={{
           alignItems: 'center',
@@ -375,7 +367,7 @@ const AddPost = props => {
               children={'Add Media'}
             />
 
-            <OptionsMenu
+            {/* <OptionsMenu
               button={require('../Assets/Images/plus2.png')}
               buttonStyle={{
                 width: 15,
@@ -385,7 +377,12 @@ const AddPost = props => {
               destructiveIndex={1}
               options={['Video', 'Image']}
               actions={[Video, Image]}
-            />
+            /> */}
+
+            <Icon  
+            onPress={() => {
+              setVideoPicker(true)
+            }} name='plus' as={Entypo} size={moderateScale(18,.6)} color={'black'}/>
           </View>
           <View style={styles.imagesContainer}>
             {images?.map(item => {
@@ -420,7 +417,7 @@ const AddPost = props => {
               );
             })}
           </View>
-          <View style={styles.videoContainer}>
+          {/* <View style={styles.videoContainer}>
             {videos?.map(item => {
               return (
                 <>
@@ -432,7 +429,7 @@ const AddPost = props => {
                 </>
               );
             })}
-          </View>
+          </View> */}
 
           {fromHome ? (
             <>
@@ -568,7 +565,7 @@ const AddPost = props => {
               // marginTop={moderateScale(40, 0.3)}
               onPress={() => {
                 if (data) {
-                 fromHome ? UpdateFeedPost() : UpdatePost();
+                  fromHome ? UpdateFeedPost() : UpdatePost();
                 } else {
                   fromHome ? AddFeedPost() : AddPost();
                 }
@@ -716,14 +713,16 @@ const VideoComponent = ({item, videos, setVideos}) => {
           // backgroundColor: 'green',
         }}
         onPress={() => {
-          setVideos(videos.filter(data => data?.uri != item?.uri));
+          setVideos({})
+          // setVideos(videos.filter(data => data?.uri != item?.uri));
         }}>
         <Icon
           name={'cross'}
           color={Color.black}
           as={Entypo}
           onPress={() => {
-            setVideos(videos.filter(data => data?.uri != item?.uri));
+          setVideos({})
+            // setVideos(videos.filter(data => data?.uri != item?.uri));
           }}
         />
       </TouchableOpacity>

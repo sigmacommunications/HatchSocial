@@ -8,10 +8,16 @@ import {
   Image,
   Animated,
   Button,
+  Alert,
+  FlatList,
 } from 'react-native';
 import React, {useEffect, useRef, useState} from 'react';
 const {height, width} = Dimensions.get('window');
-import {ScaledSheet, moderateScale} from 'react-native-size-matters';
+import {
+  ScaledSheet,
+  moderateScale,
+  moderateVerticalScale,
+} from 'react-native-size-matters';
 import CustomStatusBar from '../Components/CustomStatusBar';
 import Header from '../Components/Header';
 import {windowHeight, windowWidth} from '../Utillity/utils';
@@ -35,42 +41,35 @@ import RequestModal from '../Components/RequestModal';
 import Propmpt from '../Components/Propmpt';
 import {setNewSignUp} from '../Store/slices/auth';
 import {Get} from '../Axios/AxiosInterceptorFunction';
-import {useIsFocused} from '@react-navigation/native';
-
-
+import {useIsFocused, useNavigation} from '@react-navigation/native';
+import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import RoundMenu from '../react-native-rotating-menu/src';
-import { baseUrl ,centerImageUrl} from '../Config';
+import {baseUrl, centerImageUrl} from '../Config';
+import NullDataComponent from '../Components/NullDataComponent';
 
 const HomeScreen = props => {
   const privacy = useSelector(state => state.authReducer.privacy);
   const themeColor = useSelector(state => state.authReducer.ThemeColor);
   const profileData = useSelector(state => state.commonReducer.selectedProfile);
-  console.log("🚀 ~ HomeScreen ~ profileData==========>:", profileData)
   const newSignUp = useSelector(state => state.authReducer.newSignUp);
   const token = useSelector(state => state.authReducer.token);
-  console.log("🚀 ~ HomeScreen ~ token:", token)
+
+  const backRef = useRef(null);
+  const isFocused = useIsFocused();
+  const navigation = useNavigation();
+
   const [selectedBubbleId, setSelectedBubbleId] = useState(null);
   const [prompt, setPrompt] = useState(false);
   const [clicked, setclicked] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [alignment, setAlignment] = useState('left');
   const [highlightedIcon, setHighlightedIcon] = useState(null);
-  // console.log("🚀 ~ HomeScreen ~ highlightedIcon=======>:", highlightedIcon)
   const [isVisible, setIsVisible] = useState(false);
   const [text, setText] = useState('');
-  const isFocused = useIsFocused();
-
   const [animationStopped, setAnimationStopped] = useState(false);
-
-  const backRef = useRef(null);
   const [rotationAngle, setRotationAngle] = useState(0);
-  console.log("🚀 ~ HomeScreen ~ rotationAngle:", rotationAngle)
-  const [bubbleData, setBubbleData] = useState({})
-  // console.log("🚀 ~ file: HomeScreen.js:63 ~ HomeScreen ~ bubbleData:", bubbleData?.map(item => item?.id))
-  // const token = useSelector(state => state.authReducer.token);
-
+  const [bubbleData, setBubbleData] = useState({});
   const [content, setContent] = useState([]);
-
   const [profiles, setProfiles] = useState([
     {
       id: 1,
@@ -105,8 +104,19 @@ const HomeScreen = props => {
       image: require('../Assets/Images/dummyUser1.png'),
     },
   ]);
-
   const [bubbles, setBubbles] = useState([]);
+  const [horizontalBubble, setHorizontalBubble] = useState([]);
+  const [myFeeds, setMyFeeds] = useState([]);
+
+  const getHorizontalBubbles = async () => {
+    const url = `auth/home_multiple_community/${profileData?.id}`;
+    setIsLoading(true);
+    const response = await Get(url, token);
+    setIsLoading(false);
+    if (response != undefined) {
+      setHorizontalBubble(response?.data?.message);
+    }
+  };
 
   const getBubbles = async () => {
     const url = `auth/community/${profileData?.id}`;
@@ -114,44 +124,65 @@ const HomeScreen = props => {
     const response = await Get(url, token);
     setIsLoading(false);
     if (response != undefined) {
-      // console.log(JSON.stringify(response?.data,null,2))
-      // setBubbles(response?.data?.community_info);
-      setContent(
-        response?.data?.data?.slice(0,10)?.map((item,index) => {
-          console.log(item?.image)
-          return  index == 9 ? {
+      setContent([
+        ...response?.data?.data?.interests?.map((item, index) => {
+          return {
             id: item?.id,
             image: (
               <Image
-                source={require('../Assets/Images/10.png')}
-                resizeMode="cover"
-                style={styles.icon}
-              />
-            ),
-            bubble: true,
-            item:item,
-            source: require('../Assets/Images/10.png'),
-            private: item?.privacy?.toLowerCase() == 'yes' ? true : false,
-            onPress : ()=>navigationService.navigate('Allcommunities')
-          } 
-          :
-          {
-            // key:item?.id,
-            id: item?.id,
-            image: (
-              <Image
-                source={{uri: `${baseUrl}/${item?.image}`}}
+                source={{uri: `${baseUrl}/${item?.interest_detail?.image}`}}
                 resizeMode="cover"
                 style={styles.icon}
               />
             ),
             bubble: item?.bubble == 1 ? true : false,
-            item:item,
-            source: {uri: `${baseUrl}/${item?.image}`},
-            private: item?.privacy?.toLowerCase() == 'yes' ? true : false,
+            item: item,
+            source: {uri: `${baseUrl}/${item?.interest_detail?.image}`},
+            private: false,
+            interest: true,
+            onPress: () => {
+              navigationService.navigate('feedsnBubbles', {
+                interest_id: item?.interest_detail?.id,
+                interestImage: item?.interest_detail?.image,
+                interestName: item?.interest_detail?.name,
+              });
+            },
           };
         }),
-      );
+        ...response?.data?.data?.community_list
+          ?.slice(0, 4)
+          ?.map((item, index) => {
+            return {
+              id: item?.community_id,
+              image: (
+                <Image
+                  source={{uri: `${baseUrl}/${item?.community_info?.image}`}}
+                  resizeMode="cover"
+                  style={styles.icon}
+                />
+              ),
+              bubble: true,
+              item: item,
+              source: {uri: `${baseUrl}/${item?.community_info?.image}`},
+
+              private: false,
+              onPress: () => {
+                setclicked(true);
+                setSelectedBubbleId(item?.community_id);
+              },
+            };
+          }),
+      ]);
+    }
+  };
+
+  const getMyFeeds = async () => {
+    const url = `auth/my-feed-list/${profileData?.id}`;
+    setIsLoading(true);
+    const response = await Get(url, token);
+    setIsLoading(false);
+    if (response != undefined) {
+      setMyFeeds(response?.data?.feeds_info);
     }
   };
 
@@ -171,13 +202,14 @@ const HomeScreen = props => {
   useEffect(() => {
     if (newSignUp) {
       setTimeout(() => {
-        // console.log('New Signup');
         setPrompt(true);
       }, 10000);
     }
   }, []);
   useEffect(() => {
     getBubbles();
+    getHorizontalBubbles();
+    getMyFeeds();
   }, [isFocused]);
 
   return (
@@ -190,7 +222,6 @@ const HomeScreen = props => {
 
       <ImageBackground
         source={
-          // require('../Assets/Images/activity1.png')
           privacy == 'private'
             ? require('../Assets/Images/theme2.jpg')
             : require('../Assets/Images/Main.png')
@@ -198,11 +229,10 @@ const HomeScreen = props => {
         resizeMode={'cover'}
         style={styles.container}>
         {highlightedIcon && (
-          <View style={[styles.highlightedIcon , { transform: [{scaleX: -1 }] }]}>
+          <View style={[styles.highlightedIcon, {transform: [{scaleX: -1}]}]}>
             {highlightedIcon}
-            </View>
+          </View>
         )}
-       
 
         <View style={styles.container2}>
           <Animatable.View ref={backRef} style={styles.animatedView}>
@@ -216,7 +246,7 @@ const HomeScreen = props => {
                 {profileData?.name}
               </CustomText>
             </View>
-           
+
             <LinearGradient
               style={[
                 styles.gradient,
@@ -225,7 +255,10 @@ const HomeScreen = props => {
               ]}
               colors={themeColor}>
               <View
-                style={[styles.profileContainer, {backgroundColor: themeColor}]}>
+                style={[
+                  styles.profileContainer,
+                  {backgroundColor: themeColor},
+                ]}>
                 {profiles.map(item => {
                   return (
                     <View style={styles.profile}>
@@ -250,64 +283,220 @@ const HomeScreen = props => {
                 alignment == 'right' && {left: 5},
               ]}></Image>
           </Animatable.View>
-          <GestureHandlerRootView>
+          <View>
             <View
               style={[
-                styles.menuView,
+                styles.feedsContainer,
                 {
-                  marginLeft:
-                    alignment == 'left'
-                      ? moderateScale(20, 0.3)
-                      : moderateScale(-10, 0.3),
+                  paddingVertical: moderateScale(10, 0.6),
+                  // backgroundColor :"red",
+                  transform: [{scaleX: alignment == 'left' ? 1 : -1}],
                 },
+                alignment == 'left' && {marginLeft: moderateScale(50, 0.6)},
+                alignment == 'right' && {marginRight: moderateScale(50, 0.6)},
               ]}>
-              <RoundMenu
-                borderColor={profileData?.type == 'Content Creator'
-                ? Color.neonGreen
-                : profileData?.type == 'Business & Entrepreneurship'
-                ? Color.green
-                : profileData?.type == 'Community & Connection'
-                ? 'pink'
-                : profileData?.type == 'Learning & Exploring'
-                ? 'purple'
-                : 'black'}
-                centerContent={
-                  // <View>
+              <FlatList
+                data={horizontalBubble}
+                keyExtractor={item => item?.id}
+                scrollEnabled
+                showsVerticalScrollIndicator
+                horizontal
+                showsHorizontalScrollIndicator={false}
+                contentContainerStyle={{
+                  paddingLeft: moderateScale(10, 0.6),
+                  paddingRight: moderateScale(30, 0.6),
+                }}
+                renderItem={({item}) => {
+                  // console.log('🚀 ~ HomeScreen ~ item:', item);
+                  return (
+                    <TouchableOpacity
+                      onPress={() => {
+                        navigationService.navigate('Bubble', {
+                          id: item?.id,
+                          fromHome: true,
+                        });
+                      }}
+                      style={styles.feed}>
+                      <View
+                        style={[
+                          styles.feedcircle,
+                          {
+                            borderColor:
+                              item?.type == 'owner'
+                                ? Color.neonGreen
+                                : item?.type == 'spend time'
+                                ? Color.themeColor
+                                : item?.type == 'admin'
+                                ? 'yellow'
+                                : 'black',
+                          },
+                        ]}>
+                        <View style={styles.image1}>
+                          <CustomImage
+                            onPress={() => {
+                              navigationService.navigate(
+                                'Bubble',
+                                {id: item?.id},
+                                {fromHome: true},
+                              );
+                            }}
+                            source={{uri: `${baseUrl}/${item?.image}`}}
+                            style={styles.image}
+                          />
+                        </View>
+                      </View>
+                      <CustomText
+                        isBold
+                        numberOfLines={1}
+                        style={{
+                          // backgroundColor :'green',
+                          paddingLeft: moderateScale(10, 0.6),
+                          width: windowWidth * 0.13,
+                          paddingVertical: moderateScale(5, 0.6),
+                          marginHorizontal: moderateScale(10, 0.3),
+                          fontSize: moderateScale(13, 0.6),
+                        }}>
+                        {item?.title}
+                      </CustomText>
+                    </TouchableOpacity>
+                  );
+                }}
+              />
+            </View>
 
-                    <ImageBackground
-                 
+            <GestureHandlerRootView>
+              <View
+                style={[
+                  styles.menuView,
+                  {
+                    marginLeft:
+                      alignment == 'left'
+                        ? moderateScale(20, 0.3)
+                        : moderateScale(-10, 0.3),
+                  },
+                ]}>
+                <RoundMenu
+                  borderColor={
+                    profileData?.type == 'Content Creator'
+                      ? Color.neonGreen
+                      : profileData?.type == 'Business & Entrepreneurship'
+                      ? Color.green
+                      : profileData?.type == 'Community & Connection'
+                      ? 'pink'
+                      : profileData?.type == 'Learning & Exploring'
+                      ? 'purple'
+                      : 'black'
+                  }
+                  centerContent={
+                    <Image
                       source={
-                        profileData?.photo ? {uri : `${centerImageUrl}${profileData?.photo}`} : 
-                        require('../Assets/Images/dummyman1.png')}
+                        profileData?.photo
+                          ? {uri: `${centerImageUrl}${profileData?.photo}`}
+                          : require('../Assets/Images/dummyman1.png')
+                      }
                       resizeMode="cover"
                       style={styles.centerImage}
                     />
-                    // </View>
-                }
-                largeImageSize={width / 3.5}
-                content={content}
+                  }
+                  largeImageSize={width / 3.5}
+                  content={content}
+                  contentContainerStyle={
+                    {
+                      // borderWidth: 3,
+                      // borderColor:'red'
+                    }
+                  }
+                  profileData={profileData}
+                  setHighlightedIcon={setHighlightedIcon}
+                  setAnimationStopped={setAnimationStopped}
+                  rotationAngle={rotationAngle}
+                  alignment={alignment}
+                  setBubbleData={setBubbleData}
+                  elevation={5}
+                  setIsVisible={setIsVisible}
+                  setSelectedBubbleId={setSelectedBubbleId}
+                  setclicked={setclicked}
+                  centerImageOnPress={() => {
+                    navigationService.navigate('Profile', {isEdit: true});
+                  }}
+                  ceneterImageOnLongPress={() => {
+                    navigationService.navigate('Profile', {
+                      fromCreateNewProfile: true,
+                    });
+                  }}
+                />
+              </View>
+            </GestureHandlerRootView>
+
+            <View
+              style={[
+                styles.feedsContainer,
+                {
+                  height: windowHeight * 0.2,
+                  paddingVertical: moderateScale(30, 0.6),
+                  transform: [{scaleX: alignment == 'left' ? 1 : -1}],
+                },
+                alignment == 'left' && {marginLeft: moderateScale(50, 0.6)},
+                alignment == 'right' && {marginRight: moderateScale(50, 0.6)},
+              ]}>
+              <FlatList
+                data={myFeeds}
+                // data={[1,2,3,4,5,6,7,8,9]}
+                keyExtractor={item => item?.id}
+                scrollEnabled
+                showsVerticalScrollIndicator
+                horizontal
+                showsHorizontalScrollIndicator={false}
                 contentContainerStyle={{
-                  // borderWidth: 3,
-                  // borderColor:'red'
+                  paddingHorizontal: moderateScale(10, 0.6),
                 }}
-                profileData={profileData}
-                setHighlightedIcon={setHighlightedIcon}
-                setAnimationStopped={setAnimationStopped}
-                rotationAngle={rotationAngle}
-                alignment={alignment}
-                setBubbleData={setBubbleData}
-                elevation={5}
-                setIsVisible={setIsVisible}
-                setSelectedBubbleId={setSelectedBubbleId}
-                setclicked={setclicked}
+                renderItem={({item}) => {
+                  // console.log("🚀 ~ HomeScreen ~ item  =============== < here i m :", item)
+                  return (
+                    <View>
+                      <TouchableOpacity
+                        onPress={() => {
+                          navigation.navigate('FeedPost', {data: item});
+                        }}
+                        style={styles.newContainer}>
+                        <View style={styles.newimage}>
+                          <CustomImage
+                            onPress={() => {
+                              navigationService.navigate('FeedPost', {
+                                data: item,
+                              });
+                            }}
+                            source={{uri: `${baseUrl}/${item?.image}`}}
+                            style={styles.image}
+                          />
+                        </View>
+                      </TouchableOpacity>
+                      <CustomText
+                        isBold
+                        numberOfLines={1}
+                        style={{
+                          // backgroundColor :'green',
+                          paddingLeft: moderateScale(10, 0.6),
+                          width: windowWidth * 0.13,
+                          paddingVertical: moderateScale(5, 0.6),
+                          marginHorizontal: moderateScale(10, 0.3),
+                          fontSize: moderateScale(13, 0.6),
+                        }}>
+                        {/* hdhfj */}
+                        {item?.name}
+                      </CustomText>
+                    </View>
+                  );
+                }}
               />
             </View>
-          </GestureHandlerRootView>
+          </View>
+
           <TouchableOpacity
             style={[
               {
                 position: 'absolute',
-                bottom: 100,
+                bottom: 70,
               },
               alignment == 'left' && {right: 0},
               alignment == 'right' && {left: 0},
@@ -334,11 +523,7 @@ const HomeScreen = props => {
         </View>
       </ImageBackground>
       {clicked && (
-        <BlurView
-          // intensity={100}
-          style={styles.blurView}
-          blurRadius={5}
-          blurType={'light'}>
+        <BlurView style={styles.blurView} blurRadius={5} blurType={'light'}>
           <View style={styles.container3}>
             <CustomButton
               text={'Home'}
@@ -349,7 +534,11 @@ const HomeScreen = props => {
               onPress={() => {
                 // disptach(setUserToken({token : 'fasdasd awdawdawdada'}))
                 setclicked(false);
-                navigationService.navigate('Bubble', {id: selectedBubbleId});
+                navigationService.navigate(
+                  'Bubble',
+                  {id: selectedBubbleId},
+                  {fromHome: true},
+                );
               }}
               bgColor={['#FFFFFF', '#FFFFFF']}
               borderRadius={moderateScale(30, 0.3)}
@@ -404,7 +593,6 @@ const styles = ScaledSheet.create({
   profileContainer: {
     width: windowWidth * 0.1,
     height: windowHeight * 0.9,
-// backgroundColor :'red',
     alignItems: 'center',
     zIndex: 1,
     position: 'absolute',
@@ -439,20 +627,16 @@ const styles = ScaledSheet.create({
     zIndex: 1,
     position: 'absolute',
     justifyContent: 'center',
-    // backgroundColor :'red'
   },
   centerImage: {
     width: '100%',
     height: '100%',
-    // overflow:'hidden'
-    // backgroundColor :'red'
   },
   container: {
     width: windowWidth,
     height: windowHeight * 0.9,
     overflow: 'hidden',
     justifyContent: 'center',
-    // backgroundColor :'red',
   },
   highlightedIcon: {
     width: windowWidth,
@@ -460,8 +644,6 @@ const styles = ScaledSheet.create({
     position: 'absolute',
     zIndex: 0,
     top: -40,
-    // top :50,
-    // backgroundColor :'red' 
   },
   container2: {
     width: windowWidth,
@@ -487,11 +669,9 @@ const styles = ScaledSheet.create({
     alignItems: 'center',
   },
   menuView: {
-    // width: windowWidth * 0.9,
-    height: windowHeight * 0.75,
+    height: windowHeight * 0.4,
     alignItems: 'center',
     justifyContent: 'center',
-// backgroundColor :'red',
     zIndex: 2,
   },
   animatedView: {
@@ -507,6 +687,52 @@ const styles = ScaledSheet.create({
     transform: [{rotate: '270deg'}],
     textAlign: 'center',
     textTransform: 'uppercase',
-    // backgroundColor :'red'
+  },
+  feedsContainer: {
+    width: windowWidth * 0.9,
+    height: windowHeight * 0.16,
+  },
+  heading: {
+    fontSize: moderateScale(25, 0.2),
+    marginHorizontal: moderateScale(11, 0.1),
+    color: 'white',
+    marginBottom: moderateScale(11, 0.3),
+  },
+
+  image1: {
+    width: windowWidth * 0.17,
+    height: windowWidth * 0.17,
+    borderRadius: (windowWidth * 0.2) / 2,
+    overflow: 'hidden',
+  },
+  feedcircle: {
+    width: windowWidth * 0.15,
+    height: windowWidth * 0.15,
+    borderRadius: (windowWidth * 0.15) / 2,
+    borderWidth: 3,
+    justifyContent: 'center',
+    alignItems: 'center',
+    overflow: 'hidden',
+    padding: 10,
+    marginHorizontal: moderateScale(7, 0.6),
+  },
+  feedrow: {
+    flexDirection: 'row',
+    width: windowWidth,
+  },
+  newContainer: {
+    marginHorizontal: moderateScale(8, 0.6),
+    borderRadius: moderateScale(10, 0.6),
+    borderWidth: 3,
+    borderColor: Color.themeColor,
+    width: windowWidth * 0.13,
+    height: windowHeight * 0.07,
+    overflow: 'hidden',
+    backgroundColor: 'red',
+  },
+  newimage: {
+    height: '100%',
+    width: '100%',
+    overflow: 'hidden',
   },
 });

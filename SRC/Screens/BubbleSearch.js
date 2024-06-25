@@ -268,7 +268,7 @@ const BubbleSearch = () => {
             // backgroundColor: 'red',
           }}>
           <FlatList
-            data={isSelected == 'bubbles' ? data?.community_info : data?.feeds}
+            data={isSelected == 'bubbles' ? data?.community_list : data?.feeds}
             showsVerticalScrollIndicator={false}
             contentContainerStyle={{
               marginBottom: moderateScale(10, 0.3),

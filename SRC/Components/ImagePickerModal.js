@@ -46,11 +46,11 @@ const requestCameraPermission = async () => {
 const ImagePickerModal = props => {
   const themeColor = useSelector(state => state.authReducer.ThemeColor);
   let {show, setShow, setFileObject, setMultiImages, crop, type} = props;
-  // console.log("🚀 ~ file: ImagePickerModal.js:49 ~ ImagePickerModal ~ type:", type)
+  console.log("🚀 ~ file: ImagePickerModal.js:49 ~ ImagePickerModal ~ type:", type)
 
   const openGallery = () => {
     let options = {
-      mediaType: type ? type : 'photo',
+      mediaType: 'video',
       maxWidth: 500,
       maxHeight: 500,
       quailty: 0.9,
@@ -69,38 +69,40 @@ const ImagePickerModal = props => {
     //     :
     launchImageLibrary(options, response => {
     console.log('Here is the response =====', response)
-      
-      if (Platform.OS === 'ios') {
-        setShow(false);
-      }
-      if (response.didCancel) {
-      } else if (response.error) {
-      } else if (response.customButton) {
-        alert(response.customButton);
-      }
-      else if( response?.assets && response?.assets[0]?.duration > 5){
-      alert('Video is too long');
+     
 
-      } 
-      
-      else {
-        setFileObject &&
-          setFileObject({
-            uri: type == 'video' ?  `${response?.assets[0]?.uri}`: response?.assets[0]?.uri ,
-            type: response?.assets[0]?.type,
-            name: response?.assets[0]?.fileName,
-          });
-
-        setMultiImages &&
-          setMultiImages(x => [
-            ...x,
-            {
-              uri: response?.assets[0]?.uri,
+        if (Platform.OS === 'ios') {
+          setShow(false);
+        }
+        if (response.didCancel) {
+        } else if (response.error) {
+        } else if (response.customButton) {
+          alert(response.customButton);
+        }
+        else if( response?.assets && response?.assets[0]?.duration > 15){
+        alert('Video is too long');
+  
+        } 
+        
+        else {
+          setFileObject &&
+            setFileObject({
+              uri: type == 'video' ?  `${response?.assets[0]?.uri}`: response?.assets[0]?.uri ,
               type: response?.assets[0]?.type,
               name: response?.assets[0]?.fileName,
-            },
-          ]);
-      }
+            });
+  
+          setMultiImages &&
+            setMultiImages(x => [
+              ...x,
+              {
+                uri: response?.assets[0]?.uri,
+                type: response?.assets[0]?.type,
+                name: response?.assets[0]?.fileName,
+              },
+            ]);
+        }
+   
     });
     // // }
     // console.log("🚀 ~ file: ImagePickerModal.js:103 ~ openGallery ~ response:", response)
@@ -126,10 +128,11 @@ const ImagePickerModal = props => {
     }
     launchCamera(options, response => {
        console.log('Response from camera    =====', response?.assets)
+       try{
       if (Platform.OS == 'ios') {
         setShow(false);
       }
-      else if( response?.assets && response?.assets[0]?.duration > 5){
+      else if( response?.assets && response?.assets[0]?.duration > 15){
         alert('Video is too long')
       }
       // if (response.didCancel) {
@@ -155,6 +158,9 @@ const ImagePickerModal = props => {
             },
           ]);
       }
+    }catch(error){
+      console.log('value is undefined',error)
+    }
     });
   };
 
@@ -185,7 +191,7 @@ const ImagePickerModal = props => {
             styles.modalContentContianer,
             {borderBottomColor: themeColor[1], borderTopColor: themeColor[1]},
           ]}>
-          {type != 'video' && <TouchableOpacity
+           <TouchableOpacity
             onPress={() => {
               if (Platform.OS === 'android') {
                 setShow(false);
@@ -202,7 +208,7 @@ const ImagePickerModal = props => {
               }}
             />
             <CustomText style={styles.modalBtnText}>Gallery</CustomText>
-          </TouchableOpacity>}
+          </TouchableOpacity>
           <TouchableOpacity
             onPress={() => {
               if (Platform.OS === 'android') {

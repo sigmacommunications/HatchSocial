@@ -59,6 +59,11 @@ import Allcommunities from './Screens/Allcommunities';
 import MyPost from './Screens/MyPost';
 import MemberShip from './Screens/MemberShip';
 import Interests from './Screens/Interests';
+import FeedsAndBubbles from './Screens/FeedsAndBubbles';
+import FeedsPostScreen from './Screens/FeedsPostScreen';
+import FeedPost from './Screens/FeedPost';
+import SpotifyScreen from './Screens/SpotifyScreen';
+
 
 const AppNavigator = () => {
   // const isLogin = false;
@@ -105,11 +110,10 @@ const AppNavigator = () => {
     : profileSelected == false
     ? 'ProfilesListing'
     : interestSelected == false
-    ? 'Interests'
+    ? 'InterestSelection'
     : bubbleSelected == false
     ? 'BubbleSelection'
     : 'TabNavigation';
-    console.log("🚀 ~ file: appNavigation.js:95 ~ AppNavigatorContainer ~ thirdScreen:", thirdScreen)
 
     return (
       <NavigationContainer ref={navigationService.navigationRef}>
@@ -117,10 +121,12 @@ const AppNavigator = () => {
           initialRouteName={thirdScreen}
           screenOptions={{headerShown: false}}>
           <RootNav.Screen name="LoginScreen" component={LoginScreen} />
-          <RootNav.Screen
+          <RootNav.Screen name="InterestSelection" component={InterestSelection} />
+
+          {/* <RootNav.Screen
             name="Interests"
             component={Interests}
-          />
+          /> */}
           <RootNav.Screen name="BubbleSelection" component={BubbleSelection} />
           <RootNav.Screen name="PostScreen" component={PostScreen} />
           <RootNav.Screen name="FeedList" component={FeedList} />
@@ -131,7 +137,8 @@ const AppNavigator = () => {
           <RootNav.Screen name="Feeds" component={Feeds} />
 
           <RootNav.Screen name="ProfileType" component={MemberShip} />
-          {/* <RootNav.Screen name="ProfileType" component={ProfileType} /> */}
+          <RootNav.Screen name="feedsnBubbles" component={FeedsAndBubbles} />
+          <RootNav.Screen name="Spotify" component={SpotifyScreen} />
           <RootNav.Screen name="QuestionScreen" component={QuestionScreen} />
           <RootNav.Screen name="EventDetails" component={EventDetails} />
           <RootNav.Screen name="BubbleSearch" component={BubbleSearch} />
@@ -169,6 +176,10 @@ const AppNavigator = () => {
           <RootNav.Screen name="LoginProfile" component={LoginProfile} />
           <RootNav.Screen name="Activites" component={Activites} />
           <RootNav.Screen name="ResetPasscode" component={ResetPasscode} />
+          <RootNav.Screen name="FeedsPostScreen" component={FeedsPostScreen} />
+          <RootNav.Screen name="FeedPost" component={FeedPost} />
+
+
 
 
         </RootNav.Navigator>

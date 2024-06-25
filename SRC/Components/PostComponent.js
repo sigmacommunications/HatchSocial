@@ -7,6 +7,7 @@ import {
   Alert,
   ToastAndroid,
   Platform,
+  Text,
 } from 'react-native';
 import React, {useState, useRef} from 'react';
 import {apiHeader, windowHeight, windowWidth} from '../Utillity/utils';
@@ -30,17 +31,23 @@ import {Delete, Post} from '../Axios/AxiosInterceptorFunction';
 import {useSelector} from 'react-redux';
 import moment from 'moment';
 import TextInputWithTitle from './TextInputWithTitle';
-import Entypo from 'react-native-vector-icons/Entypo'
+import Entypo from 'react-native-vector-icons/Entypo';
+import FeedVideo from './FeedVideo';
+import VideoComponent from '../Components/VideoComponent';
 
 const PostComponent = ({data, setData, wholeData, fromMyPost}) => {
-  console.log('🚀 ~ PostComponent ~ data:', data?.id);
+  console.log(
+    '🚀 ~ PostComponent ~ data:',
+    data
+    // JSON.stringify(data, null, 2),
+  );
+
   const refRBSheet = useRef();
   const token = useSelector(state => state.authReducer.token);
   const profileData = useSelector(state => state.commonReducer.selectedProfile);
   const MoreIcon = require('../Assets/Images/threedots.png');
 
   const [like, setLike] = useState(data?.my_like ? data?.my_like : null);
-  console.log("🚀 ~ PostComponent ~ like:", like)
   const [loading, setloading] = useState(false);
   const [yourComment, setYourComment] = useState('');
   const [comments, setComments] = useState(data?.comments);
@@ -53,18 +60,18 @@ const PostComponent = ({data, setData, wholeData, fromMyPost}) => {
     const url = `auth/post/${data?.id}`;
     setloading(true);
     const response = await Delete(url, apiHeader(token));
-    
+
     setloading(false);
     if (response != undefined) {
-      console.log("🚀 ~ handledeletePost ~ response:", response?.data)
-      
       // let temp = [...wholeData];
       setData(wholeData.filter((item, index) => item?.id != data?.id));
     }
   };
 
   const likePost = async () => {
-    const url = `auth/post_like`;
+    // const url = `auth/post_like`;
+    const url = `auth/feed_post_like `;
+
     const body = {
       post_id: data?.id,
       profile_id: profileData?.id,
@@ -81,7 +88,8 @@ const PostComponent = ({data, setData, wholeData, fromMyPost}) => {
   };
 
   const addComment = async () => {
-    const url = 'auth/comment';
+    // const url = 'auth/comment';
+    const url = `auth/feed_post_comment`;
     const body = {
       profile_id: profileData?.id,
       post_id: data?.id,
@@ -157,7 +165,7 @@ const PostComponent = ({data, setData, wholeData, fromMyPost}) => {
                 flexDirection: 'row',
               }}>
               <CustomText numberOfLines={2}>
-                {fromMyPost ? data?.feed?.name :data?.profile_info?.name}
+                {fromMyPost ? data?.feed?.name : data?.profile_info?.name}
               </CustomText>
               {fromMyPost == true && (
                 <>
@@ -222,38 +230,40 @@ const PostComponent = ({data, setData, wholeData, fromMyPost}) => {
               style={{
                 flexDirection: 'row',
               }}>
-                {fromMyPost ?   <CustomText
-                      style={{
-                        color: Color.blue,
-                        fontSize: moderateScale(12, 0.6),
-                        textAlign: 'left',
-                        // color: '#000',
-                      }}>
-                      {data?.hashtags}
-                    </CustomText> :
-              data?.hashtags?.map((item, index) => {
-                console.log("🚀 ~ data?.hashtags?.map ~ item=======>:", item)
-                return (
-                  <View style={styles.hashContainer}>
-                    <CustomText
-                      style={{
-                        color: Color.blue,
-                        fontSize: moderateScale(12, 0.6),
-                        textAlign: 'left',
-                        // color: '#000',
-                      }}>
-                      {item?.post_hashtags[0]?.title}
-                    </CustomText>
-                  </View>
-                );
-              })
-            }
+              {fromMyPost ? (
+                <CustomText
+                  style={{
+                    color: Color.blue,
+                    fontSize: moderateScale(12, 0.6),
+                    textAlign: 'left',
+                    // color: '#000',
+                  }}>
+                  {data?.hashtags}
+                </CustomText>
+              ) : (
+                data?.hashtags?.map((item, index) => {
+                  console.log('🚀 ~ data?.hashtags?.map ~ item=======>:', item);
+                  return (
+                    <View style={styles.hashContainer}>
+                      <CustomText
+                        style={{
+                          color: Color.blue,
+                          fontSize: moderateScale(12, 0.6),
+                          textAlign: 'left',
+                          // color: '#000',
+                        }}>
+                        {item?.post_hashtags[0]?.title}
+                      </CustomText>
+                    </View>
+                  );
+                })
+              )}
             </View>
           </CustomText>
         </View>
-        {(data?.post_images || data?.post_videos) && (
+        {/* {(data?.post_images || data?.post_videos ) && (
           <View style={{width: windowWidth, height: windowHeight * 0.3}}>
-            {data?.post_images ? (
+            {data?.post_images != null  ? (
               <CustomImage
                 onPress={() => {
                   // navigationService.navigate('Feeds', {image: data?.image});
@@ -266,11 +276,14 @@ const PostComponent = ({data, setData, wholeData, fromMyPost}) => {
                 }}
                 resizeMode="cover"
               />
-            ) : (
-              <VideoController item={data} />
+              
+            ) : ( */}
+            <VideoComponent item={data}/>
+              {/* <FeedVideo item={data}/> */}
+              {/* // <VideoController item={data?.post_videos} />
             )}
           </View>
-        )}
+        )} */}
 
         <View style={styles.container}>
           <View style={styles.containerView}>
@@ -319,7 +332,6 @@ const PostComponent = ({data, setData, wholeData, fromMyPost}) => {
                 {data?.View} views
               </CustomText>
             )}
-            
           </View>
         </View>
 
@@ -336,9 +348,9 @@ const PostComponent = ({data, setData, wholeData, fromMyPost}) => {
             style={styles.likebtn}>
             <Icon
               as={AntDesign}
-              name={like  ? 'like1' : 'like2'}
+              name={like ? 'like1' : 'like2'}
               size={23}
-              color={like  ? '#2a95fd' : Color.themeBlack}
+              color={like ? '#2a95fd' : Color.themeBlack}
               onPress={() => {
                 likePost();
               }}

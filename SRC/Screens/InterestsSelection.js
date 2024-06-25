@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from 'react';
-import {ActivityIndicator} from 'react-native';
+import {ActivityIndicator, FlatList} from 'react-native';
 import * as Animatable from 'react-native-animatable';
 import Color from '../Assets/Utilities/Color';
 import CustomImage from '../Components/CustomImage';
@@ -19,17 +19,17 @@ import Header from '../Components/Header';
 import {View} from 'react-native';
 import CustomButton from '../Components/CustomButton';
 import {useDispatch, useSelector} from 'react-redux';
-import {
-  setInterestSelected,
-} from '../Store/slices/auth';
+import {setInterestSelected} from '../Store/slices/auth';
 import {Get, Post} from '../Axios/AxiosInterceptorFunction';
 import {setSelectedFeeds, setSelectedProfileData} from '../Store/slices/common';
 import CustomText from '../Components/CustomText';
-import { baseUrl } from '../Config';
-import { useNavigation } from '@react-navigation/native';
+import {baseUrl} from '../Config';
+import {useNavigation} from '@react-navigation/native';
+import { color } from 'react-native-reanimated';
 
 const InterestSelection = () => {
-  const navigation = useNavigation()
+  const dispatch = useDispatch();
+  const navigation = useNavigation();
   const privacy = useSelector(state => state.authReducer.privacy);
   const themeColor = useSelector(state => state.authReducer.ThemeColor);
   const token = useSelector(state => state.authReducer.token);
@@ -37,165 +37,62 @@ const InterestSelection = () => {
 
   const [isLaoding, setIsLaoding] = useState(false);
   const [selectedBubble, setSelectedBubble] = useState([]);
-  console.log("🚀 ~ file: InterestsSelection.js:38 ~ InterestSelection ~ selectedBubble:", selectedBubble)
- const [interestListing, setInterestListing] = useState([])
-
+  const [interestListing, setInterestListing] = useState([]);
+  const [selectedInterests, setSelectedInterests] = useState('invest');
   const selectedProfile = useSelector(
     state => state.commonReducer.selectedProfile,
   );
+  console.log(selectedProfile)
 
-  const dispatch = useDispatch();
-
-  const [BubbleImageArraty, setBubbleImageArraty] = useState([
-    {
-      id: 1,
-      image: require('../Assets/Images/amazing.jpg'),
-      added: false,
-      name: 'Sports',
-    },
-    {
-      id: 2,
-      image: require('../Assets/Images/autumn.jpg'),
-      added: false,
-      name: 'Music',
-    },
-    {
-      id: 3,
-      image: require('../Assets/Images/cake.jpg'),
-      added: false,
-      name: 'Technology',
-    },
-    {
-      id: 4,
-      image: require('../Assets/Images/colorful.jpg'),
-      added: false,
-      name: 'Arts and Crafts',
-    },
-    {
-      id: 5,
-      image: require('../Assets/Images/dubai.jpg'),
-      added: false,
-      name: 'Travel',
-    },
-    {
-      id: 6,
-      image: require('../Assets/Images/frozen.jpg'),
-      added: false,
-      name: 'Food',
-    },
-    {
-      id: 7,
-      image: require('../Assets/Images/Historical.jpg'),
-      added: false,
-      name: 'Gaming',
-    },
-    {
-      id: 8,
-      image: require('../Assets/Images/leave.jpg'),
-      added: false,
-      name: 'pets',
-    },
-    {
-      id: 9,
-      image: require('../Assets/Images/london.jpg'),
-      added: false,
-      name: 'learning',
-    },
-    {
-      id: 10,
-      image: require('../Assets/Images/turkey.jpg'),
-      added: false,
-      name: 'Books',
-    },
-    {
-      id: 11,
-      image: require('../Assets/Images/vege.jpg'),
-      added: false,
-      name: 'Fashion',
-    },
-    {
-      id: 12,
-      image: require('../Assets/Images/frozen.jpg'),
-      added: false,
-      name: 'Science and nature',
-    },
-    // {
-    //   id: 13,
-    //   image: require('../Assets/Images/Historical.jpg'),
-    //   added: false,
-    //   name: 'Movies and entertainment',
-    // },
-    // {
-    //   id: 14,
-    //   image: require('../Assets/Images/dubai.jpg'),
-    //   added: false,
-    //   name: 'Photography',
-    // },
-    // {
-    //   id: 15,
-    //   image: require('../Assets/Images/leave.jpg'),
-    //   added: false,
-    //   name: 'Health',
-    // },
-    // {
-    //   id: 16,
-    //   image: require('../Assets/Images/london.jpg'),
-    //   added: false,
-    //   name: 'Parenting',
-    // },
-    // {
-    //   id: 17,
-    //   image: require('../Assets/Images/london.jpg'),
-    //   added: false,
-    //   name: 'Parenting',
-    // },
-    // {
-    //   id: 18,
-    //   image: require('../Assets/Images/london.jpg'),
-    //   added: false,
-    //   name: 'Parenting',
-    // },
-  ]);
-
-  // const getInterest = async () => {
-  //   const url = `auth/interest_list`;
-  //   setIsLaoding(true);
-  //   const response = await Get(url, token);
-  //   setIsLaoding(false);
-  //   if (response != undefined) {
-  //    console.log("🚀 ~ file: InterestsSelection.js:165 ~ getInterest ~ response:", response?.data)
-  //     setInterestListing(response?.data?.post_info);
-  //   }
-  // };
  
 
-  // const sendSelectedFeeds = async () => {
-  //   const url = 'auth/subscribe';
-  //   const body = {
-  //     id: profileData?.id,
-  //     interests: selectedBubble,
-  //   };
-  //   setIsLaoding(true);
-  //   const response = await Post(url, body, apiHeader(token));
-  //   setIsLaoding(false);
-  //   if (response != undefined) {
-  //     dispatch(setSelectedProfileData(response?.data?.profile_info));
-  //     dispatch(setInterestSelected(true));
-  //     Platform.OS == 'android'
-  //       ? ToastAndroid.show('Saved', ToastAndroid.SHORT)
-  //       : Alert.alert('Saved');
-  //   }
-  // };
 
-  // useEffect(() => {
-  //   getInterest();
-  // }, []);
+ 
+  const getInterest = async () => {
+    const url = `auth/interest_list?type=${selectedInterests}`
+    setIsLaoding(true);
+    const response = await Get(url, token);
+    setIsLaoding(false);
+    if (response != undefined) {console.log('data ===== >', response?.data?.interest_info)
+      setInterestListing(response?.data?.interest_info);
+    }
+  };
+
+  const sendSelectedFeeds = async () => {
+    const url = 'auth/subscribe';
+    const body = {
+      id: profileData?.id,
+      interests: selectedBubble,
+      // interest_img :selectedBubble[0]?.image,
+    };
+    console.log("🚀 ~ sendSelectedFeeds ~ body:", body)
+    setIsLaoding(true);
+    const response = await Post(url, body, apiHeader(token));
+    setIsLaoding(false);
+    if (response != undefined) {
+      dispatch(setSelectedProfileData(response?.data?.profile_info));
+      dispatch(setInterestSelected(true));
+      Platform.OS == 'android'
+        ? ToastAndroid.show('Saved', ToastAndroid.SHORT)
+        : Alert.alert('Saved');
+    }
+  };
+
+  useEffect(() => {
+    console.log("🚀 ~ InterestSelection ~ selectedProfile:", selectedProfile)
+    console.log("🚀 ~ InterestSelection ~ selectedProfile:", selectedProfile)
+    if (selectedInterests != '') {
+    getInterest();
+    }
+  }, [selectedInterests]);
+ 
 
   return (
     <ScreenBoiler
       statusBarBackgroundColor={'white'}
       statusBarContentStyle={'dark-content'}>
       <Header Title={'Interests'} />
+
       <ImageBackground
         source={
           privacy == 'private'
@@ -226,14 +123,12 @@ const InterestSelection = () => {
             width={windowWidth * 0.2}
             height={windowHeight * 0.04}
             onPress={() => {
+            
               if (selectedBubble.length > 0) {
-      // dispatch(setSelectedProfileData(response?.data?.profile_info));
 
-                dispatch(setInterestSelected(true))
-                navigation.navigate('BubbleSelection')
+              
 
-                // setIsVisible(true)
-                // sendSelectedFeeds();
+                sendSelectedFeeds();
               } else {
                 Platform.OS == 'android'
                   ? ToastAndroid.show('Select any Bubble', ToastAndroid.SHORT)
@@ -260,6 +155,80 @@ const InterestSelection = () => {
             isGradient
           />
         </View>
+        <View style={styles.container1}>
+          <TouchableOpacity
+            style={[
+              styles.btn,
+              {
+                backgroundColor:
+                  selectedInterests == 'invest' ? 'purple' : 'white',
+              },
+            ]}
+            onPress={() => {
+              setSelectedInterests('invest');
+            }}>
+            <View style={styles.tabBarButton}>
+              <CustomText
+                isBold
+                // style={{
+                //   color:
+                //     selectedInterests == 'invest' ? Color.white : Color.black,
+                // }}
+              >
+                invest
+              </CustomText>
+            </View>
+          </TouchableOpacity>
+          <TouchableOpacity
+            onPress={() => {
+              console.log('i m Text here social');
+              setSelectedInterests('social');
+            }}
+            style={[
+              styles.btn,
+              {
+                backgroundColor:
+                  selectedInterests == 'social' ? '#ff66f5' : 'white',
+              },
+            ]}>
+            <View style={styles.tabBarButton}>
+              <CustomText isBold>Social</CustomText>
+            </View>
+          </TouchableOpacity>
+          <TouchableOpacity
+            onPress={() => {
+              setSelectedInterests('traders');
+            }}
+            style={[
+              ,
+              styles.btn,
+              {
+                backgroundColor:
+                  selectedInterests == 'traders' ? 'green' : 'white',
+              },
+            ]}>
+            <View style={styles.tabBarButton}>
+              <CustomText isBold>trade</CustomText>
+            </View>
+          </TouchableOpacity>
+          <TouchableOpacity
+            onPress={() => {
+              setSelectedInterests('biz');
+            }}
+            style={[
+              styles.btn,
+              {
+                backgroundColor:
+                  selectedInterests == 'biz' ? '#39FF14' : 'white',
+                // borderBottomWidth: selectedInterests == 'biz' ? 1 : 0,
+                // borderColor: selectedInterests == 'biz' && Color.themeblue,
+              },
+            ]}>
+            <View style={styles.tabBarButton}>
+              <CustomText isBold>biz</CustomText>
+            </View>
+          </TouchableOpacity>
+        </View>
         <ScrollView
           showsVerticalScrollIndicator={false}
           contentContainerStyle={{
@@ -273,124 +242,185 @@ const InterestSelection = () => {
           style={{
             width: windowWidth,
           }}>
-          {BubbleImageArraty.map((item, index) => {
-            return (
-              <TouchableOpacity
-              key={index}
-                onPress={() => {
-                  console.log('Here');
-                  if (selectedBubble.findIndex(i => i == item?.id) != -1) {
-                    setSelectedBubble(
-                      selectedBubble?.filter(i => i != item?.id),
-                    );
-                  } else {
-                    setSelectedBubble(prev => [...prev, item?.id]);
-                  }
-                  const data = [...BubbleImageArraty];
-                  data[index].added = !data[index].added;
-
-                  setBubbleImageArraty(data);
-                }}
-                style={{
-                  width: windowWidth * 0.3,
-                  height:
-                    index % 2 == 0 ? windowHeight * 0.3 : windowHeight * 0.17,
-                  borderRadius: moderateScale(15, 0.6),
-                  overflow: 'hidden',
-                  marginTop:
-                    index == 4 || index == 10 ? -windowHeight * 0.13 : 0,
-                  zIndex: 1,
-                  marginVertical: moderateScale(5, 0.3),
-                  marginHorizontal: moderateScale(2, 0.3),
-                }}>
-                <CustomText
-                  numberOfLines={1}
-                  style={{
-                    fontSize: moderateScale(11, 0.6),
-                    fontWeight: '700',
-                    textAlign: 'left',
-                    position: 'absolute',
-                    bottom: 0,
-                    padding: moderateScale(5, 0.6),
-                    width: '100%',
-                    paddingLeft: moderateScale(10, 0.3),
-                    zIndex: 1,
-                    color: 'white',
-                    backgroundColor: 'rgba(0,0,0,0.6)',
-                  }}>
-                  {item?.name}
-                </CustomText>
-                <CustomImage
+          <FlatList
+            showsVerticalScrollIndicator={true}
+            nestedScrollEnabled={true}
+            numColumns={3}
+            data={
+             
+            interestListing
+            }
+            keyExtractor={item => item.id}
+            contentContainerStyle={{
+              paddingBottom: moderateScale(50, 0.6),
+            }}
+            style={
+              {
+                // width: windowWidth * 0.95,
+                // alignSelf: 'center',
+              }
+            }
+            renderItem={({item, index}) => {
+              return (
+                <TouchableOpacity
+                  key={index}
                   onPress={() => {
+                    console.log('Here');
                     if (selectedBubble.findIndex(i => i == item?.id) != -1) {
                       setSelectedBubble(
                         selectedBubble?.filter(i => i != item?.id),
                       );
+                    } else if (selectedBubble.length == 8) {
+                      console.log('you can select only eight interest');
+                      Platform.OS == 'android'
+                        ? ToastAndroid.show(
+                            'you can select only eight interest',
+                            ToastAndroid.SHORT,
+                          )
+                        : Alert.alert('you can select only eight interest');
                     } else {
                       setSelectedBubble(prev => [...prev, item?.id]);
                     }
-                    const data = [...BubbleImageArraty];
-                    data[index].added = !data[index].added;
-
-                    setBubbleImageArraty(data);
+                   
                   }}
-                  source={BubbleImageArraty[index]?.image}
-                  // source={item?.image ? {uri:`${baseUrl}/${item.image}`} :BubbleImageArraty[index]?.image}
                   style={{
-                    width: '100%',
-                    height: '100%',
-                  }}
-                />
-                {selectedBubble.includes(item?.id)&& (
-                  <View
+                    width: windowWidth * 0.3,
+                    height:
+                      index % 2 == 0 ? windowHeight * 0.3 : windowHeight * 0.17,
+                    borderRadius: moderateScale(15, 0.6),
+                    overflow: 'hidden',
+                    marginTop:
+                      index == 4 || index == 10 ? -windowHeight * 0.13 : 0,
+                    zIndex: 1,
+                    marginVertical: moderateScale(5, 0.3),
+                    marginHorizontal: moderateScale(2, 0.3),
+                  }}>
+                  <CustomText
+                    numberOfLines={1}
                     style={{
-                      width: windowWidth * 0.3,
-                      height:
-                        index % 2 == 0
-                          ? windowHeight * 0.3
-                          : windowHeight * 0.17,
-                      backgroundColor: 'rgba(0,0,0,0.5)',
+                      fontSize: moderateScale(11, 0.6),
+                      fontWeight: '700',
+                      textAlign: 'left',
                       position: 'absolute',
+                      bottom: 0,
+                      padding: moderateScale(5, 0.6),
+                      width: '100%',
+                      paddingLeft: moderateScale(10, 0.3),
                       zIndex: 1,
+                      color: 'white',
+                      backgroundColor: 'rgba(0,0,0,0.6)',
                     }}>
-                    <Animatable.View
-                      animation="pulse"
-                      easing="ease-out"
-                      iterationCount="infinite"
+                    {item?.name}
+                  </CustomText>
+                  <CustomImage
+                    onPress={() => {
+                      if (selectedBubble.findIndex(i => i == item?.id) != -1) {
+                        setSelectedBubble(
+                          selectedBubble?.filter(i => i != item?.id),
+                        );
+                      } else if (selectedBubble.length == 8) {
+                        console.log('you can select only eight interest');
+                        Platform.OS == 'android'
+                          ? ToastAndroid.show(
+                              'you can select only eight interest',
+                              ToastAndroid.SHORT,
+                            )
+                          : Alert.alert('you can select only eight interest');
+                      } else {
+                        setSelectedBubble(prev => [...prev, item?.id]);
+                      }
+                    
+                    }}
+                    source={{uri :`${baseUrl}/${item?.image}` }}
+                    style={{
+                      width: '100%',
+                      height: '100%',
+                    }}
+                  />
+                  {selectedBubble.includes(item?.id) && (
+                    <View
                       style={{
-                        width: moderateScale(60, 0.6),
-                        height: moderateScale(60, 0.6),
-
-                        alignSelf: 'center',
-                        top: '35%',
+                        width: windowWidth * 0.3,
+                        height:
+                          index % 2 == 0
+                            ? windowHeight * 0.3
+                            : windowHeight * 0.17,
+                        backgroundColor: 'rgba(0,0,0,0.5)',
+                        position: 'absolute',
+                        zIndex: 1,
                       }}>
-                      <CustomImage
-                        onPress={() => {
-                          if (
-                            selectedBubble.findIndex(i => i == item?.id) !=
-                            -1
-                          ) {
-                            setSelectedBubble(
-                              selectedBubble?.filter(i => i != item?.id),
-                            );
-                          } else {
-                            setSelectedBubble(prev => [...prev, item?.id]);
-                          }
-                          const data = [...BubbleImageArraty];
-                          data[index].added = !data[index].added;
+                      <Animatable.View
+                        animation="pulse"
+                        easing="ease-out"
+                        iterationCount="infinite"
+                        style={{
+                          width: moderateScale(60, 0.6),
+                          height: moderateScale(60, 0.6),
 
-                          setBubbleImageArraty(data);
-                        }}
-                        source={require('../Assets/Images/heart.png')}                                
-                        resizeMode={'stretch'}
-                        style={{width: '100%', height: '100%'}}
-                      />
-                    </Animatable.View>
-                  </View>
-                )}
-              </TouchableOpacity>
-            );
-          })}
+                          alignSelf: 'center',
+                          top: '35%',
+                        }}>
+                        <CustomImage
+                          onPress={() => {
+                            if (
+                              selectedBubble.findIndex(i => i == item?.id) != -1
+                            ) {
+                              setSelectedBubble(
+                                selectedBubble?.filter(i => i != item?.id),
+                              );
+                            }else if (selectedBubble.length == 8) {
+                              console.log('you can select only eight interest');
+                              Platform.OS == 'android'
+                                ? ToastAndroid.show(
+                                    'you can select only eight interest',
+                                    ToastAndroid.SHORT,
+                                  )
+                                : Alert.alert('you can select only eight interest');
+                            } else {
+                              setSelectedBubble(prev => [...prev, item?.id]);
+                            }
+                          
+                          }}
+                          source={require('../Assets/Images/heart.png')}
+                          resizeMode={'stretch'}
+                          style={{width: '100%', height: '100%'}}
+                        />
+                      </Animatable.View>
+                    </View>
+                  )}
+                </TouchableOpacity>
+              );
+            }}
+            // ListEmptyComponent={() => {
+            //   return (
+            //     <View
+            //       style={{
+            //         width: '100%',
+            //         height: windowHeight * 0.7,
+            //         justifyContent: 'center',
+            //         alignItems: 'center',
+            //       }}>
+            //       <View
+            //         style={{
+            //           width: windowWidth * 0.25,
+            //           height: windowHeight * 0.15,
+
+            //           // backgroundColor:'red',
+            //         }}>
+            //         <CustomImage
+            //           style={{
+            //             height: '100%',
+            //             width: '100%',
+            //           }}
+            //           source={require('../Assets/Images/emptybox.png')}
+            //         />
+            //       </View>
+            //     </View>
+            //   );
+            // }}
+          />
+
+        
         </ScrollView>
       </ImageBackground>
     </ScreenBoiler>
@@ -405,6 +435,27 @@ const styles = ScaledSheet.create({
     height: windowHeight,
     width: windowWidth,
     // backgroundColor: themeColor[1],
+  },
+  container1: {
+    width: windowWidth,
+    height: windowHeight * 0.07,
+    paddingVertical: moderateScale(12, 0.5),
+    paddingHorizontal: moderateScale(15, 0.3),
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    paddingHorizontal: moderateScale(25, 0.6),
+    // backgroundColor: Color.white,
+  },
+  tabBarButton: {
+    // borderBottomWidth: 1,
+    paddingVertical: moderateScale(3, 0.7),
+    // borderBottomColor: Color.darkGray,
+    alignItems: 'center',
+  },
+  btn: {
+    justifyContent: 'center',
+    paddingHorizontal: moderateScale(15, 0.6),
+    borderRadius: moderateScale(8, 0.6),
   },
 });
 

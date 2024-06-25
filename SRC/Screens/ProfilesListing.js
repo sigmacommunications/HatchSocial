@@ -67,7 +67,7 @@ const ProfilesListing = props => {
       dispatch(setQuestionAnswered(item?.qa_status));
       dispatch(setSelectedProfileData(item));
       dispatch(setProfileSelcted(true));
-      dispatch(setBubbleSelected(item?.community_info?.length == 0 ? false : true));
+      dispatch(setBubbleSelected(item?.community_list?.length == 0 ? false : true));
       dispatch(setInterestSelected(item?.interests?.length == 0 ? false : true));
     }
   };

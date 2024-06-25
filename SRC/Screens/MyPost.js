@@ -31,11 +31,11 @@ const MyPost = props => {
   const token = useSelector(state => state.authReducer.token);
   const [isLoading, setIsLoading] = useState(false);
   const [postData, setPostData] = useState([]);
-  console.log("🚀 ~ MyPost ~ postData========================>:", postData?.my_like)
+  console.log("🚀 ~ MyPost ~ postData========================>:", postData)
 
   const navigation = useNavigation();
 
-  // const PostData = [
+// const PostData = [
   //   {
   //     id: 1,
   //     Name: 'Travelling Tour Posted a video to playlist Special Content',
@@ -220,7 +220,7 @@ const MyPost = props => {
     if (response != undefined) {
       console.log(
         '🚀 ~ postList ~ response=======================>:',
-        response?.data?.post_list,
+        JSON.stringify(response?.data , null ,2),
       );
       setPostData(response?.data?.post_list);
     }
@@ -301,7 +301,7 @@ const MyPost = props => {
             <FlatList
               data={postData}
               contentContainerStyle={{
-                paddingBottom: moderateScale(80, 0.3),
+               paddingBottom: moderateScale(80, 0.3),
               }}
               renderItem={({item, index}) => {
                 return <PostComponent data={item} fromMyPost={true} setData={setPostData} wholeData={postData} />;

@@ -54,7 +54,7 @@ const RequestModal = ({isVisible, setIsVisible, item}) => {
       dispatch(setProfileSelcted(true));
       dispatch(
         setBubbleSelected(
-          [0, '0', undefined, null, [], 'null'].includes(item?.community_info)
+          [0, '0', undefined, null, [], 'null'].includes(item?.community_list)
             ? false
             : true,
         ),

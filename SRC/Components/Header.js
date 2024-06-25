@@ -27,14 +27,17 @@ import {
   setQuestionAnswered,
   setUserToken,
 } from '../Store/slices/auth';
-import {setSelectedBubbles, setSelectedProfileData} from '../Store/slices/common';
+import {
+  setSelectedBubbles,
+  setSelectedProfileData,
+} from '../Store/slices/common';
 
 const Header = props => {
+  const {showBack, Title, right, search, signup, menu, fromInterest} = props;
   const themeColor = useSelector(state => state.authReducer.ThemeColor);
-  const {showBack, Title, right, search, signup, menu} = props;
   const token = useSelector(state => state.authReducer.token);
-  const [modalVisible, setModalVisible] = useState(false);
   const dispatch = useDispatch();
+  const [modalVisible, setModalVisible] = useState(false);
   const navigation = useNavigation();
   const modalData = [
     {
@@ -51,7 +54,7 @@ const Header = props => {
         setModalVisible(!modalVisible);
       },
     },
-   
+
     {
       name: 'Bubble List',
       onPress: () => {
@@ -63,7 +66,22 @@ const Header = props => {
       name: 'Membership',
       onPress: () => {
         // navigationService.navigate('SubscriptionScreen');
-        navigationService.navigate('MemberShipScreen', {fromHeaderMenu:true});
+        navigationService.navigate('MemberShipScreen', {fromHeaderMenu: true});
+        setModalVisible(!modalVisible);
+      },
+    },
+    {
+      name:"Spotify",
+      onPress:() =>{
+        navigationService.navigate('Spotify');
+        setModalVisible(!modalVisible);
+      },
+    },
+    {
+      name: 'Create New Feed',
+      onPress: () => {
+        // navigationService.navigate('SubscriptionScreen');
+        navigationService.navigate('CreateNewFeed');
         setModalVisible(!modalVisible);
       },
     },
@@ -82,14 +100,14 @@ const Header = props => {
         dispatch(setBubbleSelected(false));
         dispatch(setProfileSelcted(false));
         dispatch(setNumOfProfiles(0));
-      dispatch(setFeedsSelected(false));
+        dispatch(setFeedsSelected(false));
         setModalVisible(!modalVisible);
         dispatch(setAccountPrivate('public'));
         // dispatch(setQuestionAnswered(false));
         dispatch(setBubbleCreated(false));
         dispatch(setNewSignUp(false));
         dispatch(setSelectedBubbles(false));
-        dispatch(setSelectedProfileData({}))
+        dispatch(setSelectedProfileData({}));
         dispatch(setInterestSelected(false));
 
         // navigationService.navigate('LoginScreen');
@@ -199,7 +217,7 @@ const Header = props => {
         }}>
         <View
           style={{
-            width: windowWidth * 0.32,
+            width: windowWidth * 0.35,
             top: 40,
             // right: 0,
             position: 'absolute',
@@ -222,7 +240,6 @@ const Header = props => {
             return (
               <>
                 <CustomText
-                
                   style={{
                     fontSize: moderateScale(15, 0.6),
                     paddingVertical: moderateScale(5, 0.6),

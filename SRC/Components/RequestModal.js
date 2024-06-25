@@ -14,7 +14,6 @@ import CustomButton from './CustomButton';
 import {ScaledSheet, moderateScale} from 'react-native-size-matters';
 import {apiHeader, windowHeight, windowWidth} from '../Utillity/utils';
 import Color from '../Assets/Utilities/Color';
-import AntDesign from 'react-native-vector-icons/AntDesign';
 import CustomImage from './CustomImage';
 import {useSelector} from 'react-redux';
 import {Get, Post} from '../Axios/AxiosInterceptorFunction';
@@ -27,17 +26,16 @@ const RequestModal = ({
   selectedBubbleId,
   item,
 }) => {
-  console.log("🚀 ~ file: RequestModal.js:31 ~ bubbleData:", bubbleData)
   const themeColor = useSelector(state => state.authReducer.ThemeColor);
-  const [loading, setLoading] = useState(false);
   const profileData = useSelector(state => state.commonReducer.selectedProfile);
-  console.log("🚀 ~ profileData:", profileData?.id)
   const token = useSelector(state => state.authReducer.token);
+  
+  const [loading, setLoading] = useState(false);
   const [bubbleInfo, setBubbleInfo] = useState([]);
   const isFocused = useIsFocused()
+  const [requested, setRequested] = useState(bubbleData?.follow?.status == 'request' ? true : false);
   
 
-  const [requested, setRequested] = useState(bubbleData?.follow?.status == 'request' ? true : false);
 
  
 
@@ -48,18 +46,15 @@ const RequestModal = ({
       profile_id: [profileData?.id],
       community_id: selectedBubbleId,
     };
-
     setLoading(true);
     const response = await Post(url, body, apiHeader(token));
     setLoading(false);
     if (response != undefined) {
-      console.log("🚀 ~ file: RequestModal.js:55 ~ addRequest ~ response:", response?.data)
       setIsVisible(false);
       Platform.OS == 'android'
         ? ToastAndroid.show('Request has been sent', ToastAndroid.SHORT)
         : Alert.alert('Request has been sent');
     }
-    // setRequested(!requested);
     setRequested(prevRequest => !prevRequest);
   };
 
@@ -87,7 +82,6 @@ const RequestModal = ({
             style={{
               color: Color.white,
               fontSize: moderateScale(15, 0.6),
-              // marginTop: moderateScale(20, 0.3),
               paddingVertical: moderateScale(10, 0.6),
               paddingHorizontal: moderateScale(30, 0.6),
               textAlign: 'center',
@@ -98,13 +92,7 @@ const RequestModal = ({
         </View>
 
         <View
-          // colors={['#286086', '#dfecf5']}
-          style={{
-            height: windowHeight * 0.22,
-            width: windowWidth * 0.85,
-            alignItems: 'center',
-            justifyContent: 'center',
-          }}>
+          style={styles.container3}>
           <View style={styles.circle}>
             <CustomImage
               source={require('../Assets/Images/user.png')}
@@ -113,13 +101,7 @@ const RequestModal = ({
           </View>
 
           <CustomText
-            style={{
-              color: Color.black,
-              fontSize: moderateScale(14, 0.6),
-              marginTop: moderateScale(20, 0.3),
-              paddingHorizontal: moderateScale(30, 0.6),
-              textAlign: 'center',
-            }}
+            style={styles.text}
             isBold>
             you need admins permission to get into this bubble
           </CustomText>
@@ -168,9 +150,7 @@ const styles = ScaledSheet.create({
     width: moderateScale(60, 0.6),
     height: moderateScale(60, 0.6),
     borderRadius: moderateScale(30, 0.6),
-    //   backgroundColor: Color.white,
     justifyContent: 'center',
-    //   alignItems: 'center',
     overflow: 'hidden',
     shadowColor: '#000',
     shadowOffset: {
@@ -183,7 +163,6 @@ const styles = ScaledSheet.create({
     elevation: 9,
   },
   container2: {
-    // height: windowHeight * 0.13,
     paddingVertical: moderateScale(10, 0.6),
     width: '100%',
     backgroundColor: '#EEEEEE',
@@ -191,4 +170,17 @@ const styles = ScaledSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
+  container3:{
+    height: windowHeight * 0.22,
+    width: windowWidth * 0.85,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  text:{
+    color: Color.black,
+    fontSize: moderateScale(14, 0.6),
+    marginTop: moderateScale(20, 0.3),
+    paddingHorizontal: moderateScale(30, 0.6),
+    textAlign: 'center',
+  }
 });

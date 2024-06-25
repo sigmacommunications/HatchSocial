@@ -53,8 +53,8 @@ const PostScreen = props => {
       date: '17 July',
       desc: 'Lorem Ipsum is simply dummy text of the printing and typesetting industry Lorem Ipsum has been the industry',
       profileImage: require('../Assets/Images/avatar4.png'),
-      image: require('../Assets/Images/travel.jpg'),
-      video: null,
+      post_images: require('../Assets/Images/travel.jpg'),
+      post_videos: 'https://www.youtube.com/watch?v=qD2PTHSRBYA&list=RD6nfghmEEpyY&index=8',
       Like: 157,
       love: 1100,
       comment: 405,
@@ -96,9 +96,9 @@ const PostScreen = props => {
       date: '24 Aug',
       desc: 'Lorem Ipsum is simply dummy text of the printing and typesetting industry Lorem Ipsum has been the industry',
       profileImage: require('../Assets/Images/avatar3.png'),
-      image: require('../Assets/Images/art.png'),
-      video: null,
-      // video: 'https://vjs.zencdn.net/v/oceans.mp4',
+      post_images: require('../Assets/Images/art.png'),
+      // video: null,
+      post_videos: 'https://vjs.zencdn.net/v/oceans.mp4',
       Like: 357,
       love: 4100,
       comment: 205,
@@ -141,8 +141,10 @@ const PostScreen = props => {
       date: '1 May',
       desc: 'The beauty of our private island paradise rests in its enhanced interior decorum. Minimalist, monochromatic interior design emphasizes',
       profileImage: require('../Assets/Images/avatar4.png'),
-      image: null,
-      video: null,
+      post_images: null,
+      post_videos: 'https://www.youtube.com/watch?v=qD2PTHSRBYA&list=RD6nfghmEEpyY&index=8',
+    
+      // video: null,
       Like: 357,
       love: 4100,
       comment: 205,
@@ -184,8 +186,8 @@ const PostScreen = props => {
       date: '4 Dec',
       desc: `📍Italy Gorgeous pastel buildings picture-perfect harbors, and crystal-clear waters — experience everything this Italian seaside oasis has to offer on our trip to Northern Italy`,
       profileImage: require('../Assets/Images/avatar1.png'),
-      image: require('../Assets/Images/travel3.jpg'),
-      video: null,
+      post_images: require('../Assets/Images/travel3.jpg'),
+      post_videos: null,
       Like: 457,
       love: 1800,
       comment: 905,
@@ -285,6 +287,7 @@ const PostScreen = props => {
         paddingBottom: moderateScale(80, 0.3),
       }}
       renderItem={({item, index}) => {
+        console.log("🚀 ~ PostScreen ~ item==========>:", item)
         return (
           <PostComponent
             data={item}

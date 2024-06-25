@@ -46,7 +46,10 @@ const RoundMenu = ({
   setBubbleData,
   setclicked,
   setSelectedBubbleId,
-  borderColor
+  borderColor,
+  ceneterImageOnLongPress,
+  centerImageOnPress
+
 }) => {
   // console.log("🚀 ~ content===================> here is content:", content)
   const navigation = useNavigation()   
@@ -69,9 +72,6 @@ const RoundMenu = ({
     touchEvent.current = e.nativeEvent;
     if (!touchStart.current) {
       touchStart.current = {
-
-
-
         touchEvent: e.nativeEvent,
         angle: offsetAngle,
       };
@@ -177,6 +177,7 @@ const RoundMenu = ({
         <View>
           {centerContent && (
             <Animatable.View
+            
               ref={innerContainerRef}
               style={{
                 transform: [{rotate: `${rotationAngle}deg`}],
@@ -194,9 +195,19 @@ const RoundMenu = ({
                 borderRadius: 500 / 2,
                 overflow: 'hidden',
                 borderColor :borderColor,
-                borderWidth :3
+                borderWidth :3,
+                zIndex : 1,
               }}>
+                <TouchableOpacity 
+                activeOpacity={0.8}
+                onPress={centerImageOnPress} 
+                onLongPress={ceneterImageOnLongPress}
+                style={{
+                   height: '100%',
+                   width: '100%',
+                }}>
               {centerContent}
+              </TouchableOpacity>
             </Animatable.View>
           )}
           <View
@@ -265,7 +276,7 @@ const RoundMenu = ({
                       (elContainerSize == x / 3 ||
                         elContainerSize ==
                           (Dimensions.get('window').width - x) / 3) &&
-                      (el?.bubble ? 'pulse' : 'swing')
+                      (el?.bubble ? 'pulse' : 'pulse')
                     }
                     easing="ease-in"
                     iterationCount="infinite"
@@ -276,16 +287,12 @@ const RoundMenu = ({
                         backgroundColor: contentContainerStyle?.backgroundColor
                           ? contentContainerStyle?.red
                           : undefined,
-                        // borderColor: elContainerSize == size /3 ? 'yellow':'rgb('+(x)%255+','+(y)%255+','+(x+y)%255+')',
-                        borderColor:
-                        el?.item?.community_owner?.id  == profileData?.id
-                            ? 'green'
-                            : 'yellow',
-                        // borderColor: 'yellow',
+                        borderColor:el?.interest
+                            ? 'red'
+                            : el?.item?.role == 'owner' ? 'green' : 'yellow',
 
-                        borderRadius: el?.bubble
-                          ? elContainerSize / 2
-                          : elContainerSize / 5,
+                        borderRadius:  elContainerSize / 2
+                          ,
                         borderWidth:
                           elContainerSize == x /3 ||
                           elContainerSize ==
@@ -297,37 +304,37 @@ const RoundMenu = ({
                     ]}>
                     <TouchableOpacity
                       onPress={() => {
-                        if(el.onPress){
+                        // if(el.onPress){
                           el.onPress()
-                        }
-                        else{
+                        // }
+                      //   else{
 
                         
-                        if (el?.bubble && el?.private) {
-                          console.log('here')
-                          console.log('Hrere=========>>>>>>', el?.item);
-                          if (
-                            el?.item?.profile_id == profileData?.id ||
-                            el?.item?.follow?.status == 'follow' ||
-                            el?.item?.follow?.status == 'blocked'
-                          ) {
-                            setSelectedBubbleId(el?.id);
-                            setclicked(true);
-                            setBubbleData(el?.item);
-                          } else {
-                            setIsVisible(true);
-                            setSelectedBubbleId(el?.id);
-                            setBubbleData(el?.item);
-                          }
-                        } else if (el?.bubble && !el?.private) {
+                      //   if (el?.bubble && el?.private) {
+                      //     console.log('here')
+                      //     console.log('Hrere=========>>>>>>', el?.item);
+                      //     if (
+                      //       el?.item?.profile_id == profileData?.id ||
+                      //       el?.item?.follow?.status == 'follow' ||
+                      //       el?.item?.follow?.status == 'blocked'
+                      //     ) {
+                      //       setSelectedBubbleId(el?.id);
+                      //       setclicked(true);
+                      //       setBubbleData(el?.item);
+                      //     } else {
+                      //       setIsVisible(true);
+                      //       setSelectedBubbleId(el?.id);
+                      //       setBubbleData(el?.item);
+                      //     }
+                      //   } else if (el?.bubble && !el?.private) {
                           
-                          setclicked(true);
-                          setSelectedBubbleId(el?.id);
-                        } else if (!el?.bubble && !el?.private) {
-                          // setIsVisible(true);
-                          navigation.navigate('PostScreen' , {item : el?.item});
-                        }
-                      }
+                      //     setclicked(true);
+                      //     setSelectedBubbleId(el?.id);
+                      //   } else if (!el?.bubble && !el?.private) {
+                      //     // setIsVisible(true);
+                      //     navigation.navigate('PostScreen' , {item : el?.item});
+                      //   }
+                      // }
                        
                       }}
                       key={i}
