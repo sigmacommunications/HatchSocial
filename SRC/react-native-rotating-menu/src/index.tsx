@@ -187,7 +187,7 @@ const RoundMenu = ({
                     : center.x - centerContentSize / 2.3,
                 top: center.x - centerContentSize / 2,
                 width: centerContentSize,
-                backgroundColor: 'gray',
+                backgroundColor:'#d7d7d7',
                 height: centerContentSize,
                 position: 'absolute',
                 justifyContent: 'center',

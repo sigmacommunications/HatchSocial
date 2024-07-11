@@ -111,8 +111,9 @@ const LoginScreen = () => {
               color: '#353434',
               width: windowWidth * 0.9,
               textAlign: 'left',
+              marginTop:moderateScale(12,0.3)
             }}
-            children={' Login to continue'}></CustomText>
+            children={' Login to continue'} isBold></CustomText>
           <View style={styles.conatiner}>
             <TextInputWithTitle
               title={'User Name'}
@@ -135,7 +136,7 @@ const LoginScreen = () => {
               title={'password'}
               titleText={'Password'}
               secureText={true}
-              placeholder={'password'}
+              placeholder={'Password'}
               setText={setPassword}
               value={password}
               viewHeight={0.07}

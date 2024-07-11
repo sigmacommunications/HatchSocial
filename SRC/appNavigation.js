@@ -165,6 +165,7 @@ const AppNavigator = () => {
           <RootNav.Screen name="ChangePassword" component={ChangePassword} />
           <RootNav.Screen name="MyPost" component={MyPost} />
           <RootNav.Screen name="MemberShipScreen" component={MemberShip} />
+          <RootNav.Screen name="Messages" component={Inbox} />
           <RootNav.Screen
             name="SubscriptionScreen"
             component={SubscriptionScreen}

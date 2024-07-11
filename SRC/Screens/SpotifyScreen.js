@@ -189,6 +189,7 @@ const SpotifyScreen = ({navigation}) => {
                             width: windowWidth * 0.2,
                             fontSize: moderateScale(14, 0.6),
                             color: Color.white,
+                            textAlign:'center'
                           }}
                           isBold>
                           {item?.name}

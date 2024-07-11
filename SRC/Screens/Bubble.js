@@ -36,6 +36,7 @@ import {Get, Post} from '../Axios/AxiosInterceptorFunction';
 import {useIsFocused, useNavigation} from '@react-navigation/native';
 import {baseUrl} from '../Config';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
+import AddIconButton from '../Components/IconButon-add';
 
 const Bubble = props => {
   const bubbleId = props?.route?.params?.id;
@@ -388,6 +389,7 @@ const Bubble = props => {
               </ImageBackground>
               <View style={styles.mapview}>
                 <ScrollView
+              
                   horizontal={true}
                   showsHorizontalScrollIndicator={false}>
                   {events?.map(data => {
@@ -444,6 +446,7 @@ const Bubble = props => {
                       navigationService.navigate('AddPost', {
                         bubbleId: bubbleId,
                         bubbleInfo: bubbleInfo,
+                        fromHome: false
                       });
                     }}
                   />
@@ -453,9 +456,32 @@ const Bubble = props => {
                   <></>
                 )}
               </View>
+              
             </>
           )}
         </ScrollView>
+      {(selectedEvent == 'Posts' || selectedEvent == 'Events') && (bubbleInfo?.profile_id == profileData?.id ||
+        (bubbleInfo?.follow?.role?.toLowerCase() == 'moderator' &&
+          bubbleInfo?.moderator_create_content?.toLowerCase() == 'yes') ||
+          (bubbleInfo?.follow?.role?.toLowerCase() == 'member' &&
+            bubbleInfo?.member_create_content?.toLowerCase() == 'yes')
+            ||
+            (bubbleInfo?.follow?.role?.toLowerCase() == 'admin' &&
+              bubbleInfo?.admin_create_content?.toLowerCase() == 'yes')
+            
+            ) && !isLoading && (<AddIconButton 
+        style={{bottom: moderateScale(42,0.2)}}
+        onPress={() =>{
+      // onPress();
+      selectedEvent == 'Posts' ?   navigationService.navigate('AddPost', {
+        bubbleId: bubbleId,
+        bubbleInfo: bubbleInfo,
+        fromHome: false
+      }) : selectedEvent == 'Events' ?   navigationService.navigate('AddEvents', {
+        bubbleId: bubbleId,
+      }) : null
+     }} />
+     )}
       </ImageBackground>
       <Modal
         isVisible={isVisible}
@@ -751,6 +777,7 @@ const styles = ScaledSheet.create({
   },
   mapview: {
     width: windowWidth,
+ // height: windowHeight * 0.24,
     marginTop: moderateScale(10, 0.3),
   },
   invite: {

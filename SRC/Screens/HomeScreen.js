@@ -53,6 +53,7 @@ const HomeScreen = props => {
   const profileData = useSelector(state => state.commonReducer.selectedProfile);
   const newSignUp = useSelector(state => state.authReducer.newSignUp);
   const token = useSelector(state => state.authReducer.token);
+  console.log("🚀 ~ HomeScreen ~ token:", token)
 
   const backRef = useRef(null);
   const isFocused = useIsFocused();
@@ -117,13 +118,15 @@ const HomeScreen = props => {
       setHorizontalBubble(response?.data?.message);
     }
   };
-
+  
+  console.log("🚀 ~ getBubbles ~ profileData?.id:", profileData?.id)
   const getBubbles = async () => {
     const url = `auth/community/${profileData?.id}`;
     setIsLoading(true);
     const response = await Get(url, token);
     setIsLoading(false);
     if (response != undefined) {
+      console.log("🚀 ~ getBubbles ~ response:", response?.data?.data)
       setContent([
         ...response?.data?.data?.interests?.map((item, index) => {
           return {
@@ -167,7 +170,11 @@ const HomeScreen = props => {
 
               private: false,
               onPress: () => {
-                setclicked(true);
+                navigationService.navigate(
+                  'Bubble',
+                  {id: item?.community_id},
+                  {fromHome: true},
+                );
                 setSelectedBubbleId(item?.community_id);
               },
             };
@@ -218,7 +225,7 @@ const HomeScreen = props => {
         backgroundColor={Color.white}
         barStyle={'dark-content'}
       />
-      <Header right Title={'Profile'} />
+      <Header right Title={'Profile'} menu={true}/>
 
       <ImageBackground
         source={
@@ -392,9 +399,9 @@ const HomeScreen = props => {
                       source={
                         profileData?.photo
                           ? {uri: `${centerImageUrl}${profileData?.photo}`}
-                          : require('../Assets/Images/dummyman1.png')
+                          :  require('../Assets/Images/dummyUser.png')
                       }
-                      resizeMode="cover"
+                      // resizeMode="contain"
                       style={styles.centerImage}
                     />
                   }

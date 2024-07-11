@@ -28,15 +28,32 @@ import ShowMoreAndShowLessText from '../Components/ShowMoreAndShowLessText';
 import {useSelector} from 'react-redux';
 import moment from 'moment';
 import CustomButton from '../Components/CustomButton';
-import {Post} from '../Axios/AxiosInterceptorFunction';
+import {Delete, Post} from '../Axios/AxiosInterceptorFunction';
+import { baseUrl } from '../Config';
 const EventDetails = props => {
   const item = props?.route?.params?.item;
+  const navigation  = props?.navigation;
   console.log('🚀 ~ file: EventDetails.js:22 ~ EventDetails ~ item:', item);
   const themeColor = useSelector(state => state.authReducer.ThemeColor);
   const privacy = useSelector(state => state.authReducer.privacy);
   const token = useSelector(state => state.authReducer.token);
+  console.log("🚀 ~ EventDetails ~ token:", token)
 
   const [loading, setLoading] = useState(false);
+
+const deleteEvent = async () =>{
+  const url =`auth/event/${item?.id}`;
+  setLoading(true);
+// return console.log('🚀 ~ file: EventDetails.js:22 ~ EventDetails ~ item:', item);
+
+  const response = await Delete(url, apiHeader(token));
+  setLoading(false);
+    console.log("🚀 ~ deleteEvent ~ response:", response)
+  if (response != undefined) {
+    navigation.goBack();
+  }
+  
+}
 
   const attendingEvent = async () => {
     const url = '';
@@ -71,7 +88,7 @@ const EventDetails = props => {
             <CustomImage
               source={
                 item?.images?.length > 0
-                  ? {uri: item?.images[0]?.name}
+                  ? {uri:`${baseUrl}/${item?.images[0]?.name}`}
                   : require('../Assets/Images/event.jpg')
               }
               style={{
@@ -198,17 +215,19 @@ const EventDetails = props => {
               {item?.description}
             </ShowMoreAndShowLessText>
           </View>
+          <View style={{flexDirection:'row', justifyContent:'center', gap:moderateScale(10,0.2)}}>
+
           <CustomButton
             text={
               loading ? (
                 <ActivityIndicator color={Color.white} size={'small'} />
-              ) : (
-                'Interested'
+                ) : (
+                  'Interested'
               )
             }
             onPress={() => {}}
             textColor={themeColor[1]}
-            width={windowWidth * 0.65}
+            width={windowWidth * 0.35}
             height={windowHeight * 0.06}
             marginTop={moderateScale(20, 0.3)}
             bgColor={['#fff', '#fff']}
@@ -216,7 +235,29 @@ const EventDetails = props => {
             elevation
             isGradient
             fontSize={moderateScale(14, 0.6)}
-          />
+            />
+          <CustomButton
+            text={
+              loading ? (
+                <ActivityIndicator color={Color.white} size={'small'} />
+                ) : (
+                  'Delete'
+                  )
+                }
+            onPress={() => {
+              deleteEvent();
+            }}
+            textColor={themeColor[1]}
+            width={windowWidth * 0.35}
+            height={windowHeight * 0.06}
+            marginTop={moderateScale(20, 0.3)}
+            bgColor={['#fff', '#fff']}
+            borderRadius={moderateScale(25, 0.3)}
+            elevation
+            isGradient
+            fontSize={moderateScale(14, 0.6)}
+            />
+            </View>
         </ScrollView>
       </ImageBackground>
     </>

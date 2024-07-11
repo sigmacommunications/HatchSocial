@@ -44,6 +44,7 @@ import SelectInterestDropdown from '../Components/SelectInterestDropdown';
 const CreateNewBubble = props => {
   const item = props?.route?.params?.item;
   const selectedInterest = props?.route?.params?.selectedInterest;
+  console.log("🚀 ~ CreateNewBubble ~ selectedInterest:", selectedInterest)
   const fromInterest = props?.route?.params?.fromInterest;
 
   const token = useSelector(state => state.authReducer.token);
@@ -1812,6 +1813,7 @@ const CreateNewBubble = props => {
         </ImageBackground>
       </ScrollView>
       <ImagePickerModal
+      type='photo'
         show={showModal}
         setShow={setShowModal}
         setFileObject={setProfilePicture}

@@ -19,12 +19,14 @@ import Entypo from 'react-native-vector-icons/Entypo';
 import {Icon} from 'native-base';
 import TextInputWithTitle from './TextInputWithTitle';
 import {useSelector} from 'react-redux';
+import Ionicons from 'react-native-vector-icons/Ionicons';
 import navigationService from '../navigationService';
 import {FlatList} from 'react-native';
 import PostComponentBubble from './PostComponentBubble';
 import {Delete, Get} from '../Axios/AxiosInterceptorFunction';
 import {useIsFocused} from '@react-navigation/native';
 import {baseUrl} from '../Config';
+import AddIconButton from './IconButon-add';
 
 
 const Posts = ({onPress, bubbleId, bubbleInfo}) => {
@@ -89,7 +91,12 @@ const Posts = ({onPress, bubbleId, bubbleInfo}) => {
   }, [isFocused]);
 
   return (
-    <View>
+   
+
+    <View style={{
+      width: windowWidth,
+      }}>
+     
       {(bubbleInfo?.profile_id == profileData?.id ||
         (bubbleInfo?.follow?.role?.toLowerCase() == 'moderator' &&
           bubbleInfo?.moderator_create_content?.toLowerCase() == 'yes') ||
@@ -154,10 +161,15 @@ const Posts = ({onPress, bubbleId, bubbleInfo}) => {
           <ActivityIndicator color={Color.white} size={'large'} />
         </View>
       ) : (
+
         <FlatList
           data={posts}
-          contentContainerStyle={{
+          contentContainerStyle={{    
             paddingBottom: moderateScale(80, 0.3),
+            // borderColor:'red',
+            // borderWidth:1,
+            zIndex:-1,
+
           }}
           ListEmptyComponent={() => {
             return (
@@ -166,6 +178,7 @@ const Posts = ({onPress, bubbleId, bubbleInfo}) => {
                   justifyContent: 'center',
                   height: windowHeight * 0.4,
                   alignItems: 'center',
+                  
                 }}>
                 <CustomText style={{color: Color.black}} isBold>
                   No Posts Added yet!
@@ -178,7 +191,14 @@ const Posts = ({onPress, bubbleId, bubbleInfo}) => {
           }}
         />
       )}
+          {/* <AddIconButton onPress={() =>{
+      onPress();
+     }} /> */}
+          {/* <AddIconButton onPress={() =>{
+      onPress();
+     }} /> */}
     </View>
+    
     // <View></View>
   );
 };

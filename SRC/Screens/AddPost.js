@@ -34,12 +34,14 @@ import {Text} from 'react-native-svg';
 import Feather from 'react-native-vector-icons/Feather';
 import HashtagModal from '../Components/HashtagModal';
 import AntDesign from 'react-native-vector-icons/AntDesign'
+import Modal from 'react-native-modal';
 
 const AddPost = props => {
   const bubbleId = props?.route?.params?.bubbleId;
   const bubbleInfo = props?.route?.params?.bubbleInfo;
   const data = props?.route?.params?.data;
   const fromHome = props?.route?.params?.fromHome;
+  console.log("🚀 ~ fromHome:", fromHome)
 
   const themeColor = useSelector(state => state.authReducer.ThemeColor);
   const privacy = useSelector(state => state.authReducer.privacy);
@@ -70,6 +72,7 @@ const AddPost = props => {
   );
   const [isVisible, setIsVisible] = useState(false);
   const [text, setText] = useState('');
+  const [modalVisible, setModalVisible] = useState(false);
 
   useEffect(() => {
     if (Object.keys(image).length > 0) {
@@ -84,6 +87,7 @@ const AddPost = props => {
       setVideo({});
     }
   }, [video]);
+  console.log("🚀 ~ videos:", videos)
 
   const AddPost = async () => {
     const url = 'auth/post';
@@ -102,29 +106,31 @@ const AddPost = props => {
             ` please fill atleast one feild`,
             ToastAndroid.SHORT,
           )
-        : Alert.alert(` plaease fill atleast one feild`);
+        : Alert.alert(` please fill atleast one feild`);
     } else {
       for (let key in body) {
         formData.append(key, body[key]);
       }
-      // if (images.length > 0) {
-      //   images?.map((item, index) =>
-      //     formData.append(`image[${index}]`, images[index]),
-      //   );
-      // }
-      if (Object.Keys(videos).length > 0) {
+      if (images.length > 0) {
+        images?.map((item, index) =>
+          formData.append(`image[${index}]`, images[index]),
+        );
+      }
+      if (Object.keys(videos).length > 0) {
         // videos?.map((item, index) =>
           formData.append(`file`, videos),
           formData.append('type' ,'video')
         // );
       }
+      
       if (hashtags.length > 0) {
         hashtags?.map((item, index) =>
           formData.append(`hashtags[${index}]`, hashtags[index]),
         );
       }
     }
-
+  // return  console.log("🚀 ~ AddPost ~ formData:", formData)
+     
     setLoading(true);
     const response = await Post(url, formData, apiHeader(token));
     console.log(
@@ -260,7 +266,7 @@ const AddPost = props => {
       caption: description,
       profile_id: profileData?.id,
     };
-    if (images.length == 0 && videos.length == 0 && description == '') {
+    if (images.length == 0 && Object.keys(videos).length == 0 && description == '') {
       Platform.OS == 'android'
         ? ToastAndroid.show(
             ` please fill atleast one feild`,
@@ -271,29 +277,31 @@ const AddPost = props => {
       for (let key in body) {
         formData.append(key, body[key]);
       }
-      // if (images.length > 0) {
-      //   images?.map((item, index) =>
-      //     formData.append(`image[${index}]`, images[index]),
-      //   );
-      // }
+      if (images.length > 0) {
+        images?.map((item, index) =>{
+              
+          console.log("🚀 ~ AddFeedPost ~ images:", images[index])
+          formData.append(`file[${index}]`, images[index])
+          formData.append('type', 'photo');
+       } );
+      }
       if (Object.keys(videos).length > 0) {
         // videos?.map((item, index) =>
-          formData.append(`file`, videos),
-          formData.append(`type`, 'video')
-
-        // );
+          formData.append(`file`, videos);
+          formData.append(`type`, 'video');
+          console.log("🚀 ~ AddFeedPost ~ videos:", videos)
+        }
+        if (hashtag.length > 0) {
+          hashtag?.map((item, index) =>
+            formData.append(`hashtags[${index}]`, item?.id),
+          );
+        } 
       }
-
-      if (hashtag.length > 0) {
-        hashtag?.map((item, index) =>
-          formData.append(`hashtags[${index}]`, item?.id),
-        );
-      }
-    }
+    //  return console.log("🚀 ~ AddFeedPost ~ formData:", JSON.stringify(formData, null, 2))
 
     setLoading(true);
     const response = await Post(url, formData, apiHeader(token));
-    console.log("🚀 ~ AddFeedPost ~ formData:", formData)
+    console.log("🚀 ~ AddFeedPost ~ formData:", response?.data)
 
     setLoading(false);
     if (response != undefined) {
@@ -326,28 +334,7 @@ const AddPost = props => {
             // justifyContent : 'center',
             alignItems: 'center',
           }}>
-          <CustomText
-            style={styles.title}
-            isBold={true}
-            children={' Write Captions'}
-          />
-          <TextInputWithTitle
-            maxLength={2000}
-            secureText={false}
-            placeholder={'Description'}
-            setText={setDescription}
-            value={description}
-            viewHeight={0.22}
-            viewWidth={0.9}
-            inputWidth={0.85}
-            marginTop={moderateScale(5, 0.3)}
-            color={Color.red}
-            border={1}
-            // marginLeft={moderateScale(10, 0.3)}
-            borderColor={Color.white}
-            placeholderColor={Color.themeLightGray}
-            multiline
-          />
+    
 
           <View
             style={{
@@ -381,8 +368,10 @@ const AddPost = props => {
 
             <Icon  
             onPress={() => {
-              setVideoPicker(true)
+              // setVideoPicker(true)
+              setModalVisible(true)
             }} name='plus' as={Entypo} size={moderateScale(18,.6)} color={'black'}/>
+            
           </View>
           <View style={styles.imagesContainer}>
             {images?.map(item => {
@@ -417,6 +406,7 @@ const AddPost = props => {
               );
             })}
           </View>
+          
           {/* <View style={styles.videoContainer}>
             {videos?.map(item => {
               return (
@@ -430,7 +420,40 @@ const AddPost = props => {
               );
             })}
           </View> */}
+          
+          <View style={styles.videoContainer}>
+        {Object.keys(videos).length > 0 &&(
+                  <VideoComponent
+                    item={videos}
+                    videos={videos}
+                    setVideos={setVideos}
+                  />)
+           }  
+           
+          </View>
 
+<CustomText
+            style={styles.title}
+            isBold={true}
+            children={' Write Captions'}
+          />
+          <TextInputWithTitle
+            maxLength={2000}
+            secureText={false}
+            placeholder={'Description'}
+            setText={setDescription}
+            value={description}
+            viewHeight={0.22}
+            viewWidth={0.9}
+            inputWidth={0.85}
+            marginTop={moderateScale(5, 0.3)}
+            color={Color.red}
+            border={1}
+            // marginLeft={moderateScale(10, 0.3)}
+            borderColor={Color.white}
+            placeholderColor={Color.themeLightGray}
+            multiline
+          />
           {fromHome ? (
             <>
               <View
@@ -447,6 +470,7 @@ const AddPost = props => {
                     {
                       marginTop: moderateScale(10, 0.3),
                       width: windowWidth * 0.5,
+                      
                     },
                   ]}
                   isBold={true}
@@ -564,6 +588,9 @@ const AddPost = props => {
               height={windowHeight * 0.06}
               // marginTop={moderateScale(40, 0.3)}
               onPress={() => {
+                // return console.log("formData")
+                // AddPost();
+                
                 if (data) {
                   fromHome ? UpdateFeedPost() : UpdatePost();
                 } else {
@@ -596,6 +623,38 @@ const AddPost = props => {
         isVisible={isVisible}
         setIsVisible={setIsVisible}
       />
+        <Modal
+              visible={modalVisible}
+              onBackdropPress={() => {
+                setModalVisible(!modalVisible);
+              }}>
+              <View style={styles.modal}>
+                <CustomText
+                  style={styles.modalt}
+                  onPress={() => {
+                    
+                    setModalVisible(!modalVisible);
+                    if(Object.keys(videos).length > 0){
+                      return Alert.alert("You have already picked a video for upload.", "Remove it first if you want to upload image")
+                    }
+                    setImagePickerVisible(true)
+                  }}>
+                  Image
+                </CustomText>
+                <View style={styles.modalView}></View>
+                <CustomText
+                  style={styles.modalt}
+                  onPress={() => {
+                    setModalVisible(!modalVisible);
+                    if(images.length > 0){
+                      return Alert.alert("You have already picked images for upload.", "Remove them first if you want to upload video")
+                    }
+                    setVideoPicker(true);
+                  }}>
+                  Video
+                </CustomText>
+              </View>
+            </Modal>
     </>
   );
 };
@@ -696,11 +755,38 @@ const styles = ScaledSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
+  modalView: {
+    width: windowWidth * 0.25,
+    backgroundColor: 'rgba(0,0,0,0.1)',
+    height: 2,
+  },
+  modal: {
+    width: windowWidth * 0.35,
+    top: 90,
+    position: 'absolute',
+    alignSelf: 'flex-end',
+    alignItems: 'center',
+    borderRadius: moderateScale(10, 0.6),
+    backgroundColor: Color.white,
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+    elevation: 5,
+  },
+  modalt: {
+    fontSize: moderateScale(15, 0.6),
+    paddingVertical: moderateScale(5, 0.6),
+  },
 });
 
 export default AddPost;
 
 const VideoComponent = ({item, videos, setVideos}) => {
+  console.log("🚀 ~ VideoComponent ~ item:", item)
   const [isPlaying, setIsPlaying] = useState(false);
   return (
     <View style={styles.image}>

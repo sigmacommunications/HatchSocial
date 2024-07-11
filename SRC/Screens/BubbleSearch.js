@@ -236,7 +236,26 @@ const BubbleSearch = () => {
         {Object.keys(data).length > 0 && (
           <View style={styles.searchCategories}>
             <TouchableOpacity onPress={() => toggleBubbles('bubbles')}>
-              <View
+            <CustomText
+                        numberOfLines={1}
+                        children={"Bubbles"}
+                        style={{
+                          ...styles.eventText,
+                          ...{
+                            backgroundColor:
+                              isSelected == "bubbles"
+                                ? Color.white
+                                : 'rgba(0,0,0,.2)',
+                          },
+                          ...{
+                            color:
+                              isSelected == "bubbles"
+                                ? themeColor[1]
+                                : Color.white,
+                          },
+                        }}
+                      />
+              {/* <View
                 style={[
                   styles.category,
                   isSelected == 'bubbles'
@@ -246,10 +265,29 @@ const BubbleSearch = () => {
                 <CustomText isBold style={styles.txt}>
                   Bubbles
                 </CustomText>
-              </View>
+              </View> */}
             </TouchableOpacity>
             <TouchableOpacity onPress={() => toggleBubbles('feeds')}>
-              <View
+            <CustomText
+                        numberOfLines={1}
+                        children={"Feeds"}
+                        style={{
+                          ...styles.eventText,
+                          ...{
+                            backgroundColor:
+                              isSelected == "feeds"
+                                ? Color.white
+                                : 'rgba(0,0,0,.2)',
+                          },
+                          ...{
+                            color:
+                              isSelected == "feeds"
+                                ? themeColor[1]
+                                : Color.white,
+                          },
+                        }}
+                      />
+              {/* <View
                 style={[
                   styles.category,
                   isSelected == 'feeds' && {backgroundColor: Color.white},
@@ -257,7 +295,7 @@ const BubbleSearch = () => {
                 <CustomText isBold style={styles.txt}>
                   feeds
                 </CustomText>
-              </View>
+              </View> */}
             </TouchableOpacity>
           </View>
         )}
@@ -497,6 +535,17 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     overflow: 'hidden',
     // alignSelf: 'center',
+  },
+  eventText: {
+    fontSize: moderateScale(14, 0.6),
+
+    marginHorizontal: moderateScale(8, 0.3),
+    width: windowWidth * 0.22,
+    marginLeft: moderateScale(10, 0.3),
+    paddingVertical: moderateScale(5, 0.6),
+    borderRadius: moderateScale(5, 0.6),
+    textAlign: 'center',
+    alignItems: 'center',
   },
   search: {
     width: windowWidth * 0.7,

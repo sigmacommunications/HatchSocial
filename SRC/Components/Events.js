@@ -11,6 +11,7 @@ import {windowHeight, windowWidth} from '../Utillity/utils';
 import Color from '../Assets/Utilities/Color';
 import {moderateScale} from 'react-native-size-matters';
 import CustomText from './CustomText';
+import Ionicons from 'react-native-vector-icons/Ionicons'
 import CustomImage from './CustomImage';
 import Entypo from 'react-native-vector-icons/Entypo';
 import {Icon} from 'native-base';
@@ -21,6 +22,8 @@ import {FlatList} from 'react-native';
 import {Get} from '../Axios/AxiosInterceptorFunction';
 import {useIsFocused} from '@react-navigation/native';
 import moment from 'moment';
+import AddIconButton from './IconButon-add';
+import { baseUrl } from '../Config';
 // import { TextInput } from 'react-native-gesture-handler';
 
 const Events = ({onPress, bubbleId, bubbleInfo}) => {
@@ -113,6 +116,7 @@ const Events = ({onPress, bubbleId, bubbleInfo}) => {
   ];
 
   return (
+  
     <View style={styles.container}>
      {(bubbleInfo?.profile_id == profileData?.id ||
         (bubbleInfo?.follow?.role?.toLowerCase() == 'moderator' &&
@@ -204,6 +208,7 @@ const Events = ({onPress, bubbleId, bubbleInfo}) => {
             );
           }}
           renderItem={({item}) => {
+            console.log("🚀 ~ Events ~ item:", item)
             return (
               <>
                 <TouchableOpacity
@@ -220,7 +225,7 @@ const Events = ({onPress, bubbleId, bubbleInfo}) => {
                       }}
                       source={
                         item?.images?.length > 0
-                          ? {uri: item?.images[0]?.name}
+                          ? {uri:`${baseUrl}/${item?.images[0]?.name}`}
                           : require('../Assets/Images/travel3.jpg')
                       }
                       style={{
@@ -270,7 +275,12 @@ const Events = ({onPress, bubbleId, bubbleInfo}) => {
           }}
         />
       )}
+     {/* <AddIconButton onPress={() =>{
+      onPress();
+     }} /> */}
     </View>
+     
+    
   );
 };
 
@@ -309,7 +319,7 @@ const styles = StyleSheet.create({
   eventCard: {
     width: windowWidth * 0.9,
     height: windowWidth * 0.45,
-    marginVertical: moderateScale(10, 0.3),
+    marginVertical: moderateScale(5, 0.3),
     overflow: 'hidden',
     alignSelf: 'center',
     borderRadius: moderateScale(20, 0.6),
@@ -343,7 +353,7 @@ const styles = StyleSheet.create({
     // backgroundColor: 'red',
     alignItems: 'center',
     justifyContent: 'center',
-    position: 'relative',
+    // position: 'relative',
   },
   date: {
     fontSize: moderateScale(12, 0.6),

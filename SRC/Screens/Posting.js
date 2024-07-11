@@ -127,7 +127,7 @@ const Posting = () => {
             isLoading ? (
               <ActivityIndicator color={'#01E8E3'} size={'small'} />
             ) : (
-              'My post'
+              'My posts'
             )
           }
           textColor={themeColor[1]}

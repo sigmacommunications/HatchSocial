@@ -61,6 +61,7 @@ const CreateNewFeed = props => {
       image: image,
     };
     hashtags.forEach((tag, index) => {
+      
       formData.append(`hashtags[${index}]`, tag);
     });
     for (let key in body) {
@@ -343,6 +344,7 @@ const CreateNewFeed = props => {
         </ImageBackground>
       </ScrollView>
       <ImagePickerModal
+      type="photo"
         show={showModal}
         setShow={setShowModal}
         setFileObject={setImage}

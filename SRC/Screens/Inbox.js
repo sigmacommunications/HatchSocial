@@ -23,7 +23,8 @@ import {Icon} from 'native-base';
 import {SwipeListView, SwipeRow} from 'react-native-swipe-list-view';
 import { useSelector } from 'react-redux';
 
-const Inbox = () => {
+const Inbox = ({route}) => {
+  console.log("🚀 ~ Inbox ~ route:", route)
   const privacy = useSelector(state=> state.authReducer.privacy)
   const [swipedRow, setSwipedRow] = useState(null);
   const [BubbleListData, setBubbleListData] = useState([
@@ -152,7 +153,7 @@ const Inbox = () => {
         backgroundColor={Color.white}
         barStyle={'dark-content'}
       />
-      <Header  Title={'Inbox'} search />
+      <Header  Title={'Inbox'} search showBack={route?.params?.fromHeader} />
 
       <ImageBackground
        source={

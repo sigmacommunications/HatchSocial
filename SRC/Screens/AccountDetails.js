@@ -66,7 +66,7 @@ const AccountDetails = () => {
             source={
               profileData?.photo
                 ?{uri: `${baseUrl}/${profileData?.photo}`}
-                : require('../Assets/Images/dummyman1.png')
+                : require('../Assets/Images/dummyUser.png')
             }
             style={{
               height: '100%',
@@ -190,7 +190,7 @@ const styles = StyleSheet.create({
   profileSection: {
     height: windowWidth * 0.35,
     width: windowWidth * 0.35,
-    backgroundColor: '#ACACAC',
+    backgroundColor: '#d7d7d7',
     borderRadius: (windowWidth * 0.35) / 2,
     marginTop: windowHeight * 0.2,
     overflow: 'hidden',

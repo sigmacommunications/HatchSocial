@@ -48,6 +48,13 @@ const Header = props => {
       },
     },
     {
+      name: 'Messages',
+      onPress: () => {
+        navigationService.navigate('Messages', {fromHeader : true});
+        setModalVisible(!modalVisible);
+      },
+    },
+    {
       name: 'Profile',
       onPress: () => {
         navigationService.navigate('ProfileList');
@@ -85,14 +92,22 @@ const Header = props => {
         setModalVisible(!modalVisible);
       },
     },
+    // {
+    //   name: 'Feeds',
+    //   onPress: () => {
+    //     // navigationService.navigate('SubscriptionScreen');
+    //     navigationService.navigate('Feeds');
+    //     setModalVisible(!modalVisible);
+    //   },
+    // },
     {name: 'Privacy', onPress: () => {}},
-    {
-      name: 'settings',
-      onPress: () => {
-        navigationService.navigate('AccountSetting');
-        setModalVisible(!modalVisible);
-      },
-    },
+    // {
+    //   name: 'settings',
+    //   onPress: () => {
+    //     navigationService.navigate('AccountSetting');
+    //     setModalVisible(!modalVisible);
+    //   },
+    // },
     {
       name: 'Logout',
       onPress: () => {
@@ -195,7 +210,7 @@ const Header = props => {
               />
             )}
 
-            {!menu && (
+            {menu && (
               <Icon
                 name={'reorder-three'}
                 as={Ionicons}

@@ -8,6 +8,9 @@ import {
   ToastAndroid,
   Platform,
   Text,
+  TouchableHighlight,
+  KeyboardAvoidingView,
+  ScrollView,
 } from 'react-native';
 import React, {useState, useRef} from 'react';
 import {apiHeader, windowHeight, windowWidth} from '../Utillity/utils';
@@ -34,11 +37,13 @@ import TextInputWithTitle from './TextInputWithTitle';
 import Entypo from 'react-native-vector-icons/Entypo';
 import FeedVideo from './FeedVideo';
 import VideoComponent from '../Components/VideoComponent';
+import ImageSlider from 'react-native-image-slider';
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 
 const PostComponent = ({data, setData, wholeData, fromMyPost}) => {
   console.log(
     '🚀 ~ PostComponent ~ data:',
-    data
+    data?.images
     // JSON.stringify(data, null, 2),
   );
 
@@ -51,7 +56,7 @@ const PostComponent = ({data, setData, wholeData, fromMyPost}) => {
   const [loading, setloading] = useState(false);
   const [yourComment, setYourComment] = useState('');
   const [comments, setComments] = useState(data?.comments);
-
+    const [keyboardShown, setKeyboardShown] = useState(false)
   const editPost = () => {
     navigationService.navigate('AddPost', {data: data, fromHome: true});
   };
@@ -278,7 +283,20 @@ const PostComponent = ({data, setData, wholeData, fromMyPost}) => {
               />
               
             ) : ( */}
-            <VideoComponent item={data}/>
+        {data?.images?.length > 0 ?    <ImageSlider
+        
+          // loopBothSides
+          // autoPlayWithInterval={3000}
+          images={data?.images}
+          customSlide={({ index, item, style, width }) => (
+            // It's important to put style here because it's got offset inside
+            <View key={index} style={[style, styles.customSlide]}>
+              {/* <Text>{item?.name}</Text> */}
+              <CustomImage source={{ uri: `${baseUrl}/${item?.name}` }} style={styles.customImage} />
+            </View>
+          )}
+          
+        />  : <VideoComponent item={data}/>}
               {/* <FeedVideo item={data}/> */}
               {/* // <VideoController item={data?.post_videos} />
             )}
@@ -370,19 +388,48 @@ const PostComponent = ({data, setData, wholeData, fromMyPost}) => {
             />
             <CustomText>comments</CustomText>
           </TouchableOpacity>
+      
 
+        
           <RBSheet
             ref={refRBSheet}
             closeOnDragDown={true}
             closeOnPressMask={false}
+            useNativeDriver={false}
             customStyles={{
               draggableIcon: {
                 backgroundColor: Color.veryLightGray,
               },
             }}
-            height={700}>
+            height={windowHeight * 0.85}
+            
+            >
+          {/* <ScrollView
+          style={{
+          }}
+        
+          > */}
+<KeyboardAwareScrollView
+contentContainerStyle={{ flexGrow: 1 }}
+scrollEnabled={true}
+extraScrollHeight={Platform.OS === 'ios' ? 20 : 0}
+keyboardShouldPersistTaps="handled"
+onKeyboardDidShow={()=>{
+  console.log('shows')
+  setKeyboardShown(true)
+}}
+onKeyboardDidHide={() =>{
+  console.log('Hide')
+  setKeyboardShown(false);
+}}
+>
+
             <FlatList
               data={comments}
+              contentContainerStyle={{
+                height: windowHeight * 0.7,
+              // backgroundColor:'red'
+              }}
               renderItem={({item, index}) => {
                 return (
                   // <View style={{width: windowWidth}}>
@@ -432,21 +479,27 @@ const PostComponent = ({data, setData, wholeData, fromMyPost}) => {
                   // </View>
                 );
               }}
+             
             />
-            <View
-              style={{
+        <View
+              style={[{
                 flexDirection: 'row',
-                position: 'absolute',
-                bottom: 0,
+              
                 width: windowWidth,
+                height:windowHeight * 0.15,
                 justifyContent: 'space-between',
                 paddingHorizontal: moderateScale(10, 0.6),
                 paddingBottom: moderateScale(10, 0.6),
                 alignItems: 'center',
-              }}>
+              },
+           keyboardShown && {
+            position: 'absolute',
+            bottom: moderateScale(145,0.3),
+           }   
+              ]}>
               <TextInputWithTitle
                 titleText={'your comment'}
-                placeholder={'your comment'}
+                placeholder={'Write Yout Comment'}
                 setText={setYourComment}
                 value={yourComment}
                 viewHeight={0.06}
@@ -467,6 +520,13 @@ const PostComponent = ({data, setData, wholeData, fromMyPost}) => {
                 }}
               />
             </View>
+            
+          {/* </ScrollView>
+           */}
+
+         
+
+</KeyboardAwareScrollView>
           </RBSheet>
         </View>
       </View>
@@ -494,6 +554,7 @@ const styles = StyleSheet.create({
   flatView: {
     width: windowWidth,
     marginTop: moderateScale(10, 0.3),
+   
   },
   cT: {
     color: Color.veryLightGray,
@@ -534,6 +595,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     width: windowWidth * 0.62,
     alignItems: 'center',
+    // backgroundColor:'red',
     justifyContent: 'space-evenly',
   },
   profileSection2: {
@@ -617,6 +679,48 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     paddingHorizontal: moderateScale(10, 0.6),
     marginTop: moderateScale(10, 0.3),
+  },
+  content2: {
+    width: '100%',
+    height: 100,
+    marginTop: 10,
+    backgroundColor: '#000',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  contentText: { color: '#fff' },
+  buttons: {
+    zIndex: 1,
+    height: 15,
+    marginTop: -25,
+    marginBottom: 10,
+    justifyContent: 'center',
+    alignItems: 'center',
+    flexDirection: 'row',
+  },
+  button1: {
+    margin: 3,
+    width: 15,
+    height: 15,
+    opacity: 0.9,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  buttonSelected: {
+    opacity: 1,
+    color: 'red',
+  },
+  customSlide: {
+    width:windowWidth ,
+    height:windowHeight * 0.34,
+    // backgroundColor: 'green',
+    // overflow:'hidden',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  customImage: {
+    width: 250,
+    height: 500,
   },
 });
 

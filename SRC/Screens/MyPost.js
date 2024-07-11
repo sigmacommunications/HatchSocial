@@ -218,10 +218,10 @@ const MyPost = props => {
     const response = await Get(url, token);
     setIsLoading(false);
     if (response != undefined) {
-      console.log(
-        '🚀 ~ postList ~ response=======================>:',
-        JSON.stringify(response?.data , null ,2),
-      );
+    //  return console.log(
+    //     '🚀 ~ postList ~ response=======================>:',
+    //     JSON.stringify(response?.data?.post_list , null ,2),
+    //   );
       setPostData(response?.data?.post_list);
     }
   };
@@ -263,7 +263,7 @@ const MyPost = props => {
             fontSize: moderateScale(18, 0.6),
             color: Color.black,
           }}>
-          my post
+          my posts
         </CustomText>
       </View>
       {/* Header END */}

@@ -404,6 +404,7 @@ const AddEvents = (props) => {
       />
 
       <ImagePickerModal
+      type={'photo'}
         show={imagePickerVisible}
         setShow={setImagePickerVisible}
         setFileObject={setImage}

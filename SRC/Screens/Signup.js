@@ -157,7 +157,7 @@ const Signup = () => {
             <TextInputWithTitle
               title={'First Name'}
               secureText={false}
-              placeholder={'first Name'}
+              placeholder={'First Name'}
               setText={setFirstName}
               value={firstName}
               viewHeight={0.07}
@@ -209,7 +209,7 @@ const Signup = () => {
               title={'password'}
               titleText={'Password'}
               secureText={true}
-              placeholder={'password'}
+              placeholder={'Password'}
               setText={setPassword}
               value={password}
               viewHeight={0.07}

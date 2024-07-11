@@ -28,7 +28,7 @@ import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityI
 import ToggleComponent from '../Components/ToggleComponent';
 import CustomSwitch from '../Components/CustomSwitch';
 import { useNavigation } from '@react-navigation/native';
-import { Post } from '../Axios/AxiosInterceptorFunction';
+import { Delete, Post } from '../Axios/AxiosInterceptorFunction';
 
 const BubbleManagement = (props) => {
   const bubbleInfo = props?.route?.params?.bubbleInfo;
@@ -85,6 +85,18 @@ const BubbleManagement = (props) => {
       navigation.goBack();
     }
   };
+  const DeleteBubble = async () =>{
+    const url =`auth/community/${bubbleInfo?.id}`;
+    setIsLoading(true);
+    const response = await Delete(url, apiHeader(token));
+    setIsLoading(false)
+    if(response != undefined){
+      Platform.OS == 'android'
+      ? ToastAndroid.show('Bubble Deleted Successfully', ToastAndroid.SHORT)
+      : Alert.alert('Bubble Deleted Successfully');
+      navigation.navigate('HomeScreen')
+    }
+  }
 
 
 
@@ -329,6 +341,7 @@ const BubbleManagement = (props) => {
                 setValue={setOpenToAll}
               />
           </View>
+              <View style={{flexDirection:'row', gap: moderateScale(12,0.2)}}>
 
           <TouchableOpacity
             onPress={() => {
@@ -370,6 +383,48 @@ const BubbleManagement = (props) => {
               Save
             </CustomText>
           </TouchableOpacity>
+          <TouchableOpacity
+            onPress={() => {
+              DeleteBubble()
+            }}
+            activeOpacity={0.7}
+            disabled={isLoading}
+            style={{
+              width: windowWidth * 0.3,
+              height: windowHeight * 0.05,
+              backgroundColor: Color.white,
+              borderRadius: moderateScale(5, 0.3),
+              flexDirection: 'row',
+              justifyContent: 'center',
+              marginTop: moderateScale(20, 0.3),
+              alignItems: 'center',
+              shadowColor: '#000000',
+              shadowOffset: {
+                width: 0,
+                height: 3,
+              },
+              shadowOpacity: 0.18,
+              shadowRadius: 4.59,
+              elevation: 5,
+            }}>
+            <Icon
+              name={'delete'}
+              as={MaterialCommunityIcons}
+              size={moderateScale(25, 0.6)}
+              color={Color.black}
+              style={{
+                width : 30,
+
+              }}
+            />
+
+            <CustomText
+            // isBold
+              style={{fontSize: moderateScale(15, 0.3), color: Color.black}}>
+              Delete
+            </CustomText>
+          </TouchableOpacity>
+          </View>
 
         
         </ImageBackground>

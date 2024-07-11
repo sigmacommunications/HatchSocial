@@ -28,6 +28,7 @@ import {
 } from '../Store/slices/common';
 import CustomText from '../Components/CustomText';
 import {baseUrl} from '../Config';
+import moment from 'moment';
 
 const BubbleSelection = () => {
   const privacy = useSelector(state => state.authReducer.privacy);
@@ -277,8 +278,10 @@ const BubbleSelection = () => {
             />
           ) : (
             bubble?.map((item, index) => {
-              // return console.log("🚀 ~ bubble?.map ~ item=============>:", item)
+             console.log("🚀 ~ bubble?.map ~ item=============>:", moment(item?.created_at).isBefore(moment().subtract(2, 'days')))
               return (
+                <>
+
                 <TouchableOpacity
                   onPress={() => {
                     if (selectedBubble.findIndex(i => i.id == item?.id) != -1) {
@@ -297,6 +300,7 @@ const BubbleSelection = () => {
                     height:
                       index % 2 == 0 ? windowHeight * 0.3 : windowHeight * 0.17,
                     borderRadius: moderateScale(15, 0.6),
+                   zIndex:0,
                     overflow: 'hidden',
                     marginTop:
                       index == 4 || index == 10 ? -windowHeight * 0.13 : 0,
@@ -348,6 +352,22 @@ const BubbleSelection = () => {
                       height: '100%',
                     }}
                   />
+                 {   
+                 moment().diff(moment(item?.created_at), 'days') <= 2 && <View
+                  style={{
+                    right:5,
+                    top:5,
+                    // borderColor:'red',borderWidth:1,
+                    width: moderateScale(30,0.4), height:moderateScale(30,0.3), position:'absolute'}}
+                  
+                  >
+
+                  <CustomImage 
+                  style={{width:'100%', height:'100%'}}
+                  source={require('../Assets/Images/new.png')}/>
+                  </View>
+}
+                  {/* <CustomText>latest</CustomText> */}
                   {selectedBubble?.some(data => data?.id == item?.id) && (
                     <View
                       style={{
@@ -402,6 +422,7 @@ const BubbleSelection = () => {
                     </View>
                   )}
                 </TouchableOpacity>
+                </>
               );
             })
           )}

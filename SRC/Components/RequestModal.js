@@ -64,8 +64,6 @@ const RequestModal = ({
     
   }, [bubbleData])
   
-
-
   return (
     <Modal
       isVisible={isVisible}

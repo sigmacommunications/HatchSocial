@@ -21,6 +21,7 @@ import Video from 'react-native-video';
 import numeral from 'numeral';
 import CustomText from '../Components/CustomText';
 import {Icon} from 'native-base';
+import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import {useSelector} from 'react-redux';
 import {baseUrl} from '../Config';
 // import ComentsSection from './ComentsSection';
@@ -36,16 +37,17 @@ const VideoComponent = ({
   currentIndex,
   item1,
 }) => {
-  console.log('🚀 ~ item==============>:', `${baseUrl}/${item?.file}`);
+  console.log('🚀 ~ item==============>:', `${baseUrl}/${item?.videos?.name}`);
   // const videoRef = useRef();
   const [videoRef, setvideoRef] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const [paused, setPaused] = useState(true);
   const [clicked, setClicked] = useState(false);
-  
+  const [replayedButton, setReplayedButton] = useState(false)
   const togglePlayPause = () => {
     setPaused(!paused);
   };
+  
 
   return (
           <>
@@ -74,13 +76,17 @@ const VideoComponent = ({
                 },
               ]}>
               <Video
-                ref={ref => setvideoRef(ref)}
+                ref={ref =>  setvideoRef(ref)}
                 resizeMode={'contain'}
                 paused={paused}
-                // source={{
-                //   uri: 'https://8a36-103-125-71-60.ngrok-free.app/uploads/post/d5ace3963d92ca80c0340e2ba3a7e219Hatch-social.mp4',
-                // }}
-                source={{uri :`${baseUrl}/${item?.file}`}}
+              
+                // controls={true}
+                onEnd={()=>{
+
+                  setReplayedButton(true);
+                }}
+                
+                source={{uri :`${baseUrl}/${item?.videos?.name}`}}
                 style={styles.backgroundVideo}
                 onProgress={data => {
                   console.log('first', data);
@@ -90,6 +96,7 @@ const VideoComponent = ({
                   setIsLoading(true);
                   // Views();
                 }}
+                
                 onLoad={x => {
                   console.log('video successfully loaded ', x);
                   setIsLoading(false);
@@ -97,7 +104,7 @@ const VideoComponent = ({
                 }}
                 onBuffer={x => console.log('buffering video', x)}
               />
-              {clicked && (
+              {clicked && !replayedButton && (
                 <View
                   style={styles.button}>
                   <View style={styles.rowView}>
@@ -120,7 +127,7 @@ const VideoComponent = ({
                           source={
                             isLoading ? (
                               <ActivityIndicator
-                                size={'small'}
+                                size={'large'}
                                 color={Color.white}
                               />
                             ) : paused ? (
@@ -130,6 +137,41 @@ const VideoComponent = ({
                             )
                           }
                         />
+                      </View>
+                    </TouchableOpacity>
+                  </View>
+                </View>
+              )}
+              {replayedButton && (
+                <View
+                  style={styles.button}>
+                  <View style={styles.rowView}>
+                    <TouchableOpacity
+                      onPress={() => {
+                       
+                      }}
+                      style={{
+                        marginHorizontal: moderateScale(25, 0.6),
+                      }}>
+                      <View style={styles.replayBtn}>
+                      <CustomImage
+                          onPress={() => {
+                            // console.log("Pressed... ", videoRef?.seek)
+                            if (videoRef) {
+                              // return console.log("RUNNING if ", videoRef.seek(0))
+                                videoRef.seek(0); // Seek to the beginning
+                                setPaused(false); // Start playing the video
+                                // setReplayed(true);
+                                setReplayedButton(false);
+                              }
+                          }}
+                          style={{
+                            width: '100%',
+                            height: '100%',
+                          }}
+                          source={require('../Assets/Images/replay2.png')}
+                        />
+                        {/* <Icon as={MaterialIcons} name='replay-circle-filled' size={moderateScale(55,0.4)} color={'white'}/> */}
                       </View>
                     </TouchableOpacity>
                   </View>
@@ -340,6 +382,12 @@ const styles = StyleSheet.create({
   },
   button2: {
     height: windowHeight * 0.1,
+    width: windowWidth * 0.25,
+    zIndex: 1,
+    // backgroundColor: 'green',
+  },
+  replayBtn: {
+    height: windowHeight * 0.15,
     width: windowWidth * 0.25,
     zIndex: 1,
     // backgroundColor: 'green',

@@ -16,6 +16,7 @@ import React, {useState} from 'react';
 const {height, width} = Dimensions.get('window');
 import {moderateScale} from 'react-native-size-matters';
 import CustomStatusBar from '../Components/CustomStatusBar';
+import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons'
 import Header from '../Components/Header';
 import {apiHeader, windowHeight, windowWidth} from '../Utillity/utils';
 import CustomImage from '../Components/CustomImage';
@@ -33,7 +34,7 @@ import navigationService from '../navigationService';
 import TextInputWithTitle from './TextInputWithTitle';
 import {baseUrl} from '../Config';
 import moment from 'moment';
-import {Post} from '../Axios/AxiosInterceptorFunction';
+import {Delete, Post} from '../Axios/AxiosInterceptorFunction';
 import {
   setAccountPrivate,
   setBubbleSelected,
@@ -42,9 +43,11 @@ import {
   setQuestionAnswered,
 } from '../Store/slices/auth';
 import { setSelectedProfileData } from '../Store/slices/common';
+import ConfirmationModal from './ConfirmationModal';
 
 const ProfileComponent = ({
   item,
+  onDelete,
   borderColor,
   pending,
   check,
@@ -55,12 +58,39 @@ const ProfileComponent = ({
   Requested,
   blocked,
 }) => {
+  console.log("🚀 ~ item:", item)
   // console.log("🚀 ~ item:", item)
   const themeColor = useSelector(state => state.authReducer.ThemeColor);
   const token = useSelector(state => state.authReducer.token);
-  const profileData = useSelector(state => state.commonReducer.profileData);
-  const [isLoading, setisLoading] = useState(false);
+  const profileData = useSelector(state => state.commonReducer.selectedProfile);
+ 
+  const [isVisible, setIsVisible] = useState(false)
+
+  // const [isLoading, setisLoading] = useState(false);
   const dispatch = useDispatch();
+  // const deleteProfile = async (id) =>{
+  //   const url = `auth/profile/${id}?_method=DELETE`;
+  //   const response = await Delete(url, apiHeader(token));
+  //   // setIsLoading(false);
+  //   if (response != undefined) {
+  //     console.log('🚀 ~ deleteProfile ~ response:', response?.data);
+  //     ;
+  //     if(profileData?.id == id){
+  //     dispatch(setQuestionAnswered(false));
+  //     dispatch(setSelectedProfileData({}));
+  //     dispatch(setProfileSelcted(false));
+  //     dispatch(setBubbleSelected(false));
+  //     dispatch(setInterestSelected(false));
+  //   }
+
+  //     Platform.OS == 'android'
+  //     ? ToastAndroid.show('Profile deleted', ToastAndroid.SHORT)
+  //     : Alert.alert('Profile deleted');
+   
+  //   }
+    
+  // }
+
 
   return (
     <>
@@ -103,11 +133,35 @@ const ProfileComponent = ({
                 : item?.type == 'Learning & Exploring'
                 ? 'purple'
                 : 'black',}]}>
-            <CustomImage
-              source={{uri: `${baseUrl}/${item?.photo}`}}
+                  
+            <Image
+              source={
+                item?.photo ?
+                {uri: `${baseUrl}/${item?.photo}`}
+                : require('../Assets/Images/dummyUser.png')
+              }
               style={{width: '100%', height: '100%'}}
             />
           </View>
+          {item?.id === profileData?.id &&  <View style={{
+                         position: 'absolute',
+                         right: 0,
+                         top: 55,
+                         zIndex:1,
+                         backgroundColor: Color.themeColor,
+                         justifyContent: 'center',
+                         alignItems: 'center',
+                         borderRadius: (windowWidth * 0.045) / 2,
+                         width: windowWidth * 0.045,
+                         height: windowWidth * 0.045,
+                        }}>
+                         {/* <Icon
+                         as={MaterialCommunityIcons}
+                         name='lock-outline'
+                         size={moderateScale(16,0.4)}
+                         color={Color.black}
+                         /> */}
+                        </View>}
         </View>
 
         <View
@@ -131,6 +185,51 @@ const ProfileComponent = ({
             {item?.privacy}
           </CustomText>
         </View>
+        {/* <CustomButton
+              iconName={'edit'}
+              iconType={Entypo}
+              iconStyle={{
+                color: Color.black,
+              }}
+              onPress={() =>{
+                // setIsVisible(true)
+                navigationService.navigate('Profile', {isEdit: true, item:item })
+              }}
+              textColor={Color.black}
+              height={windowHeight * 0.05}
+              fontSize={moderateScale(12, 0.6)}
+              borderRadius={moderateScale(10, 0.3)}
+              bgColor={'#FFFFFF'}
+              paddingHorizontal={moderateScale(15, 0.3)}
+              marginRight={moderateScale(5, 0.3)}/> */}
+              <CustomButton
+              iconName={'cross'}
+              iconType={Entypo}
+              iconStyle={{
+                color: Color.black,
+              }}
+              onPress={() =>{
+                console.log(isVisible)
+                setIsVisible(true)
+              }}
+              textColor={Color.black}
+              height={windowHeight * 0.05}
+              fontSize={moderateScale(12, 0.6)}
+              borderRadius={moderateScale(10, 0.3)}
+              bgColor={'#FFFFFF'}
+              paddingHorizontal={moderateScale(15, 0.3)}
+              marginRight={moderateScale(5, 0.3)}/>
+              
+        <View>
+            {/* {item?.id === profileData?.id && <CustomText>lOGGED IN</CustomText>} */}
+        </View>
+              <ConfirmationModal
+              heading={"Are you sure?"}
+              ConfimrationText={"You want to delete this Profile?"}
+              isVisible={isVisible}
+              setIsVisible={setIsVisible}
+              onConfirm={onDelete}
+              />
               </TouchableOpacity>
     </>
   );
@@ -161,7 +260,7 @@ const styles = StyleSheet.create({
   
   row: {
     paddingVertical: moderateScale(5, 0.6),
-    width: windowWidth * 0.97,
+    width: windowWidth,
     paddingHorizontal: moderateScale(10, 0.6),
     alignSelf: 'center',
     flexDirection: 'row',

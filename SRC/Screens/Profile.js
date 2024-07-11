@@ -37,10 +37,11 @@ import {
 } from '../Store/slices/auth';
 import Modal from 'react-native-modal';
 import DropDownSingleSelect from '../Components/DropDownSingleSelect';
-import AntDesign from 'react-native-vector-icons/AntDesign';
+import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import {Icon} from 'native-base';
+import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import ImagePickerModal from '../Components/ImagePickerModal';
-import {Post} from '../Axios/AxiosInterceptorFunction';
+import {Delete, Post} from '../Axios/AxiosInterceptorFunction';
 import {setSelectedProfileData} from '../Store/slices/common';
 import {baseUrl, profilePicUrl} from '../Config';
 import ResetProfilePassword from '../Components/ResetProfilePassword';
@@ -52,6 +53,7 @@ const Profile = props => {
   const fromCreateNewProfile =props?.route?.params?.fromCreateNewProfile
   console.log("🚀 ~ Profile ~ fromCreateNewProfile:", fromCreateNewProfile)
   const item = props?.route?.params?.item;
+  console.log("🚀 ~ Profile ~ item:", item)
   const category = props?.route?.params?.category;
   const subscriptionPlan = props?.route?.params?.subscriptionPlan;
   console.log("🚀 ~ Profile ~ subscriptionPlan:", subscriptionPlan)
@@ -107,11 +109,7 @@ const Profile = props => {
     }
     if (Object.keys(image).length > 0) {
       formData.append('photo', image);
-    } else {
-      return Platform.OS == 'android'
-        ? ToastAndroid.show(`Uplaod profile photo`, ToastAndroid.SHORT)
-        : Alert.alert(`Uplaod profile photo`);
-    }
+    } 
 
     for (let key in body) {
       console.log('🚀 ~ createProfile ~ key:', key);
@@ -225,16 +223,66 @@ const Profile = props => {
     }
   };
 
+  const deleteProfile = async () =>{
+    const url = `auth/profile/${profileData?.id}?_method=DELETE`;
+    const response = await Delete(url, apiHeader(token));
+    // setIsLoading(false);
+    if (response != undefined) {
+      console.log('🚀 ~ deleteProfile ~ response:', response?.data);
+      ;
+      dispatch(setQuestionAnswered(false));
+      dispatch(setSelectedProfileData({}));
+      dispatch(setProfileSelcted(false));
+      dispatch(setBubbleSelected(false));
+      dispatch(setInterestSelected(false));
+
+      Platform.OS == 'android'
+      ? ToastAndroid.show('Profile deleted', ToastAndroid.SHORT)
+      : Alert.alert('Profile deleted');
+   
+    }
+    
+  }
+
   return (
     <>
       <CustomStatusBar
         backgroundColor={Color.white}
         barStyle={'dark-content'}
       />
-      <Header
-        Title={isEdit ? 'Update Profile' : 'Create Profile'}
-        showBack={true}
-      />
+            <View style={styles.HeaderView}>
+        <Icon
+          onPress={() => {
+            navigation.goBack();
+          }}
+          style={{ position: 'absolute',
+          left: moderateScale(15, 0.6),}}
+          name="arrow-back-ios"
+          as={MaterialIcons}
+          color={Color.themeColor}
+          size={moderateScale(20, 0.6)}
+        />
+        <CustomText
+          numberOfLines={1}
+          isBold
+          style={{ fontSize: moderateScale(20, 0.6)}}>
+          {isEdit ? "Update Profile" : "Create New Profile"}
+        </CustomText>
+      {/* {isEdit &&(  <Icon
+          onPress={() => {
+            deleteProfile();
+          }}
+          name="delete"
+          style={{
+            position: 'absolute',
+            right: moderateScale(10, 0.6),
+          }}
+          as={MaterialCommunityIcons}
+          color={Color.themeColor}
+          size={moderateScale(30, 0.6)}
+        />)} */}
+      </View>
+
 
       <ImageBackground
         source={
@@ -273,9 +321,11 @@ const Profile = props => {
                 source={
                   Object.keys(image).length > 0 
                     ? {uri: image?.uri}
-                    : (profileData?.photo && isEdit)
+                    : (profileData?.photo && isEdit && !item)
+                    
+                    // ? (isEdit && item && {uri:  `${baseUrl}/${item?.photo}`}) 
                     ? {uri: `${baseUrl}/${profileData?.photo}`}
-                    : require('../Assets/Images/dummyman1.png')
+                    : require('../Assets/Images/dummyUser.png')
                 }
                 style={{
                   height: '100%',
@@ -528,6 +578,11 @@ const Profile = props => {
                 )}
               </>
             )}
+            <View style={{flexDirection:'row',
+              marginTop: moderateScale(35, 0.3),
+              gap:moderateScale(10,0.2),
+            justifyContent:'center', alignItems:'center'}}>
+
             <CustomButton
               text={
                 isLoading ? (
@@ -535,13 +590,13 @@ const Profile = props => {
                 ) : isEdit ? (
                   'Update'
                 ) : (
-                  'Insert'
+                  'Submit'
                 )
               }
               textColor={privacy == 'private' ? 'black' : themeColor[1]}
               width={windowWidth * 0.3}
               height={windowHeight * 0.04}
-              marginTop={moderateScale(35, 0.3)}
+              // marginTop={moderateScale(35, 0.3)}
               fontSize={moderateScale(12, 0.3)}
               onPress={() => {
                 isEdit == true ? updateProfile() : createProfile();
@@ -554,16 +609,41 @@ const Profile = props => {
               elevation
               disabled={isLoading}
             />
+                   {isEdit &&( <CustomButton
+              text={
+               "Delete"
+              }
+              textColor={privacy == 'private' ? 'black' : themeColor[1]}
+              width={windowWidth * 0.3}
+              height={windowHeight * 0.04}
+              // marginTop={moderateScale(35, 0.3)}
+              fontSize={moderateScale(12, 0.3)}
+              onPress={() => {
+              deleteProfile()
+                // isEdit == true ? updateProfile() : createProfile();
+                // dispatch(setNumOfProfiles(1))
+
+                // navigationService.navigate('QuestionScreen',{type:type})
+              }}
+              bgColor={'#FFFFFF'}
+              borderRadius={moderateScale(30, 0.3)}
+              elevation
+              disabled={isLoading}
+            />)}
+            </View>
+
           </LinearGradient>
           <ResetProfilePassword
             setIsModalVisible={setIsModalVisible}
             isModalVisible={isModalVisible}
             setPassCode={setPassCode}
           />
+    
         </ScrollView>
       </ImageBackground>
 
       <ImagePickerModal
+      type={"photo"}
         show={imagePickerModal}
         setShow={setImagePickerModal}
         setFileObject={setImage}
@@ -586,7 +666,13 @@ const styles = StyleSheet.create({
     overflow: 'hidden',
     borderWidth: 4,
   },
-
+  HeaderView: {
+    width: windowWidth,
+          height: windowHeight * 0.1,
+          justifyContent: 'center',
+          alignItems: 'center',
+          backgroundColor: 'white',
+  },
   textInput: {
     height: windowHeight * 0.05,
     width: windowWidth * 0.8,

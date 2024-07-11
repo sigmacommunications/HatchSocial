@@ -50,7 +50,7 @@ const ImagePickerModal = props => {
 
   const openGallery = () => {
     let options = {
-      mediaType: 'video',
+      mediaType: type,
       maxWidth: 500,
       maxHeight: 500,
       quailty: 0.9,
@@ -79,7 +79,7 @@ const ImagePickerModal = props => {
         } else if (response.customButton) {
           alert(response.customButton);
         }
-        else if( response?.assets && response?.assets[0]?.duration > 15){
+        else if( response?.assets && response?.assets[0]?.duration > 35){
         alert('Video is too long');
   
         } 
