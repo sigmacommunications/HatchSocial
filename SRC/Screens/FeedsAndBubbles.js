@@ -793,6 +793,7 @@ const FeedsAndBubbles = ({route}) => {
                   style={styles.modalt}
                   onPress={() => {
                     navigationService.navigate('CreateNewBubble', {
+                      selectedInterestId: interest_id,
                       selectedInterest: interestName,
                       fromInterest: true,
                     });

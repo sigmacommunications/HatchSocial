@@ -124,16 +124,34 @@ const BubbleManagement = (props) => {
             height: windowHeight * 0.9,
             alignItems: 'center',
           }}>
+          <View style={{
+            width:windowWidth,
+          flexDirection:'row', 
+          alignItems:'center',
+          justifyContent:'space-between',
+              marginTop: moderateScale(20, 0.6),
+}}>
+
           <CustomText
             isBold
             style={{
-              width: windowWidth,
+              width: windowWidth * 0.5,
               paddingHorizontal: moderateScale(10, 0.6),
               fontSize: moderateScale(15, 0.6),
-              marginTop: moderateScale(20, 0.6),
             }}>
-            Bubble Management
+           {bubbleInfo?.title}
           </CustomText>
+          <Icon
+          name="edit"
+          as={AntDesign}
+          style={{marginRight:moderateScale(12,0.3),}}
+          size={moderateScale(24,0.2)}
+          color={'black'}
+          onPress={()=>{
+            
+          }}
+          />
+          </View>
 
           <View
             style={{

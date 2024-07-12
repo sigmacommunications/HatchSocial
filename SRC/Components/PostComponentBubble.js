@@ -19,7 +19,7 @@ import {theme} from 'native-base';
 import {useNavigation} from '@react-navigation/native';
 import CustomButton from './CustomButton';
 
-const PostComponentBubble = ({data, bubbleInfo, deletePost, forApproval , setData , wholeData}) => {
+const PostComponentBubble = ({data, bubbleInfo,fromHome,deletePost, forApproval , setData , wholeData}) => {
   console.log('🚀 ~ PostComponentBubble ~ forApproval:', forApproval);
   const themeColor = useSelector(state => state.authReducer.ThemeColor);
 
@@ -122,7 +122,16 @@ const PostComponentBubble = ({data, bubbleInfo, deletePost, forApproval , setDat
               {moment(data?.created_at).fromNow()}
             </CustomText>
           </View>
-
+{ (bubbleInfo?.profile_id == profileData?.id ||
+        (bubbleInfo?.follow?.role?.toLowerCase() == 'moderator' &&
+          bubbleInfo?.moderator_create_content?.toLowerCase() == 'yes') ||
+          (bubbleInfo?.follow?.role?.toLowerCase() == 'member' &&
+            bubbleInfo?.member_create_content?.toLowerCase() == 'yes')
+            ||
+            (bubbleInfo?.follow?.role?.toLowerCase() == 'admin' &&
+              bubbleInfo?.admin_create_content?.toLowerCase() == 'yes')
+            
+            ) && 
           <OptionsMenu
             button={MoreIcon}
             buttonStyle={{
@@ -132,8 +141,9 @@ const PostComponentBubble = ({data, bubbleInfo, deletePost, forApproval , setDat
             }}
             destructiveIndex={1}
             options={['Delete']}
-            actions={[() => deletePost(data?.id)]}
-          />
+            actions={[() =>{
+          deletePost(data?.id)}]}
+          />}
         </View>
         <CustomText
           style={[

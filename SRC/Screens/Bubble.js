@@ -442,6 +442,7 @@ const Bubble = props => {
                   <Posts
                     bubbleInfo={bubbleInfo}
                     bubbleId={bubbleId}
+                    fromHome ={false}
                     onPress={() => {
                       navigationService.navigate('AddPost', {
                         bubbleId: bubbleId,

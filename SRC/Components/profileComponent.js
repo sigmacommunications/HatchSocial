@@ -148,7 +148,7 @@ const ProfileComponent = ({
                          right: 0,
                          top: 55,
                          zIndex:1,
-                         backgroundColor: Color.themeColor,
+                         backgroundColor: "yellow",
                          justifyContent: 'center',
                          alignItems: 'center',
                          borderRadius: (windowWidth * 0.045) / 2,

@@ -29,7 +29,9 @@ import {baseUrl} from '../Config';
 import AddIconButton from './IconButon-add';
 
 
-const Posts = ({onPress, bubbleId, bubbleInfo}) => {
+const Posts = ({onPress,bubbleId, bubbleInfo}) => {
+  const fromHome = 
+  console.log("🚀 ~ Posts ~ bubbleInfo:", bubbleInfo)
   const themeColor = useSelector(state => state.authReducer.ThemeColor);
   const privacy = useSelector(state => state.authReducer.privacy);
   const token = useSelector(state => state.authReducer.token);
@@ -58,9 +60,8 @@ const Posts = ({onPress, bubbleId, bubbleInfo}) => {
 
   
   const getPostsDelete = async (id) => {
-    if (
-      bubbleInfo?.follow?.role?.toLowerCase() != 'member'
-    ) {
+    if (bubbleInfo?.follow?.role?.toLowerCase() != 'member' && bubbleInfo.follow != null) {
+      // return console.log("ffrom Posts Delete   ",bubbleInfo?.follow)
       const url = `auth/post/${id}`;
       // setIsLoading(true);
       const response = await Delete(url, apiHeader(token));
@@ -187,7 +188,7 @@ const Posts = ({onPress, bubbleId, bubbleInfo}) => {
             );
           }}
           renderItem={({item, index}) => {
-            return <PostComponentBubble data={item} bubbleInfo={bubbleInfo} deletePost={getPostsDelete} forApproval ={false} />;
+            return <PostComponentBubble fromHome ={false} data={item} bubbleInfo={bubbleInfo} deletePost={getPostsDelete} forApproval ={false} />;
           }}
         />
       )}

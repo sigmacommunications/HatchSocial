@@ -44,6 +44,7 @@ import SelectInterestDropdown from '../Components/SelectInterestDropdown';
 const CreateNewBubble = props => {
   const item = props?.route?.params?.item;
   const selectedInterest = props?.route?.params?.selectedInterest;
+  const selectedInterestId = props?.route?.params?.selectedInterestId;
   console.log("🚀 ~ CreateNewBubble ~ selectedInterest:", selectedInterest)
   const fromInterest = props?.route?.params?.fromInterest;
 
@@ -84,7 +85,7 @@ const CreateNewBubble = props => {
   const [ApprovalToPostValue, setApprovalToPostValue] = useState('');
   const MembershipCost = ['yes', 'No'];
   const [MembershipCostValue, setMembershipCost] = useState('');
-  const [selectedInterests, setSelectedInterests] = useState(null);
+  const [selectedInterests, setSelectedInterests] = useState(selectedInterest ? selectedInterest : null);
   console.log("🚀 ~ CreateNewBubble ~ selectedInterests:", selectedInterests)
 
   // const newArray = [
@@ -1332,6 +1333,7 @@ const CreateNewBubble = props => {
           )
         : Alert.alert(`Please Add some keywords to your community`);
     }
+    
     if (selectedInterests != null) {
       // interests
       //   .filter(data => selectedInterests?.some(data1 => data1 == data?.id))
@@ -1351,7 +1353,7 @@ const CreateNewBubble = props => {
             interest_id: selectedInterests?.id,
             name: selectedInterests?.name,
           };
-      formData.append(`interest`, selectedInterests?.id);
+      formData.append(`interest`, selectedInterestId);
 
     } else {
       return Platform.OS == 'android'
@@ -1361,10 +1363,10 @@ const CreateNewBubble = props => {
           )
         : Alert.alert(`Please Add some Interests related to your community`);
     }
-    console.log(
-      '🚀 ~ createBubble ~ formData:',
-      JSON.stringify(formData, null, 2),
-    );
+    // return    console.log(
+    //   '🚀 ~ createBubble ~ formData:',
+    //   JSON.stringify(formData, null, 2),
+    // );
     setIsLoading(true);
     const response = await Post(url, formData, apiHeader(token));
     setIsLoading(false);

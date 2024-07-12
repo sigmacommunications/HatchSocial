@@ -64,7 +64,9 @@ const PostComponent = ({data, setData, wholeData, fromMyPost}) => {
   const handledeletePost = async () => {
     const url = `auth/post/${data?.id}`;
     setloading(true);
+  //  return console.log("🚀 ~ handledeletePost ~ url:", url)
     const response = await Delete(url, apiHeader(token));
+    console.log("🚀 ~ handledeletePost ~ response:", response)
 
     setloading(false);
     if (response != undefined) {
@@ -215,7 +217,7 @@ const PostComponent = ({data, setData, wholeData, fromMyPost}) => {
               }}
               destructiveIndex={1}
               options={['Delete']}
-              actions={[handledeletePost]}
+              actions={[() => handledeletePost()]}
             />
           )}
         </View>
