@@ -63,6 +63,7 @@ import FeedsAndBubbles from './Screens/FeedsAndBubbles';
 import FeedsPostScreen from './Screens/FeedsPostScreen';
 import FeedPost from './Screens/FeedPost';
 import SpotifyScreen from './Screens/SpotifyScreen';
+import ImagePreview from './Screens/ImagePreview';
 
 
 const AppNavigator = () => {
@@ -179,6 +180,7 @@ const AppNavigator = () => {
           <RootNav.Screen name="ResetPasscode" component={ResetPasscode} />
           <RootNav.Screen name="FeedsPostScreen" component={FeedsPostScreen} />
           <RootNav.Screen name="FeedPost" component={FeedPost} />
+          <RootNav.Screen name="Image" component={ImagePreview} />
 
 
 

@@ -27,51 +27,55 @@ import AntDesign from 'react-native-vector-icons/AntDesign';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import ToggleComponent from '../Components/ToggleComponent';
 import CustomSwitch from '../Components/CustomSwitch';
-import { useNavigation } from '@react-navigation/native';
-import { Delete, Post } from '../Axios/AxiosInterceptorFunction';
+import {useNavigation} from '@react-navigation/native';
+import {Delete, Post} from '../Axios/AxiosInterceptorFunction';
 
-const BubbleManagement = (props) => {
+const BubbleManagement = props => {
   const bubbleInfo = props?.route?.params?.bubbleInfo;
-  console.log("🚀 ~ BubbleManagement ~ bubInfo:", bubbleInfo)
-  const navigation = useNavigation()
+  console.log('🚀 ~ BubbleManagement ~ bubInfo:', bubbleInfo);
+  const navigation = useNavigation();
   const themeColor = useSelector(state => state.authReducer.ThemeColor);
-  const  token = useSelector(state => state.authReducer. token);
+  const token = useSelector(state => state.authReducer.token);
   const privacy = useSelector(state => state.authReducer.privacy);
   const profileData = useSelector(state => state.commonReducer.selectedProfile);
-  console.log("🚀 ~ BubbleManagement ~ profileData:", profileData)
+  console.log('🚀 ~ BubbleManagement ~ profileData:', profileData);
 
-
-  const [isLoading , setIsLoading] = useState(false)
-  const [adminCanCreateContent, setadminCanCreateContent] = useState(bubbleInfo?.admin_create_content);
+  const [bubbleTitle, setBubbleTitle] = useState(bubbleInfo?.title);
+  const [isLoading, setIsLoading] = useState(false);
+  const [adminCanCreateContent, setadminCanCreateContent] = useState(
+    bubbleInfo?.admin_create_content,
+  );
   const [openToAll, setOpenToAll] = useState(bubbleInfo?.privacy);
-  const [memberCreateContent, setmemberCreateContent] = useState(bubbleInfo?.member_create_content);
-  const [bubbleTeamCanCreateContent, setbubbleTeamCanCreateContent] = useState(bubbleInfo?.moderator_create_content);
-  
+  const [memberCreateContent, setmemberCreateContent] = useState(
+    bubbleInfo?.member_create_content,
+  );
+  const [bubbleTeamCanCreateContent, setbubbleTeamCanCreateContent] = useState(
+    bubbleInfo?.moderator_create_content,
+  );
+  const [isEditing, setIsEditing] = useState(false);
+
   const UpdateBubble = async () => {
     const url = `auth/community_update/${bubbleInfo?.id}`;
     const body = {
-      title: bubbleInfo?.title,
+      title: bubbleTitle,
       profile_id: bubbleInfo?.follow?.profile_id,
       approval_post: bubbleInfo?.approval_post,
       membership_cost: bubbleInfo?.membership_cost,
-      admin_create_content : adminCanCreateContent,
-      moderator_create_content : bubbleTeamCanCreateContent ,
-      member_create_content : memberCreateContent ,
+      admin_create_content: adminCanCreateContent,
+      moderator_create_content: bubbleTeamCanCreateContent,
+      member_create_content: memberCreateContent,
       privacy: openToAll,
-     };
+    };
     //  for (let key in body) {
     //    if (body[key] == '') {
     //      return Platform.OS == 'android'
     //      ? ToastAndroid.show(`${key} is required`, ToastAndroid.SHORT)
     //      : Alert.alert(`${key} is required`);
     //     }
-        
+
     //   }
-      
-      // return console.log("🚀 ~ createBubble ~ body:", body)
-   
-    
-  
+
+    // return console.log("🚀 ~ createBubble ~ body:", body)
 
     setIsLoading(true);
     const response = await Post(url, body, apiHeader(token));
@@ -81,36 +85,36 @@ const BubbleManagement = (props) => {
       Platform.OS == 'android'
         ? ToastAndroid.show('Bubble Updated Successfully', ToastAndroid.SHORT)
         : Alert.alert('Bubble Updated Successfully');
-    // return  console.log('response ==== >' , response?.data)
+      // return  console.log('response ==== >' , response?.data)
       navigation.goBack();
     }
   };
-  const DeleteBubble = async () =>{
-    const url =`auth/community/${bubbleInfo?.id}`;
+  const DeleteBubble = async () => {
+    const url = `auth/community/${bubbleInfo?.id}`;
     setIsLoading(true);
     const response = await Delete(url, apiHeader(token));
-    setIsLoading(false)
-    if(response != undefined){
+    setIsLoading(false);
+    if (response != undefined) {
       Platform.OS == 'android'
-      ? ToastAndroid.show('Bubble Deleted Successfully', ToastAndroid.SHORT)
-      : Alert.alert('Bubble Deleted Successfully');
-      navigation.navigate('HomeScreen')
+        ? ToastAndroid.show('Bubble Deleted Successfully', ToastAndroid.SHORT)
+        : Alert.alert('Bubble Deleted Successfully');
+      navigation.navigate('HomeScreen');
     }
-  }
+  };
 
-
-
-
-  
   return (
     <>
       <CustomStatusBar
         backgroundColor={Color.white}
         barStyle={'dark-content'}
       />
-      <Header Title={
-        // profileData?.type === "Business & Entrepreneurship" ? 'Grow Bubble Tips':
-        'Bubble Management'} showBack />
+      <Header
+        Title={
+          // profileData?.type === "Business & Entrepreneurship" ? 'Grow Bubble Tips':
+          'Bubble Management'
+        }
+        showBack
+      />
       <ScrollView>
         <ImageBackground
           source={
@@ -124,34 +128,97 @@ const BubbleManagement = (props) => {
             height: windowHeight * 0.9,
             alignItems: 'center',
           }}>
-          <View style={{
-            width:windowWidth,
-          flexDirection:'row', 
-          alignItems:'center',
-          justifyContent:'space-between',
-              marginTop: moderateScale(20, 0.6),
-}}>
-
-          <CustomText
-            isBold
-            style={{
-              width: windowWidth * 0.5,
-              paddingHorizontal: moderateScale(10, 0.6),
-              fontSize: moderateScale(15, 0.6),
-            }}>
-           {bubbleInfo?.title}
-          </CustomText>
-          <Icon
-          name="edit"
-          as={AntDesign}
-          style={{marginRight:moderateScale(12,0.3),}}
-          size={moderateScale(24,0.2)}
-          color={'black'}
-          onPress={()=>{
-            
-          }}
-          />
+          
+            {isEditing && (
+              <View
+              style={{width: windowWidth}}
+              >
+                <TextInputWithTitle
+                  placeholder={'Enter Bubble Title'}
+                  setText={setBubbleTitle}
+                  value={bubbleTitle}
+                  marginTop={moderateScale(5, 0.3)}
+                  viewHeight={0.04}
+                  viewWidth={0.58}
+                  inputHeight={0.05}
+                  inputWidth={0.58}
+                  color={Color.black}
+                  placeholderColor={'#000000'}
+                  isBold
+                  borderBottomWidth={1}
+                />
+                <View
+                  style={{
+                    flexDirection: 'row',
+                    alignItems: 'center',
+                    width: windowWidth * 0.65,
+                    marginTop: moderateScale(8, 0.2),
+                    gap: moderateScale(10, 0.2),
+                    paddingHorizontal: moderateScale(10, 0.2),
+                  }}>
+                  <CustomButton
+                    text={'cancel'}
+                    textColor={themeColor[1]}
+                    width={windowWidth * 0.25}
+                    height={windowHeight * 0.04}
+                    bgColor={'#FFFFFF'}
+                    borderRadius={moderateScale(30, 0.3)}
+                    //  isGradient
+                    isBold={true}
+                    //  marginBottom={moderateScale(50)}
+                    onPress={() => {
+                      setBubbleTitle((prevState) => prevState);
+                      setIsEditing(false);
+                    }}
+                  />
+                  <CustomButton
+                    text={'Edit'}
+                    textColor={themeColor[1]}
+                    width={windowWidth * 0.25}
+                    height={windowHeight * 0.04}
+                    bgColor={'#FFFFFF'}
+                    borderRadius={moderateScale(30, 0.3)}
+                    //  isGradient
+                    isBold={true}
+                    //  marginBottom={moderateScale(50)}
+                    onPress={() => {
+                      setIsEditing(false);
+                    }}
+                  />
+                </View>
+              </View>
+            )}
+            {!isEditing && (
+             <View
+             style={{
+               width: windowWidth,
+               flexDirection: 'row',
+               alignItems: 'center',
+               justifyContent: 'space-between',
+               marginTop: moderateScale(20, 0.6),
+             }}>
+                <CustomText
+                  isBold
+                  style={{
+                    width: windowWidth * 0.5,
+                    paddingHorizontal: moderateScale(10, 0.6),
+                    fontSize: moderateScale(15, 0.6),
+                  }}>
+                  {bubbleTitle}
+                </CustomText>
+                <Icon
+                  name="edit"
+                  as={AntDesign}
+                  style={{marginRight: moderateScale(12, 0.3)}}
+                  size={moderateScale(24, 0.2)}
+                  color={'black'}
+                  onPress={() => {
+                    setIsEditing(true);
+                  }}
+                />
           </View>
+             
+            )}
 
           <View
             style={{
@@ -329,134 +396,127 @@ const BubbleManagement = (props) => {
               }}>
               Team Role | Perms
             </CustomText>
-           
-             <SwitchComponent
-                text1={'Admin can create content / post'}
-                text2={'(N) Admin can not post'}
-                value={adminCanCreateContent}
-                setValue={setadminCanCreateContent}
-              />
-              {/* bubble member can post or not */}
 
-              <SwitchComponent
-                text1={'Member can create content / post'}
-                text2={'Member can not create content / post'}
-                value={memberCreateContent}
-                setValue={setmemberCreateContent}
-              />
-              {/* bubble team / moderator can post or not */}
-
-              <SwitchComponent
-                text1={'Bubble team can create content'}
-                text2={'bubble team can not create content'}
-                value={bubbleTeamCanCreateContent}
-                setValue={setbubbleTeamCanCreateContent}
-              />
-               <SwitchComponent
-                text1={'Make bubble private'}
-                text2={'Make bubble public'}
-                value={openToAll}
-                setValue={setOpenToAll}
-              />
-          </View>
-              <View style={{flexDirection:'row', gap: moderateScale(12,0.2)}}>
-
-          <TouchableOpacity
-            onPress={() => {
-              UpdateBubble()
-            }}
-            activeOpacity={0.7}
-            style={{
-              width: windowWidth * 0.3,
-              height: windowHeight * 0.05,
-              backgroundColor: Color.white,
-              borderRadius: moderateScale(5, 0.3),
-              flexDirection: 'row',
-              justifyContent: 'center',
-              marginTop: moderateScale(20, 0.3),
-              alignItems: 'center',
-              shadowColor: '#000000',
-              shadowOffset: {
-                width: 0,
-                height: 3,
-              },
-              shadowOpacity: 0.18,
-              shadowRadius: 4.59,
-              elevation: 5,
-            }}>
-            <Icon
-              name={'zip-disk'}
-              as={MaterialCommunityIcons}
-              size={moderateScale(25, 0.6)}
-              color={Color.black}
-              style={{
-                width : 30,
-
-              }}
+            <SwitchComponent
+              text1={'Admin can create content / post'}
+              text2={'(N) Admin can not post'}
+              value={adminCanCreateContent}
+              setValue={setadminCanCreateContent}
             />
+            {/* bubble member can post or not */}
 
-            <CustomText
-            // isBold
-              style={{fontSize: moderateScale(15, 0.3), color: Color.black}}>
-              Save
-            </CustomText>
-          </TouchableOpacity>
-          <TouchableOpacity
-            onPress={() => {
-              DeleteBubble()
-            }}
-            activeOpacity={0.7}
-            disabled={isLoading}
-            style={{
-              width: windowWidth * 0.3,
-              height: windowHeight * 0.05,
-              backgroundColor: Color.white,
-              borderRadius: moderateScale(5, 0.3),
-              flexDirection: 'row',
-              justifyContent: 'center',
-              marginTop: moderateScale(20, 0.3),
-              alignItems: 'center',
-              shadowColor: '#000000',
-              shadowOffset: {
-                width: 0,
-                height: 3,
-              },
-              shadowOpacity: 0.18,
-              shadowRadius: 4.59,
-              elevation: 5,
-            }}>
-            <Icon
-              name={'delete'}
-              as={MaterialCommunityIcons}
-              size={moderateScale(25, 0.6)}
-              color={Color.black}
-              style={{
-                width : 30,
-
-              }}
+            <SwitchComponent
+              text1={'Member can create content / post'}
+              text2={'Member can not create content / post'}
+              value={memberCreateContent}
+              setValue={setmemberCreateContent}
             />
+            {/* bubble team / moderator can post or not */}
 
-            <CustomText
-            // isBold
-              style={{fontSize: moderateScale(15, 0.3), color: Color.black}}>
-              Delete
-            </CustomText>
-          </TouchableOpacity>
+            <SwitchComponent
+              text1={'Bubble team can create content'}
+              text2={'bubble team can not create content'}
+              value={bubbleTeamCanCreateContent}
+              setValue={setbubbleTeamCanCreateContent}
+            />
+            <SwitchComponent
+              text1={'Make bubble private'}
+              text2={'Make bubble public'}
+              value={openToAll}
+              setValue={setOpenToAll}
+            />
           </View>
+          <View style={{flexDirection: 'row', gap: moderateScale(12, 0.2)}}>
+            <TouchableOpacity
+              onPress={() => {
+                UpdateBubble();
+              }}
+              activeOpacity={0.7}
+              style={{
+                width: windowWidth * 0.3,
+                height: windowHeight * 0.05,
+                backgroundColor: Color.white,
+                borderRadius: moderateScale(5, 0.3),
+                flexDirection: 'row',
+                justifyContent: 'center',
+                marginTop: moderateScale(20, 0.3),
+                alignItems: 'center',
+                shadowColor: '#000000',
+                shadowOffset: {
+                  width: 0,
+                  height: 3,
+                },
+                shadowOpacity: 0.18,
+                shadowRadius: 4.59,
+                elevation: 5,
+              }}>
+              <Icon
+                name={'zip-disk'}
+                as={MaterialCommunityIcons}
+                size={moderateScale(25, 0.6)}
+                color={Color.black}
+                style={{
+                  width: 30,
+                }}
+              />
 
-        
+              <CustomText
+                // isBold
+                style={{fontSize: moderateScale(15, 0.3), color: Color.black}}>
+                Save
+              </CustomText>
+            </TouchableOpacity>
+            <TouchableOpacity
+              onPress={() => {
+                DeleteBubble();
+              }}
+              activeOpacity={0.7}
+              disabled={isLoading}
+              style={{
+                width: windowWidth * 0.3,
+                height: windowHeight * 0.05,
+                backgroundColor: Color.white,
+                borderRadius: moderateScale(5, 0.3),
+                flexDirection: 'row',
+                justifyContent: 'center',
+                marginTop: moderateScale(20, 0.3),
+                alignItems: 'center',
+                shadowColor: '#000000',
+                shadowOffset: {
+                  width: 0,
+                  height: 3,
+                },
+                shadowOpacity: 0.18,
+                shadowRadius: 4.59,
+                elevation: 5,
+              }}>
+              <Icon
+                name={'delete'}
+                as={MaterialCommunityIcons}
+                size={moderateScale(25, 0.6)}
+                color={Color.black}
+                style={{
+                  width: 30,
+                }}
+              />
+
+              <CustomText
+                // isBold
+                style={{fontSize: moderateScale(15, 0.3), color: Color.black}}>
+                Delete
+              </CustomText>
+            </TouchableOpacity>
+          </View>
         </ImageBackground>
       </ScrollView>
     </>
   );
-  
 };
 
 export default BubbleManagement;
 
-
-const SwitchComponent = ({ text1, text2, setValue, value }) => {
-  console.log("🚀 ~ SwitchComponent ~ value:", value)
+const SwitchComponent = ({text1, text2, setValue, value}) => {
+  console.log('🚀 ~ SwitchComponent ~ value:', value);
   // const onSelectSwitch = index => {
   //   if (index == 1) {
   //     setValue('Yes');
@@ -465,7 +525,7 @@ const SwitchComponent = ({ text1, text2, setValue, value }) => {
   //   }
   // };
   return (
-    <View style={{ flexDirection: 'row' }}>
+    <View style={{flexDirection: 'row'}}>
       <View
         style={{
           width: windowWidth * 0.7,

@@ -110,7 +110,7 @@ const ProfilesListing = props => {
         <CustomText
           // numberOfLines={1}
           style={styles.Text}>
-          who's watching?
+          Choose Profile
         </CustomText>
             <ScrollView>
         <View style={styles.mapview}>

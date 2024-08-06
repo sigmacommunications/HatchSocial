@@ -127,23 +127,40 @@ const ImagePickerModal = props => {
       }
     }
     launchCamera(options, response => {
-       console.log('Response from camera    =====', response?.assets)
+       console.log('Response from camera    =====', response)
        try{
       if (Platform.OS == 'ios') {
         setShow(false);
       }
-      else if( response?.assets && response?.assets[0]?.duration > 15){
-        alert('Video is too long')
-      }
+      // else if( response?.assets && response?.assets[0]?.duration > 15){
+      //   alert('Video is too long')
+      // }
       // if (response.didCancel) {
       // } else if (response.error) {
       // } else if (response.customButton) {
       //   Alert.alert(response.customButton);
       // }
+      // else {
+      //   setFileObject &&
+      //     setFileObject({
+      //       uri: response?.assets[0]?.uri,
+      //       type: response?.assets[0]?.type,
+      //       name: response?.assets[0]?.fileName,
+      //     });
+        
+      if (response.didCancel) {
+      } else if (response.error) {
+      } 
+      else if (response.customButton) {
+        Alert.alert(response.customButton);
+      }
+      else if( response?.assets && response?.assets[0]?.duration > 15){
+        alert('Video is too long you can post  maximum video of 15 seconds');
+      }
       else {
         setFileObject &&
           setFileObject({
-            uri: response?.assets[0]?.uri,
+            uri: type == 'video' ?  `${response?.assets[0]?.uri}`: response?.assets[0]?.uri ,
             type: response?.assets[0]?.type,
             name: response?.assets[0]?.fileName,
           });
@@ -162,6 +179,7 @@ const ImagePickerModal = props => {
       console.log('value is undefined',error)
     }
     });
+    console.log("🚀 ~ openCamera ~ response:", response)
   };
 
   return (

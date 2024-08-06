@@ -383,6 +383,7 @@ const AddEvents = (props) => {
             borderColor: themeColor[1],
           },
         }}
+        hideSeconds
         visible={timeVisible}
         setIsVisible={setTimeVisible}
         onConfirm={pickedDuration => {

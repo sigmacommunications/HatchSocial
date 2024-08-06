@@ -109,7 +109,7 @@ const AccountDetails = () => {
           isGradient
           //   isBold
         />
-
+{/* 
         <CustomButton
           text={
             isLoading ? (
@@ -130,7 +130,7 @@ const AccountDetails = () => {
           borderRadius={moderateScale(30, 0.3)}
           isGradient
           //   isBold
-        />
+        /> */}
 
         <CustomButton
           text={

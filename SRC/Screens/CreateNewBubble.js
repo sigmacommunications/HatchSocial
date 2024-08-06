@@ -53,14 +53,16 @@ const CreateNewBubble = props => {
   const themeColor = useSelector(state => state.authReducer.ThemeColor);
   const privacy = useSelector(state => state.authReducer.privacy);
   const profileData = useSelector(state => state.commonReducer.selectedProfile);
+  console.log("🚀 ~ CreateNewBubble ~ profileData:", profileData?.name)
 
   const navigation = useNavigation();
   const dispatch = useDispatch();
 
   const [CreateBubble, setCreateBubble] = useState('');
   const [Admin, setAdmin] = useState(
-    userData?.first_name ? userData?.first_name : '',
-  );
+    // userData?.first_name ? userData?.first_name : '',
+    profileData?.name ? profileData?.name : '',
+    );
   const [bubbleTitle, setBubbleTitle] = useState(item?.name ? item?.name : '');
   const [moderator, setModerator] = useState(
     item?.moderator ? item?.moderator : '',
@@ -1397,6 +1399,7 @@ const CreateNewBubble = props => {
   useEffect(() => {
     getInterest();
   }, []);
+
 
   // useEffect(() => {
   //   if (Object.keys(profilePicture).length > 0) {

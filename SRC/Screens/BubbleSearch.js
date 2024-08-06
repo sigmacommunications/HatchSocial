@@ -9,7 +9,7 @@ import {
   TextInput,
   ScrollView,
 } from 'react-native';
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 const {height, width} = Dimensions.get('window');
 import {moderateScale, moderateVerticalScale} from 'react-native-size-matters';
 import Ionicons from 'react-native-vector-icons/Ionicons';
@@ -28,8 +28,8 @@ import {useNavigation} from '@react-navigation/native';
 import RequestModal from '../Components/RequestModal';
 import {BlurView} from '@react-native-community/blur';
 import CustomButton from '../Components/CustomButton';
-import navigationService from '../navigationService';
-import {mode} from 'native-base/lib/typescript/theme/tools';
+import { useDebounce } from 'use-debounce';
+
 
 const BubbleSearch = () => {
   const navigation = useNavigation();
@@ -43,7 +43,16 @@ const BubbleSearch = () => {
   const [selectedBubbleId, setSelectedBubbleId] = useState(null);
   const [clicked, setclicked] = useState(false);
   const [bubbleData, setBubbleData] = useState({});
+  const [debouncedSearch] = useDebounce(search, 3000)
+
   const [isVisible, setIsVisible] = useState(false);
+  useEffect(() => {
+    if (debouncedSearch) {
+      searchBubble(debouncedSearch);
+    }
+  }, [debouncedSearch]);
+
+
   // const SearchData = [
   //   {
   //     id: 1,
@@ -137,18 +146,19 @@ const BubbleSearch = () => {
   //   //   bubble: false,
   //   // },
   // ];
-  const searchBubble = async () => {
+  const searchBubble = async (searchTerm) => {
     const url = 'auth/search';
     const body = {
-      search: search,
+      search: searchTerm,
     };
+  //  return console.log("🚀 ~ searchBubble ~ body:", body)
     const response = await Post(url, body, apiHeader(token));
 
     if (response != undefined) {
       // return console.log("🚀 ~ BubbleSearch ~ data====================.>:", data?.feeds)
       console.log(
         'Search : ===> ',
-        JSON.stringify(response?.data?.feeds, null, 2),
+        JSON.stringify(response?.data, null, 2),
       );
       setData(response?.data);
     }
@@ -224,6 +234,8 @@ const BubbleSearch = () => {
             color={themeColor[1]}
             placeholderColor={Color.veryLightGray}
             borderRadius={moderateScale(25, 0.3)}
+  
+           
           />
 
           <TouchableOpacity
@@ -321,7 +333,7 @@ const BubbleSearch = () => {
               return (
                 <TouchableOpacity
                   activeOpacity={0.9}
-                  disabled
+                  // disabled
                   style={styles.row}
                   onPress={() => {
                     if (isSelected == 'bubbles') {
@@ -339,7 +351,9 @@ const BubbleSearch = () => {
                           console.log('this true 2');
 
                           setSelectedBubbleId(item?.id);
-                          setclicked(true);
+                          // setclicked(true);
+                  navigation.navigate('Bubble', {id: selectedBubbleId});
+
                           setBubbleData(item);
                         } else {
                           console.log('this true 3');
@@ -353,12 +367,16 @@ const BubbleSearch = () => {
                         item?.privacy.toLowerCase() == 'no'
                       ) {
                         console.log('this true 4');
+                        navigation.navigate('Bubble', {id: selectedBubbleId});
 
-                        setclicked(true);
+                        // setclicked(true);
                         setSelectedBubbleId(item?.id);
                       }
                     } else {
-                      navigation.navigate('PostScreen', {item: item});
+                      // navigation.navigate('PostScreen', {item: item});
+                      navigation.navigate('FeedPost', {data: item});
+
+                      
                     }
                   }}>
                   <View

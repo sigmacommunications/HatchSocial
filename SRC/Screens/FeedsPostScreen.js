@@ -23,7 +23,7 @@ import FeedVideo from '../Components/FeedVideo';
 const FeedsPostScreen = (props) => {
   const data = props?.route?.params?.data
   const refRBSheet = useRef();
-  console.log("🚀 ~ FeedsPostScreen ~ item ================ >>>>>>>>>>>>>>>:", data?.id)
+  // console.log("🚀 ~ FeedsPostScreen ~ item ================ >>>>>>>>>>>>>>>:", data?.id)
   // const item = props?.route?.params?.data;
   const profileData = useSelector(state => state.commonReducer.selectedProfile);
   const token = useSelector(state => state.authReducer.token);
@@ -460,7 +460,7 @@ const FeedsPostScreen = (props) => {
           width: windowWidth,
         }}
         onScroll={event => {
-          handleHorizontalScroll(event);
+          // handleHorizontalScroll(event);
         }}
         showsHorizontalScrollIndicator={false}
         ListEmptyComponent={() => {
@@ -478,7 +478,7 @@ const FeedsPostScreen = (props) => {
           );
         }}
         renderItem={({item, index}) => {
-          console.log('video component here ',item)
+          // console.log('video component here ',item)
           return (
             <FeedVideo
               item1={item}

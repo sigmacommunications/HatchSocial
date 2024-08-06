@@ -39,7 +39,7 @@ const CreateNewFeed = props => {
   const [Details, setDetails] = useState('');
   const [radio, setRadio] = useState('');
   const [isLoading, setisLoading] = useState(false);
-  const [image, setImage] = useState({});
+  const [image, setImage] = useState([]);
   const [showModal, setShowModal] = useState(false);
   const [hashtags, setHashTags] = useState([]);
   const [feedsTitle, setFeedsTitle] = useState([]);
@@ -67,6 +67,8 @@ const CreateNewFeed = props => {
     for (let key in body) {
       formData.append(key, body[key]);
     }
+    // return  console.log("🚀 ~ addFeeds ~ formData:", JSON.stringify(formData, null, 2))
+    
     setisLoading(true);
     const response = await Post(url, formData, apiHeader(token));
     setisLoading(false);

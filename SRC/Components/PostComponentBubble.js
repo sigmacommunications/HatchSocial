@@ -35,7 +35,7 @@ const PostComponentBubble = ({data, bubbleInfo,fromHome,deletePost, forApproval 
 
   const [loading, setloading] = useState(false);
   const [btnLoading, setBtnloading] = useState(false);
-
+  console.log("🚀 ~ PostComponentBubble ~ bubbleInfo?.profile_id == profileData?.id:", bubbleInfo)
 
   const editPost = () => {
     navigationService.navigate('AddPost', {data});
@@ -60,7 +60,6 @@ const PostComponentBubble = ({data, bubbleInfo,fromHome,deletePost, forApproval 
   const accept = async () => {
     const url = `auth/pending_post_update/${data?.id}`;
     const body = {
-      
       status: 'active',
     };
    console.log("🚀 ~ accept ~ body:", body)
@@ -167,6 +166,14 @@ const PostComponentBubble = ({data, bubbleInfo,fromHome,deletePost, forApproval 
                   height: windowHeight * 0.3,
                 }}>
                 <CustomImage
+                onPress={()=>{
+                  navigationService.navigate('Image', {
+                    imageData: {
+                      uri: `${baseUrl}/${data?.post_images[0]?.name}`,
+                      // index: index
+                    }
+                  })
+                }}
                   source={{uri: `${baseUrl}/${data?.post_images[0]?.name}`}}
                   style={{
                     height: '100%',

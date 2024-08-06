@@ -22,6 +22,8 @@ import PostComponent from '../Components/PostComponent';
 
 import {useNavigation} from '@react-navigation/native';
 import {Get, Post} from '../Axios/AxiosInterceptorFunction';
+import Modal from 'react-native-modal';
+import { baseUrl } from '../Config';
 
 
 const MyPost = props => {
@@ -31,6 +33,10 @@ const MyPost = props => {
   const token = useSelector(state => state.authReducer.token);
   const [isLoading, setIsLoading] = useState(false);
   const [postData, setPostData] = useState([]);
+  const [isVisible, setIsVisible] = useState(false);
+  const [image, setImage] = useState({});
+  const [currImageIndex , setCurrImageIndex] = useState(0);
+
   console.log("🚀 ~ MyPost ~ postData========================>:", postData)
 
   const navigation = useNavigation();
@@ -218,10 +224,10 @@ const MyPost = props => {
     const response = await Get(url, token);
     setIsLoading(false);
     if (response != undefined) {
-    //  return console.log(
-    //     '🚀 ~ postList ~ response=======================>:',
-    //     JSON.stringify(response?.data?.post_list , null ,2),
-    //   );
+      console.log(
+        '🚀 ~ postList ~ response=======================>:',
+        JSON.stringify(response?.data?.post_list , null ,2),
+      );
       setPostData(response?.data?.post_list);
     }
   };
@@ -304,12 +310,70 @@ const MyPost = props => {
                paddingBottom: moderateScale(80, 0.3),
               }}
               renderItem={({item, index}) => {
-                return <PostComponent data={item} fromMyPost={true} setData={setPostData} wholeData={postData} />;
+                return <PostComponent data={item} 
+                // setIndex={setCurrImageIndex}
+                // setModalIsVisible={setIsVisible}
+                // setImages={setImage}
+                fromMyPost={true} setData={setPostData} wholeData={postData} />;
               }}
             />
           </>
         )}
       </ImageBackground>
+      
+      {/* <Modal visible={isVisible} 
+      >
+        <View style={styles.imageView}>
+          <View style={styles.row}>
+            <TouchableOpacity
+              onPress={() => {
+                setIsVisible(false)
+              }}>
+              <View
+                // colors={Color.themeBgColor}
+                // style={styles.customBtn}>
+                >
+                <Icon
+                  name="left"
+                  as={AntDesign}
+                  size={moderateScale(20, 0.6)}
+                  color={'white'}
+                />
+              </View>
+            </TouchableOpacity>
+
+             <CustomButton
+              iconStyle={{
+                width: windowWidth * 0.09,
+                height: windowHeight * 0.05,
+                textAlign: 'center',
+                paddingHorizontal: moderateScale(12, 0.2),
+                paddingTop: moderateScale(15, 0.6),
+                fontSize: moderateScale(24, 0.6),
+                color: Color.black,
+              }}
+              iconName="cross"
+              iconType={Entypo}
+              iconSize={18}
+              // color={Color.white}
+              marginTop={moderateScale(5, 0.3)}
+              // text={'Use'}
+              isGradient={true}
+              onPress={() => {
+                setIsVisible(false);
+              }}
+              bgColor={['white', 'white']}
+              width={windowHeight * 0.06}
+              height={windowHeight * 0.06}
+            /> 
+          </View>
+          <View style={{width: windowWidth, height:windowHeight, overflow:'hidden'}}>
+
+         <CustomImage style={{width:'100%', height: '100%'}} source={{uri: `${baseUrl}/${data?.images[currImageIndex]?.name}`}}/>
+          </View>
+        </View>
+     
+    </Modal> */}
     </>
   );
 };

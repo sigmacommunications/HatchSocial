@@ -5,11 +5,12 @@ import {
   View,
   FlatList,
   ActivityIndicator,
+  TouchableWithoutFeedback,
 } from 'react-native';
 import React, {useState, useRef, useEffect} from 'react';
 // import { TouchableOpacity, View, StyleSheet, FlatList} from 'react-native';
 import {ImageBackground, ScrollView} from 'react-native';
-
+import ImageSlider from 'react-native-image-slider';
 import Color from '../Assets/Utilities/Color';
 import {apiHeader, windowHeight, windowWidth} from '../Utillity/utils';
 import {moderateScale, ScaledSheet} from 'react-native-size-matters';
@@ -27,6 +28,7 @@ import {baseUrl} from '../Config';
 import {Get, Post} from '../Axios/AxiosInterceptorFunction';
 import ShowMoreAndShowLessText from '../Components/ShowMoreAndShowLessText';
 import SkeletonPlaceholder from 'react-native-skeleton-placeholder';
+import { useNavigation } from '@react-navigation/native';
 const FeedVideo = ({
   data,
   currentTime,
@@ -36,9 +38,10 @@ const FeedVideo = ({
   currentIndex,
   item1,
 }) => {
-  console.log("🚀 ~ data:", data)
+ console.log("🚀 ~ data:", data)
   // console.log("🚀 ~ item==============>:", JSON.stringify(data,null,2))
   // const videoRef = useRef();
+  const navigation = useNavigation();
   const [videoRef, setvideoRef] = useState(null);
   // console.log('🚀 ~ videoRef:', videoRef);
   const [isLoading, setIsLoading] = useState(false);
@@ -56,11 +59,12 @@ const FeedVideo = ({
       data={data}
       pagingEnabled={true}
       showsHorizontalScrollIndicator={false}
-      scrollEventThrottle={16}
+      // scrollEventThrottle={16}
       style={{
         height: windowHeight,
         width: windowWidth,
       }}
+     
       ListEmptyComponent={() => {
         return (
           <View
@@ -77,7 +81,7 @@ const FeedVideo = ({
       }}
       renderItem={({item, index}) => {
         // console.log("🚀 ~ item ========================== >>>>>>>>>> 2:", `${baseUrl}/${item?.file}`)
-        console.log(item?.caption)
+        console.log(item?.caption);
         return (
           <>
             {/* {isLoading ? (
@@ -93,110 +97,231 @@ const FeedVideo = ({
                 />
               </SkeletonPlaceholder>
             ) : ( */}
-            <TouchableOpacity
-              onPress={() => {
-                setClicked(!clicked);
-              }}
-              activeOpacity={1}
-              style={[
-                styles.card,
-                {height: windowHeight, paddingBottom: moderateScale(0, 0.3)},
-              ]}>
-              <Video
-                ref={ref => setvideoRef(ref)}
-                resizeMode={'contain'}
-                // repeat={true}
-                paused={paused}
-                // paused={paused}
-                // controls={false}
-                // source={require('../Assets/Images/video1.mp4')}
-                source={{
-                  uri: `${baseUrl}/${item?.file}`,
+               <TouchableOpacity
+          style={{
+            position:'absolute',
+            zIndex:1,
+            top:15,
+            left:15
+          
+          }}
+          activeOpacity={1}
+          onPress={() => {
+            navigation.goBack();
+          }}>
+          <Icon
+            as={AntDesign}
+            name="arrowleft"
+            size={38}
+            color={Color.white}
+            onPress={() => {
+              navigation.goBack();
+            }}
+          />
+        </TouchableOpacity>
+            
+              <TouchableOpacity
+                onPress={() => {
+                  setClicked(!clicked);
+                  setPaused(prev => !prev);
+                  console.log("Logging video")
                 }}
-                // source={item2?.item?.uri}
-                style={styles.backgroundVideo}
-                onProgress={data => {
-                  // console.log('first', data);
-                  // setDuration(data?.playableDuration);
-                  // setCurrentTime(data?.currentTime);
-                }}
-                onLoadStart={data => {
-                  console.log('video is loading ', data);
-                  setIsLoading(true);
-                  // Views();
-                }}
-                onLoad={x => {
-                  // console.log('video successfully loaded ', x);
-                  setIsLoading(false);
-                  setPaused(false);
-                  // setvideoRef(videoRef.props.paused)
-                }}
-                onBuffer={x => console.log('buffering video', x)}
-                onError={error =>
-                  console.log('error ================> ', error)
-                }
-              />
-              {clicked && (
-                <View
-                  // onPress={() => {
-                  //   setClicked(!clicked);
-                  // }}
-                  style={styles.button}>
-                  <View style={styles.rowView}>
-                    <TouchableOpacity
-                      onPress={() => {
-                        togglePlayPause();
-                        // setPaused(!paused);
-                        // console.log(
-                        //   'here=======> click on red color ',
-                        //   videoRef.props.paused ==  true ? false :'text',
-                        // );
-                        // console.log( 'here==============================>',videoRef?.props?.paused)
-                        // setvideoRef(
-                        //   (videoRef.props.paused ==  true ? false :'text'),
-                        // );
-
-                        // setvideoRef(prev => prev.props.paused = !prev.props.paused)
-                        // setPaused(!paused);
-                      }}
-                      style={{
-                        marginHorizontal: moderateScale(25, 0.6),
-                      }}>
-                      <View style={styles.button2}>
-                        <CustomImage
-                          onPress={() => {
-                            togglePlayPause();
-                            // setPaused(!paused);
-                            // console.log( 'here1',videoRef.props.paused ==false ?true : false)
-                            // setvideoRef(videoRef.props.paused == true ? false :'text');
-
-                            // setvideoRef(prev =>  prev.props.paused = false)
-                            // setPaused(!paused);
-                          }}
-                          style={{
-                            width: '100%',
-                            height: '100%',
-                            tintColor: 'white',
-                          }}
-                          source={
-                            isLoading ? (
-                              <ActivityIndicator
-                                size={'small'}
-                                color={Color.white}
-                              />
-                            ) : paused ? (
-                              require('../Assets/Images/paused.png')
-                            ) : (
-                              require('../Assets/Images/play.png')
-                            )
-                          }
-                        />
-                      </View>
-                    </TouchableOpacity>
+                activeOpacity={1}
+                style={[
+                  styles.card,
+                  {height: windowHeight, 
+              
+                    paddingBottom: moderateScale(0, 0.3)},
+                ]}>
+               <Video
+                  ref={ref => setvideoRef(ref)}
+                  resizeMode={'contain'}
+                  // repeat={true}
+                  paused={paused}
+                
+                  // source={require('../Assets/Images/video1.mp4')}
+                  source={{
+                    uri: `${baseUrl}/${item?.videos?.name}`,
+                  }}
+                  style={styles.backgroundVideo}
+                  onProgress={data => {}}
+                  onLoadStart={data => {
+                    console.log('video is loading ', data);
+                    setIsLoading(true);
+                  }}
+                  onLoad={x => {
+                    setIsLoading(false);
+                    setPaused(false);
+                  }}
+                  onBuffer={x => console.log('buffering video', x)}
+                  onError={error =>
+                    console.log('error ================> ', error)
+                  }
+                /> 
+                {clicked && (
+                  <View style={styles.button}>
+                    <View style={styles.rowView}>
+                      <TouchableOpacity
+                        onPress={() => {
+                          togglePlayPause();
+                        }}
+                        style={{
+                          marginHorizontal: moderateScale(25, 0.6),
+                        }}>
+                        <View style={styles.button2}>
+                          <CustomImage
+                            onPress={() => {
+                              togglePlayPause();
+                            }}
+                            style={{
+                              width: '100%',
+                              height: '100%',
+                              tintColor: 'white',
+                            }}
+                            source={
+                            paused ? (
+                                require('../Assets/Images/paused.png')
+                              ) : (
+                                require('../Assets/Images/play.png')
+                              )
+                            }
+                          />
+                        </View>
+                      </TouchableOpacity>
+                    </View>
                   </View>
-                </View>
-              )}
-              {/* {isLoading && (
+                )}
+                <LinearGradient
+                  start={{x: 0, y: 0}}
+                  end={{x: 0, y: 0.9}}
+                  colors={['#ffffff00', '#000000']}
+                  style={styles.linearstyle}>
+                  <View style={styles.container}>
+                    <View style={styles.contView}>
+                      <View style={styles.photoView}>
+                        {isLoading ? (
+                          <SkeletonPlaceholder
+                            backgroundColor="lightgrey"
+                            highlightColor="#E0E0E0"
+                            speed={1}>
+                            <SkeletonPlaceholder.Item
+                              width={'100%'}
+                              shimmerWidth={'100%'}
+                              height={'100%'}
+                            />
+                          </SkeletonPlaceholder>
+                        ) : (
+                          <CustomImage
+                            source={
+                              item?.profile_info?.photo
+                                ? {
+                                    uri: `${baseUrl}/${item?.profile_info?.photo}`,
+                                  }
+                                : require('../Assets/Images/avatar3.png')
+                            }
+                            style={{
+                              height: '100%',
+                              width: '100%',
+                            }}
+                          />
+                        )}
+                      </View>
+                      {isLoading ? (
+                  
+
+                        <SkeletonPlaceholder backgroundColor='#c5c9c9'
+                        highlightColor="#E0E0E0"
+                        >
+                          <SkeletonPlaceholder.Item
+                          marginTop={moderateScale(10,0.2)}
+                          // backgroundColor=
+                            width={100}
+                            // shimmerWidth={'100%'}
+                            height={25}
+                          />
+                        </SkeletonPlaceholder>
+                      ) : (
+                        <View
+                          style={{
+                            justifyContent: 'space-between',
+                          }}>
+                          <CustomText
+                            numberOfLines={1}
+                            style={styles.cT}
+                            isBold>
+                            {item?.profile_info?.name}
+                          </CustomText>
+
+                          <CustomText numberOfLines={1} style={styles.customT2}>
+                            new york
+                          </CustomText>
+                        </View>
+                      )}
+                    </View>
+                    <View style={styles.Views}>
+                      <CustomText
+                        style={{
+                          fontSize: moderateScale(14, 0.6),
+                          color: Color.white,
+                        }}>
+                        0 likes
+                      </CustomText>
+                      <View style={styles.cmtView}></View>
+                      <CustomText
+                        style={{
+                          fontSize: moderateScale(14, 0.6),
+                          color: Color.white,
+                        }}>
+                        {data?.comment?.length}0 comments
+                      </CustomText>
+                    </View>
+                    <View style={styles.caption}>
+                      <ScrollView
+                        showsVerticalScrollIndicator={false}
+                        contentContainerStyle={{
+                          //   backgroundColor: 'green',
+                          paddingBottom: moderateScale(20, 0.3),
+                        }}>
+                        <ShowMoreAndShowLessText
+                          minTextLength={10}
+                          style={styles.moreLess}>
+                          {item?.caption}
+                        </ShowMoreAndShowLessText>
+                      </ScrollView>
+                    </View>
+                  </View>
+                  <View style={styles.opcity}>
+                    <View style={styles.btnView}>
+                      <TouchableOpacity
+                        onPress={() => {
+                          refRBSheet.current.open();
+                        }}
+                        style={styles.btn2}>
+                        <Icon
+                          name={'comments'}
+                          as={FontAwesome5}
+                          color={'white'}
+                          size={5}
+                        />
+                      </TouchableOpacity>
+                      <CustomText numberOfLines={1} style={styles.customT}>
+                        {data?.comments?.length}
+                      </CustomText>
+                    </View>
+                  </View>
+                  <View
+                    style={{
+                      position: 'absolute',
+                      backgroundColor: Color.themeColor,
+                      height: windowWidth * 0.01,
+                      width: currentTime
+                        ? duration
+                          ? `${(currentTime / duration) * 100}%`
+                          : '0%'
+                        : '0%',
+                    }}></View>
+                </LinearGradient>
+                {/* {isLoading && (
                   <View
                     style={{
                       position: 'absolute',
@@ -218,159 +343,8 @@ const FeedVideo = ({
                     <ActivityIndicator size={'large'} color={'black'} />
                   </View>
                 )} */}
-              <LinearGradient
-                start={{x: 0, y: 0}}
-                end={{x: 0, y: 0.9}}
-                colors={['#ffffff00', '#000000']}
-                style={styles.linearstyle}>
-                <View style={styles.container}>
-                  <View style={styles.contView}>
-                    <View style={styles.photoView}>
-                      {isLoading ? (
-                        <SkeletonPlaceholder
-                          backgroundColor="lightgrey"
-                          highlightColor="#E0E0E0"
-                          speed={1}>
-                          <SkeletonPlaceholder.Item
-                            width={'100%'}
-                            shimmerWidth={'100%'}
-                            height={'100%'}
-                            // borderRadius={4}
-                          />
-                        </SkeletonPlaceholder>
-                      ) : (
-                        <CustomImage
-                          source={
-                            item?.profile_info?.photo
-                              ? {
-                                  uri: `${baseUrl}/${item?.profile_info?.photo}`,
-                                }
-                              : require('../Assets/Images/avatar3.png')
-                          }
-                          style={{
-                            height: '100%',
-                            width: '100%',
-                          }}
-                        />
-                      )}
-                    </View>
-                    {isLoading ? (
-                      <SkeletonPlaceholder
-                        backgroundColor="lightgrey"
-                        highlightColor="#E0E0E0"
-                        speed={1}>
-                        <SkeletonPlaceholder.Item
-                          width={'100%'}
-                          shimmerWidth={'100%'}
-                          height={'100%'}
-                          // borderRadius={4}
-                        />
-                      </SkeletonPlaceholder>
-                    ) : (
-                      <View
-                        style={{
-                          justifyContent: 'space-between',
-                        }}>
-                        <CustomText numberOfLines={1} style={styles.cT} isBold>
-                          {item?.profile_info?.name}
-                        </CustomText>
-
-                        <CustomText numberOfLines={1} style={styles.customT2}>
-                          new york
-                        </CustomText>
-                      </View>
-                    )}
-                  </View>
-                  <View style={styles.Views}>
-                    <CustomText
-                      style={{
-                        fontSize: moderateScale(14, 0.6),
-                        color: Color.white,
-                      }}>
-                      {/* {views} */}0 likes
-                    </CustomText>
-                    <View style={styles.cmtView}></View>
-                    <CustomText
-                      style={{
-                        fontSize: moderateScale(14, 0.6),
-                        color: Color.white,
-                      }}>
-                      {data?.comment?.length}0 comments
-                    </CustomText>
-                  </View>
-                  <View style={styles.caption}>
-                    <ScrollView
-                      showsVerticalScrollIndicator={false}
-                      contentContainerStyle={{
-                        //   backgroundColor: 'green',
-                        paddingBottom: moderateScale(20, 0.3),
-                      }}>
-                      <ShowMoreAndShowLessText
-                        minTextLength={10}
-                        style={styles.moreLess}>
-                        {
-                          item?.caption
-                        
-                        }
-                      </ShowMoreAndShowLessText>
-                    </ScrollView>
-                  </View>
-                </View>
-                <View style={styles.opcity}>
-                  {/* <View style={styles.btnView}>
-                    <TouchableOpacity
-                      onPress={() => {
-                        likePost();
-                      }}
-                      style={styles.btn}>
-                      <Icon
-                        name={like == true ? 'like1' : 'like2'}
-                        as={AntDesign}
-                        color={like == true ? 'white' : 'white'}
-                        size={like == true ? 8 : 5}
-                      />
-                    </TouchableOpacity>
-                    <CustomText numberOfLines={1} style={styles.customT}>
-                      {(item?.my_like && like) || (!item?.my_like && !like)
-                        ? numeral(item?.total_likes_count).format('0a')
-                        : item?.my_like && !like
-                        ? numeral(item?.total_likes_count - 1).format('0a')
-                        : numeral(item?.total_likes_count + 1).format('0a')}
-                    </CustomText>
-                  </View> */}
-
-                  <View style={styles.btnView}>
-                    <TouchableOpacity
-                      onPress={() => {
-                        refRBSheet.current.open();
-                      }}
-                      style={styles.btn2}>
-                      <Icon
-                        name={'comments'}
-                        as={FontAwesome5}
-                        color={'white'}
-                        size={5}
-                      />
-                    </TouchableOpacity>
-                    <CustomText numberOfLines={1} style={styles.customT}>
-                      {data?.comments?.length}
-                    </CustomText>
-                  </View>
-                  {/* <ComentsSection refRBSheet={refRBSheet} data={item} setCommentsCount={setCommentsCount} />  */}
-                </View>
-                <View
-                  style={{
-                    position: 'absolute',
-                    backgroundColor: Color.themeColor,
-                    height: windowWidth * 0.01,
-                    width: currentTime
-                      ? duration
-                        ? `${(currentTime / duration) * 100}%`
-                        : '0%'
-                      : '0%',
-                  }}></View>
-              </LinearGradient>
-            </TouchableOpacity>
+              </TouchableOpacity>
+            
             {/* //  )}  */}
           </>
         );
@@ -380,6 +354,135 @@ const FeedVideo = ({
 };
 
 export default FeedVideo;
+
+// <LinearGradient
+// start={{x: 0, y: 0}}
+// end={{x: 0, y: 0.9}}
+// colors={['#ffffff00', '#000000']}
+// style={styles.linearstyle}>
+// <View style={styles.container}>
+//   <View style={styles.contView}>
+//     <View style={styles.photoView}>
+//       {isLoading ? (
+//         <SkeletonPlaceholder
+//           backgroundColor="lightgrey"
+//           highlightColor="#E0E0E0"
+//           speed={1}>
+//           <SkeletonPlaceholder.Item
+//             width={'100%'}
+//             shimmerWidth={'100%'}
+//             height={'100%'}
+//           />
+//         </SkeletonPlaceholder>
+//       ) : (
+//         <CustomImage
+//           source={
+//             item?.profile_info?.photo
+//               ? {
+//                   uri: `${baseUrl}/${item?.profile_info?.photo}`,
+//                 }
+//               : require('../Assets/Images/avatar3.png')
+//           }
+//           style={{
+//             height: '100%',
+//             width: '100%',
+//           }}
+//         />
+//       )}
+//     </View>
+//     {isLoading ? (
+//       <SkeletonPlaceholder
+//         backgroundColor="lightgrey"
+//         highlightColor="#E0E0E0"
+//         speed={1}>
+//         <SkeletonPlaceholder.Item
+//           width={'100%'}
+//           shimmerWidth={'100%'}
+//           height={'100%'}
+//         />
+//       </SkeletonPlaceholder>
+//     ) : (
+//       <View
+//         style={{
+//           justifyContent: 'space-between',
+//         }}>
+//         <CustomText numberOfLines={1} style={styles.cT} isBold>
+//           {item?.profile_info?.name}
+//         </CustomText>
+
+//         <CustomText numberOfLines={1} style={styles.customT2}>
+//           new york
+//         </CustomText>
+//       </View>
+//     )}
+//   </View>
+//   <View style={styles.Views}>
+//     <CustomText
+//       style={{
+//         fontSize: moderateScale(14, 0.6),
+//         color: Color.white,
+//       }}>
+//      0 likes
+//     </CustomText>
+//     <View style={styles.cmtView}></View>
+//     <CustomText
+//       style={{
+//         fontSize: moderateScale(14, 0.6),
+//         color: Color.white,
+//       }}>
+//       {data?.comment?.length}0 comments
+//     </CustomText>
+//   </View>
+//   <View style={styles.caption}>
+//     <ScrollView
+//       showsVerticalScrollIndicator={false}
+//       contentContainerStyle={{
+//         //   backgroundColor: 'green',
+//         paddingBottom: moderateScale(20, 0.3),
+//       }}>
+//       <ShowMoreAndShowLessText
+//         minTextLength={10}
+//         style={styles.moreLess}>
+//         {
+//           item?.caption
+
+//         }
+//       </ShowMoreAndShowLessText>
+//     </ScrollView>
+//   </View>
+// </View>
+// <View style={styles.opcity}>
+
+//   <View style={styles.btnView}>
+//     <TouchableOpacity
+//       onPress={() => {
+//         refRBSheet.current.open();
+//       }}
+//       style={styles.btn2}>
+//       <Icon
+//         name={'comments'}
+//         as={FontAwesome5}
+//         color={'white'}
+//         size={5}
+//       />
+//     </TouchableOpacity>
+//     <CustomText numberOfLines={1} style={styles.customT}>
+//       {data?.comments?.length}
+//     </CustomText>
+//   </View>
+// </View>
+// <View
+//   style={{
+//     position: 'absolute',
+//     backgroundColor: Color.themeColor,
+//     height: windowWidth * 0.01,
+//     width: currentTime
+//       ? duration
+//         ? `${(currentTime / duration) * 100}%`
+//         : '0%'
+//       : '0%',
+//   }}></View>
+// </LinearGradient>
 
 const styles = StyleSheet.create({
   linearstyle: {
@@ -409,6 +512,8 @@ const styles = StyleSheet.create({
   },
   contView: {
     flexDirection: 'row',
+    // justifyContent:'center',
+    // alignItems:'center',
     paddingTop: moderateScale(40, 0.6),
     paddingLeft: moderateScale(5, 0.6),
   },
@@ -436,6 +541,14 @@ const styles = StyleSheet.create({
     marginTop: moderateScale(12, 0.3),
     marginLeft: moderateScale(5, 0.3),
     marginRight: moderateScale(8, 0.3),
+  },
+  customSlide: {
+    width:windowWidth ,
+    height:windowHeight * 0.34,
+    // backgroundColor: 'green',
+    // overflow:'hidden',
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   opcity: {
     position: 'absolute',
@@ -567,3 +680,27 @@ const styles = StyleSheet.create({
     // backgroundColor: 'green',
   },
 });
+
+{
+  /* <View style={styles.btnView}>
+    <TouchableOpacity
+      onPress={() => {
+        likePost();
+      }}
+      style={styles.btn}>
+      <Icon
+        name={like == true ? 'like1' : 'like2'}
+        as={AntDesign}
+        color={like == true ? 'white' : 'white'}
+        size={like == true ? 8 : 5}
+      />
+    </TouchableOpacity>
+    <CustomText numberOfLines={1} style={styles.customT}>
+      {(item?.my_like && like) || (!item?.my_like && !like)
+        ? numeral(item?.total_likes_count).format('0a')
+        : item?.my_like && !like
+        ? numeral(item?.total_likes_count - 1).format('0a')
+        : numeral(item?.total_likes_count + 1).format('0a')}
+    </CustomText>
+  </View> */
+}

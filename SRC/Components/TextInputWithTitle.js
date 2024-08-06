@@ -146,6 +146,13 @@ const TextInputWithTitle = props => {
               onPressIn={props.onPressIn}
               maxLength={props.maxLength}
               editable={props.disable ? false : true}
+              onSubmitEditing={(e) => {
+                return( 
+                  console.log("🚀 ~ TextInputWithTitle ~ e:", e)
+              )
+                
+              }}
+              
             />
             <TouchableOpacity
               onPress={() => {

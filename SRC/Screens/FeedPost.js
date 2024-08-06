@@ -49,7 +49,7 @@ const FeedPost = props => {
     setIsLoading(false);
     if (response != undefined) {
       console.log(
-        '🚀 ~kamal ================== >>>>>>>>>>>>:',
+        '🚀 response feed-post-list ================== >>>>>>>>>>>>:',
         response?.data?.feeds_post_list,
       );
       setFeedDetail(response?.data?.feeds_post_list?.data);

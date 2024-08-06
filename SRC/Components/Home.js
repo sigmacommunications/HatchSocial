@@ -18,6 +18,7 @@ import {Get} from '../Axios/AxiosInterceptorFunction';
 import {useSelector} from 'react-redux';
 import {useIsFocused} from '@react-navigation/native';
 import Video from 'react-native-video';
+import { baseUrl } from '../Config';
 
 const Home = ({bubbleId }) => {
   const profileData = useSelector(state => state.commonReducer.selectedProfile);
@@ -228,7 +229,7 @@ const Home = ({bubbleId }) => {
                     mute={true}
                     // controls={true}
                     // source={item?.post_videos}
-                    source={{uri:item?.post_videos[0]?.name}}
+                    source={{uri:`${baseUrl}/${item?.post_videos[0]?.name}`}}
 
                     style={{
                       width: '100%',

@@ -116,9 +116,9 @@ const LoginScreen = () => {
             children={' Login to continue'} isBold></CustomText>
           <View style={styles.conatiner}>
             <TextInputWithTitle
-              title={'User Name'}
+              title={'Email'}
               secureText={false}
-              placeholder={'User Name'}
+              placeholder={'Email'}
               setText={setusername}
               value={username}
               viewHeight={0.07}

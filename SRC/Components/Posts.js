@@ -30,18 +30,21 @@ import AddIconButton from './IconButon-add';
 
 
 const Posts = ({onPress,bubbleId, bubbleInfo}) => {
+  console.log("🚀 ~ Posts ~ bubbleId:", bubbleId)
   const fromHome = 
   console.log("🚀 ~ Posts ~ bubbleInfo:", bubbleInfo)
   const themeColor = useSelector(state => state.authReducer.ThemeColor);
   const privacy = useSelector(state => state.authReducer.privacy);
   const token = useSelector(state => state.authReducer.token);
   const profileData = useSelector(state => state.commonReducer.selectedProfile);
+  console.log("🚀 ~ Posts ~ profileData:", profileData?.id)
 
   const isFocused = useIsFocused();
 
   const [search, setSearch] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [posts, setPosts] = useState([]);
+  console.log("🚀 ~ Posts ~ posts:", posts)
 
   const getPosts = async () => {
     const url = `auth/post/${bubbleId}?profile_id=${profileData?.id}`;
@@ -56,7 +59,6 @@ const Posts = ({onPress,bubbleId, bubbleInfo}) => {
       );
     }
   };
-
 
   
   const getPostsDelete = async (id) => {
@@ -127,7 +129,7 @@ const Posts = ({onPress,bubbleId, bubbleInfo}) => {
               }}
             />
           </View>
-          <TouchableOpacity
+          {/* <TouchableOpacity
             style={{
               backgroundColor: 'white',
               borderRadius: moderateScale(10, 0.6),
@@ -154,7 +156,7 @@ const Posts = ({onPress,bubbleId, bubbleInfo}) => {
 
           <View>
             <Icon name={'images'} as={Entypo} color={'white'} size={7} />
-          </View>
+          </View> */}
         </View>
       )}
       {isLoading ? (

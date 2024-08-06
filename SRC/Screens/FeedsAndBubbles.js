@@ -665,10 +665,15 @@ const FeedsAndBubbles = ({route}) => {
                     return (
                       <TouchableOpacity
                         onPress={() => {
+                          // item?.privacy.toLowerCase() == 'yes'
+                          //   ? setIsVisible(true)
+                          //   : setClicked(true);
+                          // setSelectedBubbleId(item);
                           item?.privacy.toLowerCase() == 'yes'
                             ? setIsVisible(true)
-                            : setClicked(true);
-                          setSelectedBubbleId(item);
+                            :  navigation.navigate('Bubble', {
+                              id: item?.id,
+                            });
                         }}
                         style={styles.pBubbles}>
                         <View
@@ -677,10 +682,15 @@ const FeedsAndBubbles = ({route}) => {
                           }}>
                           <CustomImage
                             onPress={() => {
+                              // item?.privacy.toLowerCase() == 'yes'
+                              //   ? setIsVisible(true)
+                              //   : setClicked(true);
+                              // setSelectedBubbleId(item);
                               item?.privacy.toLowerCase() == 'yes'
                                 ? setIsVisible(true)
-                                : setClicked(true);
-                              setSelectedBubbleId(item);
+                                : navigationService.navigate('Bubble', {
+                                  id: item?.id,
+                                });
                             }}
                             style={{
                               height: '100%',
@@ -738,7 +748,7 @@ const FeedsAndBubbles = ({route}) => {
                 />
               </View>
             </View>
-            {clicked && (
+            {/* {clicked && (
               <BlurView
                 style={styles.blurView}
                 blurRadius={5}
@@ -776,7 +786,7 @@ const FeedsAndBubbles = ({route}) => {
                   />
                 </View>
               </BlurView>
-            )}
+            )} */}
             <RequestModal
               selectedBubbleId={selectedBubbleId?.id}
               setIsVisible={setIsVisible}

@@ -234,7 +234,9 @@ const HomeScreen = props => {
             : require('../Assets/Images/Main.png')
         }
         resizeMode={'cover'}
-        style={styles.container}>
+        // style={styles.container}
+        style={[styles.container,  { transform: [{ scaleX: alignment === 'left' ? 1 : -1 }] }]}
+        >
         {highlightedIcon && (
           <View style={[styles.highlightedIcon, {transform: [{scaleX: -1}]}]}>
             {highlightedIcon}
@@ -362,6 +364,7 @@ const HomeScreen = props => {
                           paddingVertical: moderateScale(5, 0.6),
                           marginHorizontal: moderateScale(10, 0.3),
                           fontSize: moderateScale(13, 0.6),
+                          transform: [{ scaleX: -1 }]
                         }}>
                         {item?.title}
                       </CustomText>
@@ -440,7 +443,8 @@ const HomeScreen = props => {
                 styles.feedsContainer,
                 {
                   height: windowHeight * 0.2,
-                  paddingVertical: moderateScale(30, 0.6),
+                  marginBottom:moderateScale(19,0.3),
+                  // paddingVertical: moderateScale(30, 0.6),
                   transform: [{scaleX: alignment == 'left' ? 1 : -1}],
                 },
                 alignment == 'left' && {marginLeft: moderateScale(50, 0.6)},
@@ -455,10 +459,11 @@ const HomeScreen = props => {
                 horizontal
                 showsHorizontalScrollIndicator={false}
                 contentContainerStyle={{
-                  paddingHorizontal: moderateScale(10, 0.6),
+                  // paddingHorizontal: moderateScale(10, 0.6),
+
                 }}
                 renderItem={({item}) => {
-                  // console.log("🚀 ~ HomeScreen ~ item  =============== < here i m :", item)
+                  console.log("🚀 ~ HomeScreen ~ item  =============== < here i m :", item)
                   return (
                     <View>
                       <TouchableOpacity
@@ -644,6 +649,7 @@ const styles = ScaledSheet.create({
     height: windowHeight * 0.9,
     overflow: 'hidden',
     justifyContent: 'center',
+    // paddingBottom:moderateScale(25,0.4)
   },
   highlightedIcon: {
     width: windowWidth,
@@ -698,6 +704,8 @@ const styles = ScaledSheet.create({
   feedsContainer: {
     width: windowWidth * 0.9,
     height: windowHeight * 0.16,
+    // position:'absolute',
+    // bottom: 100
   },
   heading: {
     fontSize: moderateScale(25, 0.2),

@@ -9,6 +9,7 @@ import Fontisto from 'react-native-vector-icons/Fontisto';
 import {baseUrl} from '../Config';
 import Color from '../Assets/Utilities/Color';
 import LinearGradient from 'react-native-linear-gradient';
+import { useNavigation } from '@react-navigation/native';
 const NewComponent = ({item}) => {
   // return console.log("🚀 ~ NewComponent ~ item:", item)
 
@@ -39,6 +40,8 @@ const NewComponent = ({item}) => {
 };
 
 function NewComponent3({item ,clicked ,setClicked ,setSelectedBubble,  setIsVisible ,isVisible}) {
+  const navigation = useNavigation();
+ 
   console.log("🚀 ~ NewComponent3 ~ item ==================> :", item?.privacy)
   return (
     <LinearGradient
@@ -63,10 +66,15 @@ function NewComponent3({item ,clicked ,setClicked ,setSelectedBubble,  setIsVisi
       colors={['#01E8E3', '#1296AF']}>
       <TouchableOpacity style={styles.bubble}
       onPress={() =>{
-        item?.privacy.toLowerCase() == 'yes' ? 
-        setIsVisible(true)
-        :setClicked(true)
-        setSelectedBubble(item)
+        // item?.privacy.toLowerCase() == 'yes' ? 
+        // setIsVisible(true)
+        // :setClicked(true)
+        // setSelectedBubble(item)
+        item?.privacy.toLowerCase() == 'yes'
+                            ? setIsVisible(true)
+                            : navigation.navigate('Bubble', {
+                              id: item?.id,
+                            });
         // Alert.alert("Alert!", "Work in progress")
 
       }}
@@ -81,10 +89,16 @@ function NewComponent3({item ,clicked ,setClicked ,setSelectedBubble,  setIsVisi
           }}>
           <CustomImage
           onPress={() => {
-            item?.privacy.toLowerCase() == 'yes' ? 
-            setIsVisible(true)
-            :setClicked(true)
-            setSelectedBubble(item)
+            // item?.privacy.toLowerCase() == 'yes' ? 
+            // setIsVisible(true)
+            // :setClicked(true)
+            // setSelectedBubble(item)
+           item?.privacy.toLowerCase() == 'yes' ?
+            setIsVisible(true) 
+            : navigation.navigate('Bubble', {
+              id: item?.id
+            })
+
           }}
             resizeMode={'cover'}
             source={{uri: `${baseUrl}/${item?.image}`}}

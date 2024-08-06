@@ -18,14 +18,21 @@ import {useSelector} from 'react-redux';
 import CardComponent from '../Components/CardComponent';
 import BubbleCard from '../Components/BubbleCard';
 import {Get} from '../Axios/AxiosInterceptorFunction';
-import {useIsFocused} from '@react-navigation/native';
+import {useIsFocused, useNavigation} from '@react-navigation/native';
 // const {height, width} = Dimensions.get('window');
+import {Icon, ScrollView} from 'native-base';
+import Entypo from 'react-native-vector-icons/Entypo';
+import AntDesign from 'react-native-vector-icons/AntDesign';
+import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
+import navigationService from '../navigationService';
 
 const BubbleList = () => {
+  const navigation = useNavigation();
   const privacy = useSelector(state => state.authReducer.privacy);
   const [selectedTab, setSelectedTab] = useState(1);
   console.log("🚀 ~ BubbleList ~ selectedTab:", selectedTab)
   const [yourBubbles, setYourBubbles] = useState([]);
+  console.log("🚀 ~ BubbleList ~ yourBubbles:", yourBubbles)
   const [requests, setRequests] = useState([]);
   const [invitedBubbles, setInvitedBubbles] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
@@ -169,7 +176,37 @@ const BubbleList = () => {
         backgroundColor={Color.white}
         barStyle={'dark-content'}
       />
-      <Header  Title={'Bubble List'} showBack search />
+
+<View style={styles.HeaderView}>
+        <Icon
+          onPress={() => {
+            navigation.goBack();
+          }}
+          style={{position: 'absolute', left: moderateScale(15, 0.6)}}
+          name="arrow-back-ios"
+          as={MaterialIcons}
+          color={Color.themeColor}
+          size={moderateScale(20, 0.6)}
+        />
+        <CustomText
+          numberOfLines={1}
+          isBold
+          style={{fontSize: moderateScale(20, 0.6)}}>
+          {'Bubble List'}
+        </CustomText>
+        <Icon
+          onPress={() => navigationService.navigate('CreateNewBubble')}
+          name="plus"
+          style={{
+            fontWeight: 'bold',
+            position: 'absolute',
+            right: moderateScale(10, 0.6),
+          }}
+          as={AntDesign}
+          color={Color.themeColor}
+          size={moderateScale(25, 0.6)}
+        />
+      </View>
 
       <ImageBackground
         source={
@@ -269,7 +306,13 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
   },
-
+  HeaderView: {
+    width: windowWidth,
+    height: windowHeight * 0.1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'white',
+  },
   profileSection: {
     height: windowWidth * 0.2,
     width: windowWidth * 0.2,

@@ -30,6 +30,7 @@ import navigationService from '../navigationService';
 import TextInputWithTitle from './TextInputWithTitle';
 import {baseUrl} from '../Config';
 import {Post} from '../Axios/AxiosInterceptorFunction';
+import { useNavigation } from '@react-navigation/native';
 
 const BubbleCard = ({
   item,
@@ -42,9 +43,11 @@ const BubbleCard = ({
   getRequests,
   getList,
 }) => {
+
   console.log("🚀 ~ ite======================>:", item)
   console.log("🚀 ~ request================> request here:", request)
   // console.log("🚀 ~ item:", item?.status)
+  const navigation= useNavigation()
   const profileData = useSelector(state => state.commonReducer.selectedProfile);
   const token = useSelector(state => state.authReducer.token);
   const [loading, setLoading] = useState(false);
@@ -81,7 +84,13 @@ const BubbleCard = ({
   const [msg, setMsg] = useState('');
   return (
     <>
-      <View style={styles.row}>
+      <TouchableOpacity 
+      onPress={() =>{
+        navigation.navigate('Bubble', {
+          id: item?.community_id
+        })
+      }}
+      style={styles.row}>
         <View>
           <View style={styles.profileSection}>
             <CustomImage
@@ -321,7 +330,7 @@ const BubbleCard = ({
               <></>
             ))}
         </View>
-      </View>
+      </TouchableOpacity>
 
       <Modal
         isVisible={isVisible}

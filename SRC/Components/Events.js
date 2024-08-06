@@ -143,7 +143,7 @@ const Events = ({onPress, bubbleId, bubbleInfo}) => {
             }}
           />
         </View>
-        <TouchableOpacity
+        {/* <TouchableOpacity
           style={styles.search}
           onPress={() => {
             onPress();
@@ -163,7 +163,7 @@ const Events = ({onPress, bubbleId, bubbleInfo}) => {
 
         <View>
           <Icon name={'images'} as={Entypo} color={'white'} size={7} />
-        </View>
+        </View> */}
       </View>}
       {isLoading ? (
         <View style={styles.loaderView}>

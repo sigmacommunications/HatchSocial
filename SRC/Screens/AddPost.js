@@ -40,6 +40,7 @@ const AddPost = props => {
   const bubbleId = props?.route?.params?.bubbleId;
   const bubbleInfo = props?.route?.params?.bubbleInfo;
   const data = props?.route?.params?.data;
+  console.log("🚀 ~ data:", data)
   const fromHome = props?.route?.params?.fromHome;
   console.log("🚀 ~ fromHome:", fromHome)
 
@@ -65,13 +66,14 @@ const AddPost = props => {
   const [hashtag, setHashtag] = useState([]);
   const [video, setVideo] = useState({});
   const [videos, setVideos] = useState(
-    data?.file ? data?.file : {},
+    data?.file ? data?.file : [],
   );
   const [hashtags, setHashtags] = useState(
     data?.hashtags ? JSON.parse(data?.hashtags) : [],
   );
   const [isVisible, setIsVisible] = useState(false);
   const [text, setText] = useState('');
+  const [feedPostVideo, setFeedPostVideo ] = useState({});
   const [modalVisible, setModalVisible] = useState(false);
 
   useEffect(() => {
@@ -83,7 +85,7 @@ const AddPost = props => {
 
   useEffect(() => {
     if (Object.keys(video).length > 0) {
-      setVideos(video);
+      setVideos (prev => [...prev, video]);
       setVideo({});
     }
   }, [video]);
@@ -116,12 +118,16 @@ const AddPost = props => {
           formData.append(`image[${index}]`, images[index]),
         );
       }
-      if (Object.keys(videos).length > 0) {
-        // videos?.map((item, index) =>
-          formData.append(`file`, videos),
-          formData.append('type' ,'video')
-        // );
+      if (videos.length > 0) {
+        videos?.map((item, index) =>
+          formData.append(`video[${index}]`, videos[index]),
+        );
       }
+      // if (Object.keys(videos).length > 0) {
+      //   // videos?.map((item, index) =>
+      //     formData.append(`video`, videos)
+  
+      // }
       
       if (hashtags.length > 0) {
         hashtags?.map((item, index) =>
@@ -130,6 +136,8 @@ const AddPost = props => {
       }
     }
   // return  console.log("🚀 ~ AddPost ~ formData:", formData)
+  // return console.log("🚀 ~ AddPost ~ formData:", JSON.stringify(formData, null, 2))
+
      
     setLoading(true);
     const response = await Post(url, formData, apiHeader(token));
@@ -266,7 +274,7 @@ const AddPost = props => {
       caption: description,
       profile_id: profileData?.id,
     };
-    if (images.length == 0 && Object.keys(videos).length == 0 && description == '') {
+    if (images.length == 0 && Object.keys(feedPostVideo).length == 0 && description == '') {
       Platform.OS == 'android'
         ? ToastAndroid.show(
             ` please fill atleast one feild`,
@@ -285,11 +293,10 @@ const AddPost = props => {
           formData.append('type', 'photo');
        } );
       }
-      if (Object.keys(videos).length > 0) {
+      if (Object.keys(feedPostVideo).length > 0) {
         // videos?.map((item, index) =>
-          formData.append(`file`, videos);
+          formData.append(`file`, feedPostVideo);
           formData.append(`type`, 'video');
-          console.log("🚀 ~ AddFeedPost ~ videos:", videos)
         }
         if (hashtag.length > 0) {
           hashtag?.map((item, index) =>
@@ -407,7 +414,8 @@ const AddPost = props => {
             })}
           </View>
           
-          {/* <View style={styles.videoContainer}>
+        {/* Post videos in Bubble */}
+          <View style={styles.videoContainer}>
             {videos?.map(item => {
               return (
                 <>
@@ -419,16 +427,23 @@ const AddPost = props => {
                 </>
               );
             })}
-          </View> */}
+          </View>
           
           <View style={styles.videoContainer}>
-        {Object.keys(videos).length > 0 &&(
+        {Object.keys(feedPostVideo).length > 0 &&(
+                  <VideoComponent
+                    item={feedPostVideo}
+                    videos={feedPostVideo}
+                    setVideos={setFeedPostVideo}
+                  />)
+           }  
+        {/* {videos.length > 0 &&(
                   <VideoComponent
                     item={videos}
                     videos={videos}
                     setVideos={setVideos}
                   />)
-           }  
+           }   */}
            
           </View>
 
@@ -600,6 +615,7 @@ const AddPost = props => {
               bgColor={['#FFFFFF', '#FFFFFF']}
               borderRadius={moderateScale(30, 0.3)}
               isGradient
+              disabled={loading}
               isBold={true}
             />
           </View>
@@ -615,7 +631,7 @@ const AddPost = props => {
         show={videoPicker}
         type={'video'}
         setShow={setVideoPicker}
-        setFileObject={setVideo}
+        setFileObject={fromHome ? setFeedPostVideo : setVideo}
       />
       <HashtagModal
         setHashtag={setHashtag}
@@ -634,7 +650,7 @@ const AddPost = props => {
                   onPress={() => {
                     
                     setModalVisible(!modalVisible);
-                    if(Object.keys(videos).length > 0){
+                    if(Object.keys(feedPostVideo).length > 0){
                       return Alert.alert("You have already picked a video for upload.", "Remove it first if you want to upload image")
                     }
                     setImagePickerVisible(true)
@@ -646,7 +662,7 @@ const AddPost = props => {
                   style={styles.modalt}
                   onPress={() => {
                     setModalVisible(!modalVisible);
-                    if(images.length > 0){
+                    if(fromHome && images.length > 0){
                       return Alert.alert("You have already picked images for upload.", "Remove them first if you want to upload video")
                     }
                     setVideoPicker(true);

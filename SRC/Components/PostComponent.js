@@ -7,6 +7,7 @@ import {
   Alert,
   ToastAndroid,
   Platform,
+SafeAreaView,
   Text,
   TouchableHighlight,
   KeyboardAvoidingView,
@@ -33,17 +34,22 @@ import {baseUrl} from '../Config';
 import {Delete, Post} from '../Axios/AxiosInterceptorFunction';
 import {useSelector} from 'react-redux';
 import moment from 'moment';
+import Modal from 'react-native-modal';
 import TextInputWithTitle from './TextInputWithTitle';
 import Entypo from 'react-native-vector-icons/Entypo';
+// import AntDesign from 'react-native-vector-icons/AntDesign';
 import FeedVideo from './FeedVideo';
 import VideoComponent from '../Components/VideoComponent';
 import ImageSlider from 'react-native-image-slider';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
+import CustomButton from './CustomButton';
+import ImageView from "react-native-image-viewing";
+
 
 const PostComponent = ({data, setData, wholeData, fromMyPost}) => {
   console.log(
     '🚀 ~ PostComponent ~ data:',
-    data?.images
+    data?.hashtags
     // JSON.stringify(data, null, 2),
   );
 
@@ -56,6 +62,8 @@ const PostComponent = ({data, setData, wholeData, fromMyPost}) => {
   const [loading, setloading] = useState(false);
   const [yourComment, setYourComment] = useState('');
   const [comments, setComments] = useState(data?.comments);
+  const [currImageIndex , setCurrImageIndex] = useState(0);
+  const [isVisible, setIsVisible] = useState(false);
     const [keyboardShown, setKeyboardShown] = useState(false)
   const editPost = () => {
     navigationService.navigate('AddPost', {data: data, fromHome: true});
@@ -66,7 +74,7 @@ const PostComponent = ({data, setData, wholeData, fromMyPost}) => {
     setloading(true);
   //  return console.log("🚀 ~ handledeletePost ~ url:", url)
     const response = await Delete(url, apiHeader(token));
-    console.log("🚀 ~ handledeletePost ~ response:", response)
+  console.log("🚀 ~ handledeletePost ~ response:", response)
 
     setloading(false);
     if (response != undefined) {
@@ -130,7 +138,7 @@ const PostComponent = ({data, setData, wholeData, fromMyPost}) => {
       setYourComment('');
     }
   };
-
+console.log("first ============= > ", data?.images[currImageIndex])
   return (
     <>
       <View style={styles.mainVew}>
@@ -245,10 +253,11 @@ const PostComponent = ({data, setData, wholeData, fromMyPost}) => {
                     textAlign: 'left',
                     // color: '#000',
                   }}>
-                  {data?.hashtags}
+                  {data?.hashtags?.join(' ').replace(/(\s*#\s*){2,}/g, ' ').trim()}
                 </CustomText>
               ) : (
                 data?.hashtags?.map((item, index) => {
+
                   console.log('🚀 ~ data?.hashtags?.map ~ item=======>:', item);
                   return (
                     <View style={styles.hashContainer}>
@@ -259,7 +268,7 @@ const PostComponent = ({data, setData, wholeData, fromMyPost}) => {
                           textAlign: 'left',
                           // color: '#000',
                         }}>
-                        {item?.post_hashtags[0]?.title}
+                        {item?.post_hashtags[0]?.title} {}
                       </CustomText>
                     </View>
                   );
@@ -286,16 +295,28 @@ const PostComponent = ({data, setData, wholeData, fromMyPost}) => {
               
             ) : ( */}
         {data?.images?.length > 0 ?    <ImageSlider
-        
+      
           // loopBothSides
           // autoPlayWithInterval={3000}
           images={data?.images}
           customSlide={({ index, item, style, width }) => (
             // It's important to put style here because it's got offset inside
-            <View key={index} style={[style, styles.customSlide]}>
+            <TouchableOpacity key={index} style={[style, styles.customSlide]} onPress={() =>{
+              console.log("Index ====> ",index)
+            }}>
               {/* <Text>{item?.name}</Text> */}
-              <CustomImage source={{ uri: `${baseUrl}/${item?.name}` }} style={styles.customImage} />
-            </View>
+              <CustomImage onPress={() =>{
+                setCurrImageIndex(index);
+                // setIsVisible(true)
+                navigationService.navigate('Image', {
+                  imageData: {
+                    uri: `${baseUrl}/${item?.name}`,
+                    index: index
+                  }
+                })
+                console.log("Index ====> ",index)
+              }} source={{ uri: `${baseUrl}/${item?.name}` }} style={styles.customImage} />
+            </TouchableOpacity>
           )}
           
         />  : <VideoComponent item={data}/>}
@@ -483,6 +504,7 @@ onKeyboardDidHide={() =>{
               }}
              
             />
+                 
         <View
               style={[{
                 flexDirection: 'row',
@@ -531,7 +553,66 @@ onKeyboardDidHide={() =>{
 </KeyboardAwareScrollView>
           </RBSheet>
         </View>
+  
       </View>
+      {isVisible && <View style={{flex:1, 
+      
+        zIndex:1,
+        backgroundColor:'white'}}></View>}
+      {/* <Modal visible={isVisible} 
+      >
+        <View style={styles.imageView}>
+          <View style={styles.row}>
+            <TouchableOpacity
+              onPress={() => {
+                setIsVisible(false)
+              }}>
+              <View
+                // colors={Color.themeBgColor}
+                // style={styles.customBtn}>
+                >
+                <Icon
+                  name="left"
+                  as={AntDesign}
+                  size={moderateScale(20, 0.6)}
+                  color={'white'}
+                />
+              </View>
+            </TouchableOpacity>
+
+            {/* <CustomButton
+              iconStyle={{
+                width: windowWidth * 0.09,
+                height: windowHeight * 0.05,
+                textAlign: 'center',
+                paddingHorizontal: moderateScale(12, 0.2),
+                paddingTop: moderateScale(15, 0.6),
+                fontSize: moderateScale(24, 0.6),
+                color: Color.black,
+              }}
+              iconName="cross"
+              iconType={Entypo}
+              iconSize={18}
+              // color={Color.white}
+              marginTop={moderateScale(5, 0.3)}
+              // text={'Use'}
+              isGradient={true}
+              onPress={() => {
+                setIsVisible(false);
+              }}
+              bgColor={['white', 'white']}
+              width={windowHeight * 0.06}
+              height={windowHeight * 0.06}
+            /> 
+          </View>
+          <View style={{width: windowWidth, height:windowHeight, overflow:'hidden'}}>
+
+         <CustomImage style={{width:'100%', height: '100%'}} source={{uri: `${baseUrl}/${data?.images[currImageIndex]?.name}`}}/>
+          </View>
+        </View>
+     
+    </Modal> */}
+
     </>
   );
 };
@@ -543,6 +624,25 @@ const styles = StyleSheet.create({
     backgroundColor: Color.white,
     marginTop: moderateScale(10, 0.3),
     elevation: 2,
+  },
+  row: {
+    paddingHorizontal: moderateScale(10, 0.6),
+    paddingVertical: moderateScale(15, 0.6),
+    flexDirection: 'row',
+    width:windowWidth,
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    backgroundColor :'red'
+  },
+  imageView: {
+    widtth: windowWidth,
+    height: windowHeight,
+    // zIndex:1,
+
+    backgroundColor:'black',
+    // justifyContent: 'center',
+
+    // paddingHorizontal:moderateScale(12,0.2)
   },
   likebtn: {
     flexDirection: 'row',
